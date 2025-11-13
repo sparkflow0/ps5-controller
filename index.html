@@ -23,14 +23,14 @@
       padding: 16px;
       position: relative;
       overflow: hidden;
-      max-width: 1166px; /* matches your PNG width, but scales down responsively */
+      max-width: 1166px;
       width: 90vw;
     }
 
     .controller-area {
       position: relative;
       width: 100%;
-      aspect-ratio: 1166 / 768; /* exact ratio of your controller.png */
+      aspect-ratio: 1166 / 768;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -45,7 +45,7 @@
       filter: drop-shadow(0 18px 28px rgba(0,0,0,0.8));
     }
 
-    /* ---------- Masked color layers (perfect edges) ---------- */
+    /* Masked color layers */
     .part-layer {
       position: absolute;
       inset: 0;
@@ -108,7 +108,7 @@
       100% { filter: brightness(1); }
     }
 
-    /* ---------- Invisible clickable hitboxes ---------- */
+    /* Hitboxes */
     .part-hitbox {
       position: absolute;
       cursor: pointer;
@@ -119,12 +119,10 @@
       transform: translate(-50%, -50%);
       border-radius: var(--radius, 999px);
       background: transparent;
-      /* For debugging, uncomment:
-      outline: 1px dashed rgba(255,255,255,0.3);
-      */
+      /* outline: 1px dashed rgba(255,255,255,0.3);  // debug */
     }
 
-    /* ---------- Radial color menu ---------- */
+    /* Color wheel */
     .swatch-group {
       position: absolute;
       inset: 0;
@@ -244,7 +242,7 @@
     <div class="controller-area" id="controllerArea">
       <img src="controller.png" alt="PS5 Controller" />
 
-      <!-- Masked color layers -->
+      <!-- Masked layers -->
       <div class="part-layer" data-part-id="leftShell"
            style="--mask-url: url('masks/leftShell.png');"></div>
       <div class="part-layer" data-part-id="rightShell"
@@ -274,46 +272,33 @@
       <div class="part-layer" data-part-id="speaker"
            style="--mask-url: url('masks/speaker.png');"></div>
 
-      <!-- UPDATED: Clickable hitboxes aligned to your new controller.png -->
+      <!-- Hitboxes (positions tuned for this controller.png) -->
       <div class="part-hitbox" data-part-id="leftShell"
            style="--x: 23%; --y: 60%; --w: 30%; --h: 52%; --radius: 55%"></div>
-
       <div class="part-hitbox" data-part-id="rightShell"
            style="--x: 77%; --y: 60%; --w: 30%; --h: 52%; --radius: 55%"></div>
-
       <div class="part-hitbox" data-part-id="centerBody"
            style="--x: 50%; --y: 63%; --w: 40%; --h: 42%; --radius: 48%"></div>
-
       <div class="part-hitbox" data-part-id="touchpad"
            style="--x: 50%; --y: 30%; --w: 42%; --h: 24%; --radius: 26px"></div>
-
       <div class="part-hitbox" data-part-id="bumperL"
            style="--x: 33%; --y: 18%; --w: 18%; --h: 11%; --radius: 40px"></div>
-
       <div class="part-hitbox" data-part-id="bumperR"
            style="--x: 67%; --y: 18%; --w: 18%; --h: 11%; --radius: 40px"></div>
-
       <div class="part-hitbox" data-part-id="dpad"
            style="--x: 29%; --y: 43%; --w: 16%; --h: 21%; --radius: 28px"></div>
-
       <div class="part-hitbox" data-part-id="faceButtons"
            style="--x: 71%; --y: 43%; --w: 16%; --h: 21%; --radius: 28px"></div>
-
       <div class="part-hitbox" data-part-id="share"
            style="--x: 41%; --y: 32%; --w: 6%; --h: 10%; --radius: 40px"></div>
-
       <div class="part-hitbox" data-part-id="options"
            style="--x: 59%; --y: 32%; --w: 6%; --h: 10%; --radius: 40px"></div>
-
       <div class="part-hitbox" data-part-id="stickL"
            style="--x: 40%; --y: 57%; --w: 13%; --h: 22%; --radius: 50%"></div>
-
       <div class="part-hitbox" data-part-id="stickR"
            style="--x: 60%; --y: 57%; --w: 13%; --h: 22%; --radius: 50%"></div>
-
       <div class="part-hitbox" data-part-id="psButton"
            style="--x: 50%; --y: 67%; --w: 7%; --h: 13%; --radius: 50%"></div>
-
       <div class="part-hitbox" data-part-id="speaker"
            style="--x: 50%; --y: 48%; --w: 16%; --h: 13%; --radius: 22px"></div>
     </div>
@@ -327,13 +312,13 @@
     ];
 
     const hitboxes = Array.from(document.querySelectorAll(".part-hitbox"));
-    const layers = Array.from(document.querySelectorAll(".part-layer"));
+    const layers   = Array.from(document.querySelectorAll(".part-layer"));
 
     const layerById = {};
     layers.forEach(layer => { layerById[layer.dataset.partId] = layer; });
 
     let activeSwatchGroup = null;
-    let selectedHitbox = null;
+    let selectedHitbox    = null;
 
     const configState = {};
     hitboxes.forEach(h => { configState[h.dataset.partId] = null; });
@@ -355,6 +340,15 @@
       layer.addEventListener("animationend", () => {
         layer.classList.remove("apply-flash");
       }, { once: true });
+    }
+
+    function clearSelection(){
+      if (!selectedHitbox) return;
+      const id    = selectedHitbox.dataset.partId;
+      const layer = layerById[id];
+      selectedHitbox.classList.remove("selected");
+      if (layer) layer.classList.remove("selected");
+      selectedHitbox = null;
     }
 
     function showSwatches(hitbox){
@@ -392,7 +386,19 @@
           swatch.addEventListener("click", (e) => {
             e.stopPropagation();
             const id = hitbox.dataset.partId;
+
+            // Apply color
             applyColor(id, color);
+
+            // Remove highlight immediately after color selection
+            hitbox.classList.remove("selected");
+            const layer = layerById[id];
+            if (layer) layer.classList.remove("selected");
+            if (selectedHitbox === hitbox) {
+              selectedHitbox = null;
+            }
+
+            // Close the color wheel
             closeSwatchGroupAnimated();
           });
 
@@ -408,6 +414,7 @@
       hitbox.addEventListener("click", e => {
         e.stopPropagation();
 
+        // change selected part
         if (selectedHitbox && selectedHitbox !== hitbox) {
           const prevId = selectedHitbox.dataset.partId;
           selectedHitbox.classList.remove("selected");
@@ -426,13 +433,7 @@
 
     document.addEventListener("click", () => {
       closeSwatchGroupAnimated();
-      if (selectedHitbox) {
-        const id = selectedHitbox.dataset.partId;
-        selectedHitbox.classList.remove("selected");
-        const layer = layerById[id];
-        if (layer) layer.classList.remove("selected");
-      }
-      selectedHitbox = null;
+      clearSelection();
     });
   </script>
 </body>
