@@ -69,21 +69,27 @@
       appearance: none;
     }
 
-    /* Wrapper with no background, radius, or shadow */
+    /* Wrapper with no background, radius, or shadow – NOW SMALLER */
     .controller-wrapper {
       padding: 16px;
       position: relative;
       overflow: visible;
-      max-width: 1166px;
-      /* controller PNG width */
-      width: 90vw;
+      max-width: 900px;   /* was 1166px */
+      width: 70vw;        /* was 90vw  */
+    }
+
+    /* On very small screens keep it usable */
+    @media (max-width: 768px) {
+      .controller-wrapper {
+        max-width: 520px;
+        width: 95vw;
+      }
     }
 
     .controller-area {
       position: relative;
       width: 100%;
       aspect-ratio: 1166 / 768;
-      /* controller PNG ratio */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -119,7 +125,6 @@
       /* blend mode that brightens instead of darkens */
       mix-blend-mode: overlay;
 
-      /* slightly higher opacity for stronger tint */
       opacity: 1;
 
       -webkit-mask-image: var(--mask-url);
@@ -214,28 +219,23 @@
 
       /* Strong 3D feel: outer + inner shadows */
       box-shadow:
-        /* outer drop shadow */
         0 18px 30px rgba(0, 0, 0, 0.9),
         0 6px 12px rgba(0, 0, 0, 0.85),
-        /* main inner dark ring */
         0 0 0 2px rgba(0, 0, 0, 0.95) inset,
         0 10px 18px rgba(0, 0, 0, 0.95) inset,
-        /* top inner highlight rim */
         0 -4px 8px rgba(255, 255, 255, 0.45) inset;
 
       background-image:
-        /* glossy highlight at top-left */
         radial-gradient(circle at 28% 24%,
           rgba(255, 255, 255, 0.75),
           rgba(255, 255, 255, 0.1) 42%,
           rgba(255, 255, 255, 0) 60%),
-        /* soft sheen bottom-right */
         radial-gradient(circle at 76% 80%,
           rgba(255, 255, 255, 0.18),
           rgba(0, 0, 0, 0.5) 65%,
           rgba(0, 0, 0, 0.85) 100%);
 
-      /* Same enhancement filter as controller tint */
+      /* same enhancement as controller tint */
       filter: brightness(1.45) saturate(1.4) contrast(1.05);
 
       opacity: 0;
@@ -264,7 +264,6 @@
         0 0 0 2px rgba(0, 0, 0, 1) inset,
         0 12px 22px rgba(0, 0, 0, 1) inset,
         0 -5px 10px rgba(255, 255, 255, 0.6) inset;
-      /* Boost the same look a bit on hover */
       filter: brightness(1.6) saturate(1.6) contrast(1.08);
     }
 
@@ -346,13 +345,12 @@
       resize();
       window.addEventListener("resize", resize);
 
-      // Soft neon sci-fi palette, low opacity for base stroke, stronger for glow
       const LINE_COLORS = [
-        { stroke: "rgba(0, 255, 255, 0.08)", glow: "rgba(0, 255, 255, 0.35)" },  // cyan
-        { stroke: "rgba(0, 180, 255, 0.08)", glow: "rgba(0, 180, 255, 0.35)" },  // teal-blue
-        { stroke: "rgba(140, 100, 255, 0.1)", glow: "rgba(140, 100, 255, 0.40)" }, // violet
-        { stroke: "rgba(0, 255, 170, 0.08)", glow: "rgba(0, 255, 170, 0.35)" },  // aqua-green
-        { stroke: "rgba(255, 140, 0, 0.07)", glow: "rgba(255, 140, 0, 0.32)" }   // amber
+        { stroke: "rgba(0, 255, 255, 0.08)", glow: "rgba(0, 255, 255, 0.35)" },
+        { stroke: "rgba(0, 180, 255, 0.08)", glow: "rgba(0, 180, 255, 0.35)" },
+        { stroke: "rgba(140, 100, 255, 0.1)", glow: "rgba(140, 100, 255, 0.40)" },
+        { stroke: "rgba(0, 255, 170, 0.08)", glow: "rgba(0, 255, 170, 0.35)" },
+        { stroke: "rgba(255, 140, 0, 0.07)", glow: "rgba(255, 140, 0, 0.32)" }
       ];
 
       const LINE_COUNT = 65;
@@ -360,7 +358,7 @@
 
       function createLine() {
         const len = 100 + Math.random() * 260;
-        const speed = 120 + Math.random() * 220; // faster
+        const speed = 120 + Math.random() * 220;
         const thickness = 1 + Math.random() * 2;
         const color = LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)];
 
@@ -374,7 +372,6 @@
           speed,
           thickness,
           color,
-          // Zigzag parameters
           wiggleAmp: 10 + Math.random() * 30,
           wiggleFreq: 8 + Math.random() * 18,
           wiggleSpeed: 4 + Math.random() * 8,
@@ -392,7 +389,6 @@
         const dt = (now - lastTime) / 1000;
         lastTime = now;
 
-        // Fade previous frame slightly for motion trails
         ctx.globalCompositeOperation = "source-over";
         ctx.fillStyle = "rgba(0, 0, 0, 0.18)";
         ctx.fillRect(0, 0, width, height);
@@ -400,13 +396,11 @@
         ctx.globalCompositeOperation = "lighter";
 
         lines.forEach((line, idx) => {
-          // Move diagonally: down + right (faster)
           const diagSpeed = line.speed;
           line.x += diagSpeed * dt * 0.7;
           line.y += diagSpeed * dt;
           line.phase += line.wiggleSpeed * dt;
 
-          // If out of view, respawn above
           if (line.y - line.len > height || line.x - line.len > width) {
             lines[idx] = createLine();
             return;
@@ -420,7 +414,7 @@
           ctx.strokeStyle = line.color.stroke;
           ctx.lineWidth = line.thickness;
           ctx.shadowColor = line.color.glow;
-          ctx.shadowBlur = 18 + Math.random() * 10; // glowing
+          ctx.shadowBlur = 18 + Math.random() * 10;
           ctx.beginPath();
 
           for (let i = 0; i <= segments; i++) {
@@ -509,14 +503,12 @@
       });
     }
 
-    // Load masks
     Promise.all(PARTS.map(loadMask)).then(() => {
       masksReady = true;
     }).catch(err => {
       console.error("Error loading masks:", err);
     });
 
-    // Config state
     const configState = {};
     PARTS.forEach(p => { configState[p.id] = null; });
 
@@ -547,7 +539,7 @@
     }
 
     function showPalette() {
-      buildPalette(); // rebuild each time to restart animations
+      buildPalette();
       requestAnimationFrame(() => {
         paletteContainer.classList.add("visible");
       });
@@ -629,7 +621,6 @@
       showPalette();
     });
 
-    // Click outside controller & palette clears everything
     document.addEventListener("click", (e) => {
       if (!controllerArea.contains(e.target) && !paletteContainer.contains(e.target)) {
         hidePalette();
