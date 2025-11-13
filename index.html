@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>PS5 Controller Configurator – Mask-based Picking</title>
   <style>
-    :root { --bg: #151515; }
+    :root {
+      --bg: #151515;
+    }
 
     /* Global reset + mobile tap highlight removal */
     * {
       box-sizing: border-box;
     }
 
-    html, body,
+    html,
+    body,
     .controller-wrapper,
     .controller-area,
     button,
@@ -31,7 +35,7 @@
       overflow: hidden;
     }
 
-    /* Background canvas for sci-fi lines */
+    /* Background canvas for sci-fi lines (desktop only; disabled on mobile via JS) */
     #bgCanvas {
       position: fixed;
       inset: 0;
@@ -70,14 +74,16 @@
       padding: 16px;
       position: relative;
       overflow: visible;
-      max-width: 1166px; /* controller PNG width */
+      max-width: 1166px;
+      /* controller PNG width */
       width: 90vw;
     }
 
     .controller-area {
       position: relative;
       width: 100%;
-      aspect-ratio: 1166 / 768; /* controller PNG ratio */
+      aspect-ratio: 1166 / 768;
+      /* controller PNG ratio */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -91,7 +97,7 @@
       object-fit: contain;
       user-select: none;
       pointer-events: none;
-      filter: drop-shadow(0 18px 28px rgba(0,0,0,0.8));
+      filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.8));
     }
 
     /* Masked color layers (visual only) */
@@ -105,9 +111,16 @@
       content: "";
       position: absolute;
       inset: 0;
+
+      /* brighter, more vivid color layer */
       background: var(--tint, transparent);
-      mix-blend-mode: multiply;
-      opacity: 0.95;
+      filter: brightness(1.45) saturate(1.4) contrast(1.05);
+
+      /* blend mode that brightens instead of darkens */
+      mix-blend-mode: overlay;
+
+      /* slightly higher opacity for stronger tint */
+      opacity: 1;
 
       -webkit-mask-image: var(--mask-url);
       mask-image: var(--mask-url);
@@ -125,8 +138,8 @@
       position: absolute;
       inset: 0;
       background: radial-gradient(circle at center,
-                  rgba(255,255,255,0.9),
-                  rgba(255,255,255,0) 60%);
+          rgba(255, 255, 255, 0.9),
+          rgba(255, 255, 255, 0) 60%);
       -webkit-mask-image: var(--mask-url);
       mask-image: var(--mask-url);
       -webkit-mask-repeat: no-repeat;
@@ -137,16 +150,24 @@
       mask-position: center;
       mix-blend-mode: screen;
       filter:
-        drop-shadow(0 0 12px rgba(255,255,255,0.9))
-        drop-shadow(0 0 22px rgba(0,0,0,0.9));
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 22px rgba(0, 0, 0, 0.9));
       opacity: 0.7;
       animation: breathe 1.8s ease-in-out infinite;
       pointer-events: none;
     }
 
     @keyframes breathe {
-      0%, 100% { opacity: 0.55; transform: scale(1); }
-      50%      { opacity: 1;    transform: scale(1.03); }
+
+      0%,
+      100% {
+        opacity: 0.55;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.03);
+      }
     }
 
     .part-layer.apply-flash::before {
@@ -154,8 +175,13 @@
     }
 
     @keyframes applyFlash {
-      0%   { filter: brightness(2); }
-      100% { filter: brightness(1); }
+      0% {
+        filter: brightness(2.5) saturate(1.4);
+      }
+
+      100% {
+        filter: brightness(1) saturate(1);
+      }
     }
 
     /* ---------- Fixed palette bar under the controller ---------- */
@@ -184,49 +210,85 @@
       height: 60px;
       border-radius: 50%;
       cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.22);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+
+      /* Strong 3D feel: outer + inner shadows */
       box-shadow:
-        0 14px 32px rgba(0,0,0,0.9),
-        0 4px 8px rgba(0,0,0,0.7),
-        0 0 0 1px rgba(0,0,0,0.9) inset,
-        0 0 10px rgba(255,255,255,0.35) inset;
+        /* outer drop shadow */
+        0 18px 30px rgba(0, 0, 0, 0.9),
+        0 6px 12px rgba(0, 0, 0, 0.85),
+        /* main inner dark ring */
+        0 0 0 2px rgba(0, 0, 0, 0.95) inset,
+        0 10px 18px rgba(0, 0, 0, 0.95) inset,
+        /* top inner highlight rim */
+        0 -4px 8px rgba(255, 255, 255, 0.45) inset;
+
       background-image:
-        radial-gradient(circle at 28% 28%, rgba(255,255,255,0.5), rgba(255,255,255,0) 60%),
-        radial-gradient(circle at 70% 80%, rgba(255,255,255,0.2), rgba(0,0,0,0.4));
+        /* glossy highlight at top-left */
+        radial-gradient(circle at 28% 24%,
+          rgba(255, 255, 255, 0.75),
+          rgba(255, 255, 255, 0.1) 42%,
+          rgba(255, 255, 255, 0) 60%),
+        /* soft sheen bottom-right */
+        radial-gradient(circle at 76% 80%,
+          rgba(255, 255, 255, 0.18),
+          rgba(0, 0, 0, 0.5) 65%,
+          rgba(0, 0, 0, 0.85) 100%);
+
+      /* Same enhancement filter as controller tint */
+      filter: brightness(1.45) saturate(1.4) contrast(1.05);
+
       opacity: 0;
       transform: scale(0.6);
       animation: swatch-pop 0.22s cubic-bezier(0.22, 0.9, 0.25, 1) forwards;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
     }
 
     .swatch.gold-rim {
       box-shadow:
-        0 16px 36px rgba(0,0,0,0.95),
-        0 0 0 1px rgba(0,0,0,1) inset,
-        0 0 0 2px rgba(255,215,128,0.95),
-        0 0 14px rgba(255,230,160,0.8),
-        0 0 14px rgba(255,255,255,0.7) inset;
+        0 20px 34px rgba(0, 0, 0, 0.95),
+        0 8px 14px rgba(0, 0, 0, 0.9),
+        0 0 0 2px rgba(0, 0, 0, 1) inset,
+        0 10px 20px rgba(0, 0, 0, 0.98) inset,
+        0 -4px 10px rgba(255, 255, 255, 0.5) inset,
+        0 0 0 2px rgba(255, 215, 128, 0.98),
+        0 0 18px rgba(255, 230, 160, 0.9),
+        0 0 16px rgba(255, 255, 255, 0.85) inset;
     }
 
     .swatch:hover {
       transform: scale(1.08);
       box-shadow:
-        0 22px 40px rgba(0,0,0,1),
-        0 0 0 1px rgba(0,0,0,1) inset,
-        0 0 0 2px rgba(255,255,255,0.3),
-        0 0 20px rgba(255,255,255,0.9) inset,
-        0 0 24px rgba(255,255,255,0.9);
-      filter: saturate(1.2);
+        0 24px 40px rgba(0, 0, 0, 1),
+        0 10px 18px rgba(0, 0, 0, 0.95),
+        0 0 0 2px rgba(0, 0, 0, 1) inset,
+        0 12px 22px rgba(0, 0, 0, 1) inset,
+        0 -5px 10px rgba(255, 255, 255, 0.6) inset;
+      /* Boost the same look a bit on hover */
+      filter: brightness(1.6) saturate(1.6) contrast(1.08);
     }
 
     @keyframes swatch-pop {
-      0%   { opacity: 0; transform: scale(0.3); }
-      60%  { opacity: 1; transform: scale(1.05); }
-      100% { opacity: 1; transform: scale(1); }
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+
+      60% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
   </style>
 </head>
+
 <body>
-  <!-- Sci-fi glowing lines background -->
+  <!-- Sci-fi glowing lines background (desktop only, disabled on mobile in JS) -->
   <canvas id="bgCanvas"></canvas>
 
   <div class="controller-wrapper">
@@ -234,34 +296,20 @@
       <img src="controller.png" alt="PS5 Controller" />
 
       <!-- Masked layers for tint and highlight -->
-      <div class="part-layer" data-part-id="leftShell"
-           style="--mask-url: url('masks/leftShell.png');"></div>
-      <div class="part-layer" data-part-id="rightShell"
-           style="--mask-url: url('masks/rightShell.png');"></div>
-      <div class="part-layer" data-part-id="centerBody"
-           style="--mask-url: url('masks/centerBody.png');"></div>
-      <div class="part-layer" data-part-id="touchpad"
-           style="--mask-url: url('masks/touchpad.png');"></div>
-      <div class="part-layer" data-part-id="bumperL"
-           style="--mask-url: url('masks/bumperL.png');"></div>
-      <div class="part-layer" data-part-id="bumperR"
-           style="--mask-url: url('masks/bumperR.png');"></div>
-      <div class="part-layer" data-part-id="dpad"
-           style="--mask-url: url('masks/dpad.png');"></div>
-      <div class="part-layer" data-part-id="faceButtons"
-           style="--mask-url: url('masks/faceButtons.png');"></div>
-      <div class="part-layer" data-part-id="share"
-           style="--mask-url: url('masks/share.png');"></div>
-      <div class="part-layer" data-part-id="options"
-           style="--mask-url: url('masks/options.png');"></div>
-      <div class="part-layer" data-part-id="stickL"
-           style="--mask-url: url('masks/stickL.png');"></div>
-      <div class="part-layer" data-part-id="stickR"
-           style="--mask-url: url('masks/stickR.png');"></div>
-      <div class="part-layer" data-part-id="psButton"
-           style="--mask-url: url('masks/psButton.png');"></div>
-      <div class="part-layer" data-part-id="speaker"
-           style="--mask-url: url('masks/speaker.png');"></div>
+      <div class="part-layer" data-part-id="leftShell" style="--mask-url: url('masks/leftShell.png');"></div>
+      <div class="part-layer" data-part-id="rightShell" style="--mask-url: url('masks/rightShell.png');"></div>
+      <div class="part-layer" data-part-id="centerBody" style="--mask-url: url('masks/centerBody.png');"></div>
+      <div class="part-layer" data-part-id="touchpad" style="--mask-url: url('masks/touchpad.png');"></div>
+      <div class="part-layer" data-part-id="bumperL" style="--mask-url: url('masks/bumperL.png');"></div>
+      <div class="part-layer" data-part-id="bumperR" style="--mask-url: url('masks/bumperR.png');"></div>
+      <div class="part-layer" data-part-id="dpad" style="--mask-url: url('masks/dpad.png');"></div>
+      <div class="part-layer" data-part-id="faceButtons" style="--mask-url: url('masks/faceButtons.png');"></div>
+      <div class="part-layer" data-part-id="share" style="--mask-url: url('masks/share.png');"></div>
+      <div class="part-layer" data-part-id="options" style="--mask-url: url('masks/options.png');"></div>
+      <div class="part-layer" data-part-id="stickL" style="--mask-url: url('masks/stickL.png');"></div>
+      <div class="part-layer" data-part-id="stickR" style="--mask-url: url('masks/stickR.png');"></div>
+      <div class="part-layer" data-part-id="psButton" style="--mask-url: url('masks/psButton.png');"></div>
+      <div class="part-layer" data-part-id="speaker" style="--mask-url: url('masks/speaker.png');"></div>
     </div>
 
     <!-- Fixed color palette centered under the controller -->
@@ -269,9 +317,21 @@
   </div>
 
   <script>
-    /* ---------- Sci-fi diagonal glowing zigzag lines background ---------- */
-    (function() {
+    /* ---------- Mobile detection ---------- */
+    const isMobile =
+      /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      window.innerWidth < 768;
+
+    /* ---------- Sci-fi diagonal glowing zigzag lines background (desktop only) ---------- */
+    (function () {
       const canvas = document.getElementById("bgCanvas");
+
+      // If mobile: disable the animated background completely to avoid lag
+      if (isMobile) {
+        canvas.style.display = "none"; // static CSS gradient background only
+        return;
+      }
+
       const ctx = canvas.getContext("2d");
 
       let width = window.innerWidth;
@@ -288,11 +348,11 @@
 
       // Soft neon sci-fi palette, low opacity for base stroke, stronger for glow
       const LINE_COLORS = [
-        { stroke: "rgba(0, 255, 255, 0.08)",  glow: "rgba(0, 255, 255, 0.35)" },  // cyan
-        { stroke: "rgba(0, 180, 255, 0.08)",  glow: "rgba(0, 180, 255, 0.35)" },  // teal-blue
+        { stroke: "rgba(0, 255, 255, 0.08)", glow: "rgba(0, 255, 255, 0.35)" },  // cyan
+        { stroke: "rgba(0, 180, 255, 0.08)", glow: "rgba(0, 180, 255, 0.35)" },  // teal-blue
         { stroke: "rgba(140, 100, 255, 0.1)", glow: "rgba(140, 100, 255, 0.40)" }, // violet
-        { stroke: "rgba(0, 255, 170, 0.08)",  glow: "rgba(0, 255, 170, 0.35)" },  // aqua-green
-        { stroke: "rgba(255, 140, 0, 0.07)",  glow: "rgba(255, 140, 0, 0.32)" }   // amber
+        { stroke: "rgba(0, 255, 170, 0.08)", glow: "rgba(0, 255, 170, 0.35)" },  // aqua-green
+        { stroke: "rgba(255, 140, 0, 0.07)", glow: "rgba(255, 140, 0, 0.32)" }   // amber
       ];
 
       const LINE_COUNT = 65;
@@ -391,24 +451,24 @@
 
     /* ---------- Controller configurator logic ---------- */
 
-    const BASE_WIDTH  = 1166;
+    const BASE_WIDTH = 1166;
     const BASE_HEIGHT = 768;
 
     const PARTS = [
-      { id: "psButton",     mask: "masks/psButton.png",     priority: 4 },
-      { id: "share",        mask: "masks/share.png",        priority: 4 },
-      { id: "options",      mask: "masks/options.png",      priority: 4 },
-      { id: "speaker",      mask: "masks/speaker.png",      priority: 4 },
-      { id: "dpad",         mask: "masks/dpad.png",         priority: 4 },
-      { id: "faceButtons",  mask: "masks/faceButtons.png",  priority: 4 },
-      { id: "stickL",       mask: "masks/stickL.png",       priority: 3 },
-      { id: "stickR",       mask: "masks/stickR.png",       priority: 3 },
-      { id: "touchpad",     mask: "masks/touchpad.png",     priority: 2 },
-      { id: "bumperL",      mask: "masks/bumperL.png",      priority: 2 },
-      { id: "bumperR",      mask: "masks/bumperR.png",      priority: 2 },
-      { id: "centerBody",   mask: "masks/centerBody.png",   priority: 1 },
-      { id: "leftShell",    mask: "masks/leftShell.png",    priority: 1 },
-      { id: "rightShell",   mask: "masks/rightShell.png",   priority: 1 }
+      { id: "psButton", mask: "masks/psButton.png", priority: 4 },
+      { id: "share", mask: "masks/share.png", priority: 4 },
+      { id: "options", mask: "masks/options.png", priority: 4 },
+      { id: "speaker", mask: "masks/speaker.png", priority: 4 },
+      { id: "dpad", mask: "masks/dpad.png", priority: 4 },
+      { id: "faceButtons", mask: "masks/faceButtons.png", priority: 4 },
+      { id: "stickL", mask: "masks/stickL.png", priority: 3 },
+      { id: "stickR", mask: "masks/stickR.png", priority: 3 },
+      { id: "touchpad", mask: "masks/touchpad.png", priority: 2 },
+      { id: "bumperL", mask: "masks/bumperL.png", priority: 2 },
+      { id: "bumperR", mask: "masks/bumperR.png", priority: 2 },
+      { id: "centerBody", mask: "masks/centerBody.png", priority: 1 },
+      { id: "leftShell", mask: "masks/leftShell.png", priority: 1 },
+      { id: "rightShell", mask: "masks/rightShell.png", priority: 1 }
     ];
 
     const COLORS = [
@@ -417,7 +477,7 @@
       "#ff1744", "#ff9100", "#ffc400", "#2979ff", "#00e676"
     ];
 
-    const controllerArea   = document.getElementById("controllerArea");
+    const controllerArea = document.getElementById("controllerArea");
     const paletteContainer = document.getElementById("paletteContainer");
 
     const layers = Array.from(document.querySelectorAll(".part-layer"));
@@ -522,7 +582,7 @@
         const mask = maskDataById[part.id];
         if (!mask) continue;
 
-        const x = Math.floor(designX / BASE_WIDTH  * mask.width);
+        const x = Math.floor(designX / BASE_WIDTH * mask.width);
         const y = Math.floor(designY / BASE_HEIGHT * mask.height);
         if (x < 0 || y < 0 || x >= mask.width || y >= mask.height) continue;
 
@@ -538,7 +598,7 @@
 
       const rect = controllerArea.getBoundingClientRect();
       const relX = (e.clientX - rect.left) / rect.width;
-      const relY = (e.clientY - rect.top)  / rect.height;
+      const relY = (e.clientY - rect.top) / rect.height;
 
       if (relX < 0 || relX > 1 || relY < 0 || relY > 1) {
         hidePalette();
@@ -578,4 +638,5 @@
     });
   </script>
 </body>
+
 </html>
