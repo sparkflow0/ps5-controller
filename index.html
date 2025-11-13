@@ -6,9 +6,17 @@
   <style>
     :root { --bg: #151515; }
 
+    /* Global reset + mobile tap highlight removal */
     * {
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent; /* hide blue tap highlight on mobile */
+    }
+
+    html, body,
+    .controller-wrapper,
+    .controller-area,
+    button,
+    .swatch {
+      -webkit-tap-highlight-color: transparent !important;
     }
 
     body {
@@ -22,8 +30,25 @@
       color: #fff;
     }
 
-    button {
+    /* Remove focus outlines everywhere relevant */
+    button,
+    button:focus,
+    button:active,
+    .swatch,
+    .swatch:focus,
+    .swatch:active,
+    .controller-area:focus,
+    .controller-area:active,
+    .controller-wrapper:focus,
+    .controller-wrapper:active,
+    img:focus,
+    img:active {
       outline: none;
+    }
+
+    button {
+      border: none;
+      background: none;
       -webkit-appearance: none;
       appearance: none;
     }
@@ -45,6 +70,7 @@
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      touch-action: manipulation;
     }
 
     .controller-area img {
@@ -174,7 +200,6 @@
       border-radius: 50%;
       cursor: pointer;
       pointer-events: auto;
-      outline: none;
       border: 1px solid rgba(255,255,255,0.22);
       box-shadow:
         0 10px 25px rgba(0,0,0,0.85),
