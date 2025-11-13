@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PS5 Controller Configurator – Masked Highlight</title>
+  <style>
+    :root { --bg: #151515; }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #2b2b2b 0, #0b0b0b 55%, #000 100%);
+      color: #fff;
+    }
+
+    .controller-wrapper {
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      max-width: 1166px; /* matches your PNG width, but scales down responsively */
+      width: 90vw;
+    }
+
+    .controller-area {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1166 / 768; /* exact ratio of your controller.png */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .controller-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      user-select: none;
+      pointer-events: none;
+      filter: drop-shadow(0 18px 28px rgba(0,0,0,0.8));
+    }
+
+    /* ---------- Masked color layers (perfect edges) ---------- */
+    .part-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .part-layer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--tint, transparent);
+      mix-blend-mode: multiply;
+      opacity: 0.95;
+
+      -webkit-mask-image: var(--mask-url);
+      mask-image: var(--mask-url);
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-position: center;
+      mask-position: center;
+    }
+
+    .part-layer.selected::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center,
+                  rgba(255,255,255,0.9),
+                  rgba(255,255,255,0) 60%);
+      -webkit-mask-image: var(--mask-url);
+      mask-image: var(--mask-url);
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-position: center;
+      mask-position: center;
+      mix-blend-mode: screen;
+      filter:
+        drop-shadow(0 0 12px rgba(255,255,255,0.9))
+        drop-shadow(0 0 22px rgba(0,0,0,0.9));
+      opacity: 0.7;
+      animation: breathe 1.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes breathe {
+      0%, 100% { opacity: 0.55; transform: scale(1); }
+      50%      { opacity: 1;    transform: scale(1.03); }
+    }
+
+    .part-layer.apply-flash::before {
+      animation: applyFlash 0.45s ease-out;
+    }
+
+    @keyframes applyFlash {
+      0%   { filter: brightness(2); }
+      100% { filter: brightness(1); }
+    }
+
+    /* ---------- Invisible clickable hitboxes ---------- */
+    .part-hitbox {
+      position: absolute;
+      cursor: pointer;
+      left: var(--x);
+      top: var(--y);
+      width: var(--w);
+      height: var(--h);
+      transform: translate(-50%, -50%);
+      border-radius: var(--radius, 999px);
+      background: transparent;
+      /* For debugging, uncomment:
+      outline: 1px dashed rgba(255,255,255,0.3);
+      */
+    }
+
+    /* ---------- Radial color menu ---------- */
+    .swatch-group {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      animation: ringSpin 0.5s ease-out;
+      transform-origin: center;
+    }
+
+    @keyframes ringSpin {
+      0%   { transform: rotate(-6deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .swatch-line {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 2px;
+      height: var(--length, 80px);
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.4),
+        rgba(255, 255, 255, 0.05)
+      );
+      opacity: 0;
+      transform-origin: center top;
+      transform: rotate(var(--angle, 0deg)) scaleY(0.05);
+      pointer-events: none;
+      filter: drop-shadow(0 0 4px rgba(0,0,0,0.8));
+      animation: line-out 0.45s cubic-bezier(0.25, 0.9, 0.25, 1) forwards;
+      will-change: transform, opacity;
+    }
+
+    .swatch {
+      --dx: 0px;
+      --dy: 0px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      pointer-events: auto;
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 10px 25px rgba(0,0,0,0.85),
+        0 3px 6px rgba(0,0,0,0.7),
+        0 0 0 1px rgba(0,0,0,0.9) inset,
+        0 0 8px rgba(255,255,255,0.35) inset;
+      background-image:
+        radial-gradient(circle at 28% 28%, rgba(255,255,255,0.5), rgba(255,255,255,0) 60%),
+        radial-gradient(circle at 70% 80%, rgba(255,255,255,0.2), rgba(0,0,0,0.4));
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy)) scale(1);
+      animation: swatch-out 0.45s cubic-bezier(0.22, 0.9, 0.25, 1) forwards;
+      transition:
+        transform 0.22s cubic-bezier(0.16, 0.84, 0.44, 1),
+        box-shadow 0.22s ease,
+        filter 0.22s ease;
+      will-change: transform, opacity;
+    }
+
+    .swatch.gold-rim {
+      box-shadow:
+        0 10px 25px rgba(0,0,0,0.9),
+        0 0 0 1px rgba(0,0,0,1) inset,
+        0 0 0 2px rgba(255,215,128,0.95),
+        0 0 10px rgba(255,230,160,0.8),
+        0 0 10px rgba(255,255,255,0.7) inset;
+    }
+
+    .swatch:hover {
+      transform: translate(var(--dx), var(--dy)) scale(1.16);
+      box-shadow:
+        0 18px 32px rgba(0,0,0,1),
+        0 0 0 1px rgba(0,0,0,1) inset,
+        0 0 0 2px rgba(255,255,255,0.3),
+        0 0 16px rgba(255,255,255,0.9) inset,
+        0 0 20px rgba(255,255,255,0.9);
+      filter: saturate(1.2);
+    }
+
+    @keyframes swatch-out {
+      0%   { opacity: 0; transform: translate(0,0) scale(0.05); }
+      60%  { opacity: 1; transform: translate(calc(var(--dx)*1.05), calc(var(--dy)*1.05)) scale(1.08); }
+      100% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1); }
+    }
+
+    @keyframes swatch-in {
+      0%   { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1); }
+      45%  { opacity: 1; transform: translate(calc(var(--dx)*0.35), calc(var(--dy)*0.35)) scale(0.9); }
+      100% { opacity: 0; transform: translate(0,0) scale(0.03); }
+    }
+
+    @keyframes line-out {
+      0%   { opacity: 0; transform: rotate(var(--angle)) scaleY(0.05); }
+      70%  { opacity: 1; transform: rotate(var(--angle)) scaleY(1.05); }
+      100% { opacity: 1; transform: rotate(var(--angle)) scaleY(1); }
+    }
+
+    @keyframes line-in {
+      0%   { opacity: 1; transform: rotate(var(--angle)) scaleY(1); }
+      100% { opacity: 0; transform: rotate(var(--angle)) scaleY(0.05); }
+    }
+
+    .swatch-group.closing .swatch {
+      animation: swatch-in 0.5s cubic-bezier(0.36, 0.0, 0.66, 1) forwards;
+    }
+    .swatch-group.closing .swatch-line {
+      animation: line-in 0.5s cubic-bezier(0.36, 0.0, 0.66, 1) forwards;
+    }
+  </style>
+</head>
+<body>
+  <div class="controller-wrapper">
+    <div class="controller-area" id="controllerArea">
+      <img src="controller.png" alt="PS5 Controller" />
+
+      <!-- Masked color layers -->
+      <div class="part-layer" data-part-id="leftShell"
+           style="--mask-url: url('masks/leftShell.png');"></div>
+      <div class="part-layer" data-part-id="rightShell"
+           style="--mask-url: url('masks/rightShell.png');"></div>
+      <div class="part-layer" data-part-id="centerBody"
+           style="--mask-url: url('masks/centerBody.png');"></div>
+      <div class="part-layer" data-part-id="touchpad"
+           style="--mask-url: url('masks/touchpad.png');"></div>
+      <div class="part-layer" data-part-id="bumperL"
+           style="--mask-url: url('masks/bumperL.png');"></div>
+      <div class="part-layer" data-part-id="bumperR"
+           style="--mask-url: url('masks/bumperR.png');"></div>
+      <div class="part-layer" data-part-id="dpad"
+           style="--mask-url: url('masks/dpad.png');"></div>
+      <div class="part-layer" data-part-id="faceButtons"
+           style="--mask-url: url('masks/faceButtons.png');"></div>
+      <div class="part-layer" data-part-id="share"
+           style="--mask-url: url('masks/share.png');"></div>
+      <div class="part-layer" data-part-id="options"
+           style="--mask-url: url('masks/options.png');"></div>
+      <div class="part-layer" data-part-id="stickL"
+           style="--mask-url: url('masks/stickL.png');"></div>
+      <div class="part-layer" data-part-id="stickR"
+           style="--mask-url: url('masks/stickR.png');"></div>
+      <div class="part-layer" data-part-id="psButton"
+           style="--mask-url: url('masks/psButton.png');"></div>
+      <div class="part-layer" data-part-id="speaker"
+           style="--mask-url: url('masks/speaker.png');"></div>
+
+      <!-- UPDATED: Clickable hitboxes aligned to your new controller.png -->
+      <div class="part-hitbox" data-part-id="leftShell"
+           style="--x: 23%; --y: 60%; --w: 30%; --h: 52%; --radius: 55%"></div>
+
+      <div class="part-hitbox" data-part-id="rightShell"
+           style="--x: 77%; --y: 60%; --w: 30%; --h: 52%; --radius: 55%"></div>
+
+      <div class="part-hitbox" data-part-id="centerBody"
+           style="--x: 50%; --y: 63%; --w: 40%; --h: 42%; --radius: 48%"></div>
+
+      <div class="part-hitbox" data-part-id="touchpad"
+           style="--x: 50%; --y: 30%; --w: 42%; --h: 24%; --radius: 26px"></div>
+
+      <div class="part-hitbox" data-part-id="bumperL"
+           style="--x: 33%; --y: 18%; --w: 18%; --h: 11%; --radius: 40px"></div>
+
+      <div class="part-hitbox" data-part-id="bumperR"
+           style="--x: 67%; --y: 18%; --w: 18%; --h: 11%; --radius: 40px"></div>
+
+      <div class="part-hitbox" data-part-id="dpad"
+           style="--x: 29%; --y: 43%; --w: 16%; --h: 21%; --radius: 28px"></div>
+
+      <div class="part-hitbox" data-part-id="faceButtons"
+           style="--x: 71%; --y: 43%; --w: 16%; --h: 21%; --radius: 28px"></div>
+
+      <div class="part-hitbox" data-part-id="share"
+           style="--x: 41%; --y: 32%; --w: 6%; --h: 10%; --radius: 40px"></div>
+
+      <div class="part-hitbox" data-part-id="options"
+           style="--x: 59%; --y: 32%; --w: 6%; --h: 10%; --radius: 40px"></div>
+
+      <div class="part-hitbox" data-part-id="stickL"
+           style="--x: 40%; --y: 57%; --w: 13%; --h: 22%; --radius: 50%"></div>
+
+      <div class="part-hitbox" data-part-id="stickR"
+           style="--x: 60%; --y: 57%; --w: 13%; --h: 22%; --radius: 50%"></div>
+
+      <div class="part-hitbox" data-part-id="psButton"
+           style="--x: 50%; --y: 67%; --w: 7%; --h: 13%; --radius: 50%"></div>
+
+      <div class="part-hitbox" data-part-id="speaker"
+           style="--x: 50%; --y: 48%; --w: 16%; --h: 13%; --radius: 22px"></div>
+    </div>
+  </div>
+
+  <script>
+    const COLORS = [
+      "#ffffff", "#f5f5f5", "#000000", "#cccccc", "#777777",
+      "#00b0ff", "#ff4081", "#7c4dff", "#69f0ae",
+      "#ff1744", "#ff9100", "#ffc400", "#2979ff", "#00e676"
+    ];
+
+    const hitboxes = Array.from(document.querySelectorAll(".part-hitbox"));
+    const layers = Array.from(document.querySelectorAll(".part-layer"));
+
+    const layerById = {};
+    layers.forEach(layer => { layerById[layer.dataset.partId] = layer; });
+
+    let activeSwatchGroup = null;
+    let selectedHitbox = null;
+
+    const configState = {};
+    hitboxes.forEach(h => { configState[h.dataset.partId] = null; });
+
+    function closeSwatchGroupAnimated(cb){
+      if (!activeSwatchGroup) { cb && cb(); return; }
+      const g = activeSwatchGroup;
+      g.classList.add("closing");
+      activeSwatchGroup = null;
+      setTimeout(() => { g.remove(); cb && cb(); }, 520);
+    }
+
+    function applyColor(partId, color){
+      configState[partId] = color;
+      const layer = layerById[partId];
+      if (!layer) return;
+      layer.style.setProperty("--tint", color);
+      layer.classList.add("apply-flash");
+      layer.addEventListener("animationend", () => {
+        layer.classList.remove("apply-flash");
+      }, { once: true });
+    }
+
+    function showSwatches(hitbox){
+      closeSwatchGroupAnimated(() => {
+        const group = document.createElement("div");
+        group.classList.add("swatch-group");
+
+        const n = COLORS.length;
+        const radius = 80;
+        const startAngle = -Math.PI / 2;
+
+        COLORS.forEach((color, i) => {
+          const angle = startAngle + (i / n) * 2 * Math.PI;
+          const dx = Math.cos(angle) * radius;
+          const dy = Math.sin(angle) * radius;
+
+          const line = document.createElement("div");
+          line.classList.add("swatch-line");
+          line.style.setProperty("--length", `${radius}px`);
+          line.style.setProperty("--angle", `${angle}rad`);
+          line.style.animationDelay = `${i * 18}ms`;
+          group.appendChild(line);
+
+          const swatch = document.createElement("button");
+          swatch.classList.add("swatch");
+          swatch.style.background = color;
+          swatch.style.setProperty("--dx", `${dx}px`);
+          swatch.style.setProperty("--dy", `${dy}px`);
+          swatch.style.animationDelay = `${i * 18}ms`;
+
+          if (["#ffc400","#ffea00","#d4af37"].includes(color)) {
+            swatch.classList.add("gold-rim");
+          }
+
+          swatch.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const id = hitbox.dataset.partId;
+            applyColor(id, color);
+            closeSwatchGroupAnimated();
+          });
+
+          group.appendChild(swatch);
+        });
+
+        hitbox.appendChild(group);
+        activeSwatchGroup = group;
+      });
+    }
+
+    hitboxes.forEach(hitbox => {
+      hitbox.addEventListener("click", e => {
+        e.stopPropagation();
+
+        if (selectedHitbox && selectedHitbox !== hitbox) {
+          const prevId = selectedHitbox.dataset.partId;
+          selectedHitbox.classList.remove("selected");
+          const prevLayer = layerById[prevId];
+          if (prevLayer) prevLayer.classList.remove("selected");
+        }
+
+        selectedHitbox = hitbox;
+        selectedHitbox.classList.add("selected");
+        const layer = layerById[hitbox.dataset.partId];
+        if (layer) layer.classList.add("selected");
+
+        showSwatches(hitbox);
+      });
+    });
+
+    document.addEventListener("click", () => {
+      closeSwatchGroupAnimated();
+      if (selectedHitbox) {
+        const id = selectedHitbox.dataset.partId;
+        selectedHitbox.classList.remove("selected");
+        const layer = layerById[id];
+        if (layer) layer.classList.remove("selected");
+      }
+      selectedHitbox = null;
+    });
+  </script>
+</body>
+</html>
