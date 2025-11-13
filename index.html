@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>PS5 Controller Configurator – Masked Highlight</title>
+  <title>PS5 Controller Configurator – Mask-based Picking</title>
   <style>
     :root { --bg: #151515; }
 
@@ -19,21 +19,23 @@
       color: #fff;
     }
 
+    /* Wrapper with no background, radius, or shadow */
     .controller-wrapper {
       padding: 16px;
       position: relative;
       overflow: hidden;
-      max-width: 1166px;
+      max-width: 1166px; /* your PNG width */
       width: 90vw;
     }
 
     .controller-area {
       position: relative;
       width: 100%;
-      aspect-ratio: 1166 / 768;
+      aspect-ratio: 1166 / 768; /* your PNG ratio */
       display: flex;
       justify-content: center;
       align-items: center;
+      cursor: pointer;
     }
 
     .controller-area img {
@@ -45,7 +47,7 @@
       filter: drop-shadow(0 18px 28px rgba(0,0,0,0.8));
     }
 
-    /* Masked color layers */
+    /* Masked color layers (visual only) */
     .part-layer {
       position: absolute;
       inset: 0;
@@ -70,6 +72,7 @@
       mask-position: center;
     }
 
+    /* Mask-shaped glow when selected */
     .part-layer.selected::after {
       content: "";
       position: absolute;
@@ -108,26 +111,21 @@
       100% { filter: brightness(1); }
     }
 
-    /* Hitboxes */
-    .part-hitbox {
+    /* ---------- Color wheel ---------- */
+
+    .swatch-host {
       position: absolute;
-      cursor: pointer;
-      left: var(--x);
-      top: var(--y);
-      width: var(--w);
-      height: var(--h);
-      transform: translate(-50%, -50%);
-      border-radius: var(--radius, 999px);
-      background: transparent;
-      /* outline: 1px dashed rgba(255,255,255,0.3);  // debug */
+      width: 0;
+      height: 0;
+      pointer-events: none;
     }
 
-    /* Color wheel */
     .swatch-group {
       position: absolute;
-      inset: 0;
+      left: 0;
+      top: 0;
       pointer-events: none;
-      animation: ringSpin 0.5s ease-out;
+      animation: ringSpin 0.45s ease-out;
       transform-origin: center;
     }
 
@@ -138,8 +136,8 @@
 
     .swatch-line {
       position: absolute;
-      left: 50%;
-      top: 50%;
+      left: 0;
+      top: 0;
       width: 2px;
       height: var(--length, 80px);
       background: linear-gradient(
@@ -160,8 +158,8 @@
       --dx: 0px;
       --dy: 0px;
       position: absolute;
-      left: 50%;
-      top: 50%;
+      left: 0;
+      top: 0;
       width: 34px;
       height: 34px;
       border-radius: 50%;
@@ -242,7 +240,7 @@
     <div class="controller-area" id="controllerArea">
       <img src="controller.png" alt="PS5 Controller" />
 
-      <!-- Masked layers -->
+      <!-- Masked layers for tint and highlight -->
       <div class="part-layer" data-part-id="leftShell"
            style="--mask-url: url('masks/leftShell.png');"></div>
       <div class="part-layer" data-part-id="rightShell"
@@ -271,67 +269,101 @@
            style="--mask-url: url('masks/psButton.png');"></div>
       <div class="part-layer" data-part-id="speaker"
            style="--mask-url: url('masks/speaker.png');"></div>
-
-      <!-- Hitboxes (positions tuned for this controller.png) -->
-      <div class="part-hitbox" data-part-id="leftShell"
-           style="--x: 23%; --y: 60%; --w: 30%; --h: 52%; --radius: 55%"></div>
-      <div class="part-hitbox" data-part-id="rightShell"
-           style="--x: 77%; --y: 60%; --w: 30%; --h: 52%; --radius: 55%"></div>
-      <div class="part-hitbox" data-part-id="centerBody"
-           style="--x: 50%; --y: 63%; --w: 40%; --h: 42%; --radius: 48%"></div>
-      <div class="part-hitbox" data-part-id="touchpad"
-           style="--x: 50%; --y: 30%; --w: 42%; --h: 24%; --radius: 26px"></div>
-      <div class="part-hitbox" data-part-id="bumperL"
-           style="--x: 33%; --y: 18%; --w: 18%; --h: 11%; --radius: 40px"></div>
-      <div class="part-hitbox" data-part-id="bumperR"
-           style="--x: 67%; --y: 18%; --w: 18%; --h: 11%; --radius: 40px"></div>
-      <div class="part-hitbox" data-part-id="dpad"
-           style="--x: 29%; --y: 43%; --w: 16%; --h: 21%; --radius: 28px"></div>
-      <div class="part-hitbox" data-part-id="faceButtons"
-           style="--x: 71%; --y: 43%; --w: 16%; --h: 21%; --radius: 28px"></div>
-      <div class="part-hitbox" data-part-id="share"
-           style="--x: 41%; --y: 32%; --w: 6%; --h: 10%; --radius: 40px"></div>
-      <div class="part-hitbox" data-part-id="options"
-           style="--x: 59%; --y: 32%; --w: 6%; --h: 10%; --radius: 40px"></div>
-      <div class="part-hitbox" data-part-id="stickL"
-           style="--x: 40%; --y: 57%; --w: 13%; --h: 22%; --radius: 50%"></div>
-      <div class="part-hitbox" data-part-id="stickR"
-           style="--x: 60%; --y: 57%; --w: 13%; --h: 22%; --radius: 50%"></div>
-      <div class="part-hitbox" data-part-id="psButton"
-           style="--x: 50%; --y: 67%; --w: 7%; --h: 13%; --radius: 50%"></div>
-      <div class="part-hitbox" data-part-id="speaker"
-           style="--x: 50%; --y: 48%; --w: 16%; --h: 13%; --radius: 22px"></div>
     </div>
   </div>
 
   <script>
+    const BASE_WIDTH  = 1166;
+    const BASE_HEIGHT = 768;
+
+    const PARTS = [
+      { id: "psButton",     mask: "masks/psButton.png",     priority: 4 },
+      { id: "share",        mask: "masks/share.png",        priority: 4 },
+      { id: "options",      mask: "masks/options.png",      priority: 4 },
+      { id: "speaker",      mask: "masks/speaker.png",      priority: 4 },
+      { id: "dpad",         mask: "masks/dpad.png",         priority: 4 },
+      { id: "faceButtons",  mask: "masks/faceButtons.png",  priority: 4 },
+      { id: "stickL",       mask: "masks/stickL.png",       priority: 3 },
+      { id: "stickR",       mask: "masks/stickR.png",       priority: 3 },
+      { id: "touchpad",     mask: "masks/touchpad.png",     priority: 2 },
+      { id: "bumperL",      mask: "masks/bumperL.png",      priority: 2 },
+      { id: "bumperR",      mask: "masks/bumperR.png",      priority: 2 },
+      { id: "centerBody",   mask: "masks/centerBody.png",   priority: 1 },
+      { id: "leftShell",    mask: "masks/leftShell.png",    priority: 1 },
+      { id: "rightShell",   mask: "masks/rightShell.png",   priority: 1 }
+    ];
+
     const COLORS = [
       "#ffffff", "#f5f5f5", "#000000", "#cccccc", "#777777",
       "#00b0ff", "#ff4081", "#7c4dff", "#69f0ae",
       "#ff1744", "#ff9100", "#ffc400", "#2979ff", "#00e676"
     ];
 
-    const hitboxes = Array.from(document.querySelectorAll(".part-hitbox"));
-    const layers   = Array.from(document.querySelectorAll(".part-layer"));
-
+    const controllerArea = document.getElementById("controllerArea");
+    const layers = Array.from(document.querySelectorAll(".part-layer"));
     const layerById = {};
-    layers.forEach(layer => { layerById[layer.dataset.partId] = layer; });
+    layers.forEach(l => { layerById[l.dataset.partId] = l; });
 
-    let activeSwatchGroup = null;
-    let selectedHitbox    = null;
+    const maskDataById = {};
+    let masksReady = false;
 
-    const configState = {};
-    hitboxes.forEach(h => { configState[h.dataset.partId] = null; });
-
-    function closeSwatchGroupAnimated(cb){
-      if (!activeSwatchGroup) { cb && cb(); return; }
-      const g = activeSwatchGroup;
-      g.classList.add("closing");
-      activeSwatchGroup = null;
-      setTimeout(() => { g.remove(); cb && cb(); }, 520);
+    function loadMask(part) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = part.mask;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          maskDataById[part.id] = {
+            width: canvas.width,
+            height: canvas.height,
+            data: imageData.data
+          };
+          resolve();
+        };
+        img.onerror = reject;
+      });
     }
 
-    function applyColor(partId, color){
+    Promise.all(PARTS.map(loadMask)).then(() => {
+      masksReady = true;
+    }).catch(err => {
+      console.error("Error loading masks:", err);
+    });
+
+    let selectedPartId = null;
+    let swatchHost = null;
+    let activeSwatchGroup = null;
+
+    const configState = {};
+    PARTS.forEach(p => { configState[p.id] = null; });
+
+    function clearSelection() {
+      if (!selectedPartId) return;
+      const layer = layerById[selectedPartId];
+      if (layer) layer.classList.remove("selected");
+      selectedPartId = null;
+    }
+
+    function closeSwatchGroupAnimated(cb) {
+      if (!activeSwatchGroup) { cb && cb(); return; }
+      const group = activeSwatchGroup;
+      group.classList.add("closing");
+      activeSwatchGroup = null;
+      setTimeout(() => {
+        if (swatchHost) {
+          swatchHost.remove();
+          swatchHost = null;
+        }
+        cb && cb();
+      }, 520);
+    }
+
+    function applyColor(partId, color) {
       configState[partId] = color;
       const layer = layerById[partId];
       if (!layer) return;
@@ -342,19 +374,15 @@
       }, { once: true });
     }
 
-    function clearSelection(){
-      if (!selectedHitbox) return;
-      const id    = selectedHitbox.dataset.partId;
-      const layer = layerById[id];
-      selectedHitbox.classList.remove("selected");
-      if (layer) layer.classList.remove("selected");
-      selectedHitbox = null;
-    }
-
-    function showSwatches(hitbox){
+    function showSwatches(partId, clickX, clickY) {
       closeSwatchGroupAnimated(() => {
+        swatchHost = document.createElement("div");
+        swatchHost.className = "swatch-host";
+        swatchHost.style.left = `${clickX}px`;
+        swatchHost.style.top  = `${clickY}px`;
+
         const group = document.createElement("div");
-        group.classList.add("swatch-group");
+        group.className = "swatch-group";
 
         const n = COLORS.length;
         const radius = 80;
@@ -385,55 +413,78 @@
 
           swatch.addEventListener("click", (e) => {
             e.stopPropagation();
-            const id = hitbox.dataset.partId;
-
-            // Apply color
-            applyColor(id, color);
-
-            // Remove highlight immediately after color selection
-            hitbox.classList.remove("selected");
-            const layer = layerById[id];
-            if (layer) layer.classList.remove("selected");
-            if (selectedHitbox === hitbox) {
-              selectedHitbox = null;
-            }
-
-            // Close the color wheel
+            applyColor(partId, color);
+            clearSelection();
             closeSwatchGroupAnimated();
           });
 
           group.appendChild(swatch);
         });
 
-        hitbox.appendChild(group);
+        swatchHost.appendChild(group);
+        controllerArea.appendChild(swatchHost);
         activeSwatchGroup = group;
       });
     }
 
-    hitboxes.forEach(hitbox => {
-      hitbox.addEventListener("click", e => {
-        e.stopPropagation();
+    function hitTestPart(designX, designY) {
+      const sorted = [...PARTS].sort((a, b) => b.priority - a.priority);
 
-        // change selected part
-        if (selectedHitbox && selectedHitbox !== hitbox) {
-          const prevId = selectedHitbox.dataset.partId;
-          selectedHitbox.classList.remove("selected");
-          const prevLayer = layerById[prevId];
-          if (prevLayer) prevLayer.classList.remove("selected");
-        }
+      for (const part of sorted) {
+        const mask = maskDataById[part.id];
+        if (!mask) continue;
 
-        selectedHitbox = hitbox;
-        selectedHitbox.classList.add("selected");
-        const layer = layerById[hitbox.dataset.partId];
-        if (layer) layer.classList.add("selected");
+        const x = Math.floor(designX / BASE_WIDTH  * mask.width);
+        const y = Math.floor(designY / BASE_HEIGHT * mask.height);
+        if (x < 0 || y < 0 || x >= mask.width || y >= mask.height) continue;
 
-        showSwatches(hitbox);
-      });
+        const idx = (y * mask.width + x) * 4 + 3;
+        const alpha = mask.data[idx];
+        if (alpha > 20) return part.id;
+      }
+      return null;
+    }
+
+    controllerArea.addEventListener("click", (e) => {
+      if (!masksReady) return;
+
+      const rect = controllerArea.getBoundingClientRect();
+      const relX = (e.clientX - rect.left) / rect.width;
+      const relY = (e.clientY - rect.top)  / rect.height;
+
+      if (relX < 0 || relX > 1 || relY < 0 || relY > 1) {
+        closeSwatchGroupAnimated();
+        clearSelection();
+        return;
+      }
+
+      const designX = relX * BASE_WIDTH;
+      const designY = relY * BASE_HEIGHT;
+
+      const partId = hitTestPart(designX, designY);
+
+      if (!partId) {
+        closeSwatchGroupAnimated();
+        clearSelection();
+        return;
+      }
+
+      if (selectedPartId && selectedPartId !== partId) {
+        const prevLayer = layerById[selectedPartId];
+        if (prevLayer) prevLayer.classList.remove("selected");
+      }
+      selectedPartId = partId;
+      const layer = layerById[partId];
+      if (layer) layer.classList.add("selected");
+
+      showSwatches(partId, e.clientX - rect.left, e.clientY - rect.top);
     });
 
-    document.addEventListener("click", () => {
-      closeSwatchGroupAnimated();
-      clearSelection();
+    document.addEventListener("click", (e) => {
+      if (!controllerArea.contains(e.target)) {
+        closeSwatchGroupAnimated();
+        clearSelection();
+      }
     });
   </script>
 </body>
