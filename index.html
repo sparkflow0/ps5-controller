@@ -30,7 +30,7 @@
       color: #fff;
     }
 
-    /* Remove focus outlines everywhere relevant */
+    /* Remove focus outlines */
     button,
     button:focus,
     button:active,
@@ -57,15 +57,15 @@
     .controller-wrapper {
       padding: 16px;
       position: relative;
-      overflow: hidden;
-      max-width: 1166px; /* your PNG width */
+      overflow: visible;
+      max-width: 1166px; /* controller PNG width */
       width: 90vw;
     }
 
     .controller-area {
       position: relative;
       width: 100%;
-      aspect-ratio: 1166 / 768; /* your PNG ratio */
+      aspect-ratio: 1166 / 768; /* controller PNG ratio */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -146,128 +146,72 @@
       100% { filter: brightness(1); }
     }
 
-    /* ---------- Color wheel ---------- */
+    /* ---------- Fixed palette bar under the controller ---------- */
 
-    .swatch-host {
-      position: absolute;
-      width: 0;
-      height: 0;
-      pointer-events: none;
-    }
-
-    .swatch-group {
-      position: absolute;
-      left: 0;
-      top: 0;
-      pointer-events: none;
-      animation: ringSpin 0.45s ease-out;
-      transform-origin: center;
-    }
-
-    @keyframes ringSpin {
-      0%   { transform: rotate(-6deg); }
-      100% { transform: rotate(0deg); }
-    }
-
-    .swatch-line {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 2px;
-      height: var(--length, 80px);
-      background: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.4),
-        rgba(255, 255, 255, 0.05)
-      );
+    .palette-container {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
       opacity: 0;
-      transform-origin: center top;
-      transform: rotate(var(--angle, 0deg)) scaleY(0.05);
+      transform: translateY(12px);
       pointer-events: none;
-      filter: drop-shadow(0 0 4px rgba(0,0,0,0.8));
-      animation: line-out 0.45s cubic-bezier(0.25, 0.9, 0.25, 1) forwards;
-      will-change: transform, opacity;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .palette-container.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .swatch {
-      --dx: 0px;
-      --dy: 0px;
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 34px;
-      height: 34px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       cursor: pointer;
-      pointer-events: auto;
       border: 1px solid rgba(255,255,255,0.22);
       box-shadow:
-        0 10px 25px rgba(0,0,0,0.85),
+        0 12px 28px rgba(0,0,0,0.85),
         0 3px 6px rgba(0,0,0,0.7),
         0 0 0 1px rgba(0,0,0,0.9) inset,
-        0 0 8px rgba(255,255,255,0.35) inset;
+        0 0 10px rgba(255,255,255,0.35) inset;
       background-image:
         radial-gradient(circle at 28% 28%, rgba(255,255,255,0.5), rgba(255,255,255,0) 60%),
         radial-gradient(circle at 70% 80%, rgba(255,255,255,0.2), rgba(0,0,0,0.4));
       opacity: 0;
-      transform: translate(var(--dx), var(--dy)) scale(1);
-      animation: swatch-out 0.45s cubic-bezier(0.22, 0.9, 0.25, 1) forwards;
-      transition:
-        transform 0.22s cubic-bezier(0.16, 0.84, 0.44, 1),
-        box-shadow 0.22s ease,
-        filter 0.22s ease;
-      will-change: transform, opacity;
+      transform: scale(0.6);
+      animation: swatch-pop 0.22s cubic-bezier(0.22, 0.9, 0.25, 1) forwards;
     }
 
     .swatch.gold-rim {
       box-shadow:
-        0 10px 25px rgba(0,0,0,0.9),
+        0 12px 30px rgba(0,0,0,0.9),
         0 0 0 1px rgba(0,0,0,1) inset,
         0 0 0 2px rgba(255,215,128,0.95),
-        0 0 10px rgba(255,230,160,0.8),
-        0 0 10px rgba(255,255,255,0.7) inset;
+        0 0 12px rgba(255,230,160,0.8),
+        0 0 12px rgba(255,255,255,0.7) inset;
     }
 
     .swatch:hover {
-      transform: translate(var(--dx), var(--dy)) scale(1.16);
+      transform: scale(1.12);
       box-shadow:
-        0 18px 32px rgba(0,0,0,1),
+        0 18px 34px rgba(0,0,0,1),
         0 0 0 1px rgba(0,0,0,1) inset,
         0 0 0 2px rgba(255,255,255,0.3),
-        0 0 16px rgba(255,255,255,0.9) inset,
-        0 0 20px rgba(255,255,255,0.9);
+        0 0 18px rgba(255,255,255,0.9) inset,
+        0 0 22px rgba(255,255,255,0.9);
       filter: saturate(1.2);
     }
 
-    @keyframes swatch-out {
-      0%   { opacity: 0; transform: translate(0,0) scale(0.05); }
-      60%  { opacity: 1; transform: translate(calc(var(--dx)*1.05), calc(var(--dy)*1.05)) scale(1.08); }
-      100% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1); }
+    @keyframes swatch-pop {
+      0%   { opacity: 0; transform: scale(0.3); }
+      60%  { opacity: 1; transform: scale(1.1); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
-    @keyframes swatch-in {
-      0%   { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1); }
-      45%  { opacity: 1; transform: translate(calc(var(--dx)*0.35), calc(var(--dy)*0.35)) scale(0.9); }
-      100% { opacity: 0; transform: translate(0,0) scale(0.03); }
-    }
-
-    @keyframes line-out {
-      0%   { opacity: 0; transform: rotate(var(--angle)) scaleY(0.05); }
-      70%  { opacity: 1; transform: rotate(var(--angle)) scaleY(1.05); }
-      100% { opacity: 1; transform: rotate(var(--angle)) scaleY(1); }
-    }
-
-    @keyframes line-in {
-      0%   { opacity: 1; transform: rotate(var(--angle)) scaleY(1); }
-      100% { opacity: 0; transform: rotate(var(--angle)) scaleY(0.05); }
-    }
-
-    .swatch-group.closing .swatch {
-      animation: swatch-in 0.5s cubic-bezier(0.36, 0.0, 0.66, 1) forwards;
-    }
-    .swatch-group.closing .swatch-line {
-      animation: line-in 0.5s cubic-bezier(0.36, 0.0, 0.66, 1) forwards;
-    }
   </style>
 </head>
 <body>
@@ -305,6 +249,9 @@
       <div class="part-layer" data-part-id="speaker"
            style="--mask-url: url('masks/speaker.png');"></div>
     </div>
+
+    <!-- Fixed color palette centered under the controller -->
+    <div class="palette-container" id="paletteContainer"></div>
   </div>
 
   <script>
@@ -334,7 +281,9 @@
       "#ff1744", "#ff9100", "#ffc400", "#2979ff", "#00e676"
     ];
 
-    const controllerArea = document.getElementById("controllerArea");
+    const controllerArea   = document.getElementById("controllerArea");
+    const paletteContainer = document.getElementById("paletteContainer");
+
     const layers = Array.from(document.querySelectorAll(".part-layer"));
     const layerById = {};
     layers.forEach(l => { layerById[l.dataset.partId] = l; });
@@ -364,38 +313,62 @@
       });
     }
 
+    // Load masks
     Promise.all(PARTS.map(loadMask)).then(() => {
       masksReady = true;
     }).catch(err => {
       console.error("Error loading masks:", err);
     });
 
-    let selectedPartId = null;
-    let swatchHost = null;
-    let activeSwatchGroup = null;
-
+    // Build the palette once
     const configState = {};
     PARTS.forEach(p => { configState[p.id] = null; });
+
+    let selectedPartId = null;
+
+    function buildPalette() {
+      paletteContainer.innerHTML = "";
+      COLORS.forEach((color, i) => {
+        const swatch = document.createElement("button");
+        swatch.className = "swatch";
+        swatch.style.background = color;
+        // small staggered animation
+        swatch.style.animationDelay = `${i * 18}ms`;
+
+        if (["#ffc400", "#ffea00", "#d4af37"].includes(color)) {
+          swatch.classList.add("gold-rim");
+        }
+
+        swatch.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (!selectedPartId) return;
+          applyColor(selectedPartId, color);
+          clearSelection();
+          hidePalette();
+        });
+
+        paletteContainer.appendChild(swatch);
+      });
+    }
+
+    function showPalette() {
+      if (!paletteContainer.classList.contains("visible")) {
+        buildPalette(); // rebuild to restart animations each time
+        requestAnimationFrame(() => {
+          paletteContainer.classList.add("visible");
+        });
+      }
+    }
+
+    function hidePalette() {
+      paletteContainer.classList.remove("visible");
+    }
 
     function clearSelection() {
       if (!selectedPartId) return;
       const layer = layerById[selectedPartId];
       if (layer) layer.classList.remove("selected");
       selectedPartId = null;
-    }
-
-    function closeSwatchGroupAnimated(cb) {
-      if (!activeSwatchGroup) { cb && cb(); return; }
-      const group = activeSwatchGroup;
-      group.classList.add("closing");
-      activeSwatchGroup = null;
-      setTimeout(() => {
-        if (swatchHost) {
-          swatchHost.remove();
-          swatchHost = null;
-        }
-        cb && cb();
-      }, 520);
     }
 
     function applyColor(partId, color) {
@@ -407,59 +380,6 @@
       layer.addEventListener("animationend", () => {
         layer.classList.remove("apply-flash");
       }, { once: true });
-    }
-
-    function showSwatches(partId, clickX, clickY) {
-      closeSwatchGroupAnimated(() => {
-        swatchHost = document.createElement("div");
-        swatchHost.className = "swatch-host";
-        swatchHost.style.left = `${clickX}px`;
-        swatchHost.style.top  = `${clickY}px`;
-
-        const group = document.createElement("div");
-        group.className = "swatch-group";
-
-        const n = COLORS.length;
-        const radius = 80;
-        const startAngle = -Math.PI / 2;
-
-        COLORS.forEach((color, i) => {
-          const angle = startAngle + (i / n) * 2 * Math.PI;
-          const dx = Math.cos(angle) * radius;
-          const dy = Math.sin(angle) * radius;
-
-          const line = document.createElement("div");
-          line.classList.add("swatch-line");
-          line.style.setProperty("--length", `${radius}px`);
-          line.style.setProperty("--angle", `${angle}rad`);
-          line.style.animationDelay = `${i * 18}ms`;
-          group.appendChild(line);
-
-          const swatch = document.createElement("button");
-          swatch.classList.add("swatch");
-          swatch.style.background = color;
-          swatch.style.setProperty("--dx", `${dx}px`);
-          swatch.style.setProperty("--dy", `${dy}px`);
-          swatch.style.animationDelay = `${i * 18}ms`;
-
-          if (["#ffc400","#ffea00","#d4af37"].includes(color)) {
-            swatch.classList.add("gold-rim");
-          }
-
-          swatch.addEventListener("click", (e) => {
-            e.stopPropagation();
-            applyColor(partId, color);
-            clearSelection();
-            closeSwatchGroupAnimated();
-          });
-
-          group.appendChild(swatch);
-        });
-
-        swatchHost.appendChild(group);
-        controllerArea.appendChild(swatchHost);
-        activeSwatchGroup = group;
-      });
     }
 
     function hitTestPart(designX, designY) {
@@ -488,7 +408,7 @@
       const relY = (e.clientY - rect.top)  / rect.height;
 
       if (relX < 0 || relX > 1 || relY < 0 || relY > 1) {
-        closeSwatchGroupAnimated();
+        hidePalette();
         clearSelection();
         return;
       }
@@ -499,7 +419,7 @@
       const partId = hitTestPart(designX, designY);
 
       if (!partId) {
-        closeSwatchGroupAnimated();
+        hidePalette();
         clearSelection();
         return;
       }
@@ -508,16 +428,18 @@
         const prevLayer = layerById[selectedPartId];
         if (prevLayer) prevLayer.classList.remove("selected");
       }
+
       selectedPartId = partId;
       const layer = layerById[partId];
       if (layer) layer.classList.add("selected");
 
-      showSwatches(partId, e.clientX - rect.left, e.clientY - rect.top);
+      showPalette();  // always show centered palette under controller
     });
 
+    // Click outside controller clears everything
     document.addEventListener("click", (e) => {
-      if (!controllerArea.contains(e.target)) {
-        closeSwatchGroupAnimated();
+      if (!controllerArea.contains(e.target) && !paletteContainer.contains(e.target)) {
+        hidePalette();
         clearSelection();
       }
     });
