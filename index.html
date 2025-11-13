@@ -6,7 +6,10 @@
   <style>
     :root { --bg: #151515; }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent; /* hide blue tap highlight on mobile */
+    }
 
     body {
       margin: 0;
@@ -17,6 +20,12 @@
       align-items: center;
       background: radial-gradient(circle at top, #2b2b2b 0, #0b0b0b 55%, #000 100%);
       color: #fff;
+    }
+
+    button {
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     /* Wrapper with no background, radius, or shadow */
@@ -165,6 +174,7 @@
       border-radius: 50%;
       cursor: pointer;
       pointer-events: auto;
+      outline: none;
       border: 1px solid rgba(255,255,255,0.22);
       box-shadow:
         0 10px 25px rgba(0,0,0,0.85),
