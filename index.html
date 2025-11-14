@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PS5 Controller Configurator – Per-Part Palettes</title>
+  <title>PS5 Controller Configurator – Per-Part Palettes with Audio</title>
   <style>
     :root {
       --bg: #151515;
@@ -144,19 +144,19 @@
       }
     }
 
-    .part-layer.apply-flash::before {
+    /* .part-layer.apply-flash::before {
       animation: applyFlash 0.45s ease-out;
     }
 
     @keyframes applyFlash {
       0% {
-        filter: brightness(2.5) saturate(1.4);
+        filter: brightness(2.5)
       }
 
       100% {
-        filter: brightness(1) saturate(1);
+        filter: brightness(1)
       }
-    }
+    } */
 
     /* ---------------- BOTTOM SHEET ---------------- */
 
@@ -194,7 +194,7 @@
     .color-sheet {
       width: 100%;
       max-width: 1166px;
-      max-height: 72vh; /* higher drawer */
+      max-height: 72vh;
       background: radial-gradient(circle at top,
           rgba(255, 255, 255, 0.06),
           rgba(5, 5, 5, 0.98));
@@ -408,6 +408,11 @@
 <body>
   <canvas id="bgCanvas"></canvas>
 
+  <!-- Audio elements -->
+  <audio id="sfxClick" src="sounds/click.mp3" preload="auto"></audio>
+  <audio id="sfxSlide" src="sounds/slide.mp3" preload="auto"></audio>
+  <audio id="sfxClick2" src="sounds/click2.mp3" preload="auto"></audio>
+
   <div class="controller-wrapper" id="controllerWrapper">
     <div class="controller-area" id="controllerArea">
       <img src="controller.png" alt="PS5 Controller" />
@@ -442,6 +447,33 @@
     const isMobile =
       /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
       window.innerWidth < 768;
+
+    /* ---------- SFX helpers ---------- */
+    const sfxClickEl = document.getElementById("sfxClick");
+    const sfxSlideEl = document.getElementById("sfxSlide");
+    const sfxClick2El = document.getElementById("sfxClick2");
+
+    function playSfx(el) {
+      if (!el) return;
+      try {
+        el.currentTime = 0;
+        el.play();
+      } catch (_) {
+        // ignore playback errors (e.g., browser auto-play restrictions)
+      }
+    }
+
+    function playClick() {
+      playSfx(sfxClickEl);
+    }
+
+    function playSlide() {
+      playSfx(sfxSlideEl);
+    }
+
+    function playClick2() {
+      playSfx(sfxClick2El);
+    }
 
     /* ---------- Background sci-fi lines (desktop only) ---------- */
     (function () {
@@ -590,7 +622,7 @@
       rightShell: 15.0
     };
 
-    // Shell palette (left/right shells + centerBody)
+    // Shell palette
     const SHELL_COLORS = [
       { hex: "#FF7A21", name: "Orange" },
       { hex: "#E6D63A", name: "Yellow" },
@@ -604,7 +636,7 @@
       { hex: "#0A0A0A", name: "Matte Black" }
     ];
 
-    // Accessory palette (buttons, touchpad, sticks, bumpers, dpad, share/options, etc.)
+    // Accessory palette
     const ACCESSORY_COLORS = [
       { hex: "#0A0A0A", name: "Black" },
       { hex: "#D8D8D8", name: "Light Gray" },
@@ -628,15 +660,15 @@
       { hex: "#E3E3E3", name: "Frosted White" }
     ];
 
-    // Colors we treat as "transparent plastic" (lower opacity overlay)
+    // Transparent colors set
     const TRANSPARENT_HEXES = new Set([
-      "#EDEDED", // Clear Transparent
-      "#D43838", // Transparent Red
-      "#2448B5", // Transparent Blue
-      "#68D78B", // Transparent Green
-      "#4E2B8C", // Transparent Purple
-      "#8C3B2F", // Transparent Brown / Amber
-      "#E3E3E3"  // Frosted Transparent White
+      "#EDEDED",
+      "#D43838",
+      "#2448B5",
+      "#68D78B",
+      "#4E2B8C",
+      "#8C3B2F",
+      "#E3E3E3"
     ].map(c => c.toLowerCase()));
 
     const SHELL_PART_IDS = new Set(["leftShell", "rightShell", "centerBody"]);
@@ -780,6 +812,7 @@
           e.stopPropagation();
           if (selectedPartId) {
             applyColor(selectedPartId, hex);
+            playClick2(); // color selected
           }
           closeSheet();
         });
@@ -797,6 +830,9 @@
       backdrop.appendChild(sheet);
       document.body.appendChild(backdrop);
       activeSheetBackdrop = backdrop;
+
+      // play slide sound when sheet opens
+      playSlide();
 
       // tap outside sheet to close
       backdrop.addEventListener("click", (e) => {
@@ -868,6 +904,9 @@
       selectedPartId = partId;
       const layer = layerById[partId];
       if (layer) layer.classList.add("selected");
+
+      // play click sound when a component is selected
+      playClick();
 
       openColorSheet();
     });
