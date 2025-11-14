@@ -4,23 +4,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PS5 Controller Configurator – Mask-based Picking</title>
+  <title>PS5 Controller Configurator – Per-Part Palettes</title>
   <style>
     :root {
       --bg: #151515;
     }
 
-    /* Global reset + mobile tap highlight removal */
     * {
       box-sizing: border-box;
     }
 
     html,
     body,
-    .controller-wrapper,
-    .controller-area,
-    button,
-    .swatch {
+    button {
       -webkit-tap-highlight-color: transparent !important;
     }
 
@@ -30,15 +26,14 @@
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       background: radial-gradient(circle at top, #05060b 0, #020308 50%, #000 100%);
       color: #fff;
-      /* allow scroll globally (especially important on small screens) */
-      overflow-y: auto;
       overflow-x: hidden;
+      overflow-y: auto;
+      padding: 12px 0 24px;
     }
 
-    /* Background canvas for sci-fi lines (desktop only; disabled on mobile via JS) */
     #bgCanvas {
       position: fixed;
       inset: 0;
@@ -49,36 +44,23 @@
       display: block;
     }
 
-    /* Remove focus outlines */
-    button,
-    button:focus,
-    button:active,
-    .swatch,
-    .swatch:focus,
-    .swatch:active,
-    .controller-area:focus,
-    .controller-area:active,
-    .controller-wrapper:focus,
-    .controller-wrapper:active,
-    img:focus,
-    img:active {
-      outline: none;
-    }
-
     button {
       border: none;
       background: none;
+      outline: none;
       -webkit-appearance: none;
       appearance: none;
     }
 
-    /* Wrapper – desktop / large screens (smaller controller) */
+    img {
+      user-select: none;
+    }
+
     .controller-wrapper {
-      padding: 16px;
+      width: 92vw;
+      max-width: 1166px;
+      margin: 0 auto;
       position: relative;
-      overflow: visible;
-      max-width: 900px;   /* desktop max */
-      width: 70vw;        /* desktop width */
     }
 
     .controller-area {
@@ -90,18 +72,17 @@
       align-items: center;
       cursor: pointer;
       touch-action: manipulation;
+      transform-origin: center;
     }
 
     .controller-area img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      user-select: none;
+      filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.9));
       pointer-events: none;
-      filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.8));
     }
 
-    /* Masked color layers (visual only) */
     .part-layer {
       position: absolute;
       inset: 0;
@@ -112,16 +93,10 @@
       content: "";
       position: absolute;
       inset: 0;
-
-      /* brighter, more vivid color layer */
       background: var(--tint, transparent);
+      opacity: var(--tint-opacity, 1);
       filter: brightness(1.45) saturate(1.4) contrast(1.05);
-
-      /* blend mode that brightens instead of darkens */
       mix-blend-mode: overlay;
-
-      opacity: 1;
-
       -webkit-mask-image: var(--mask-url);
       mask-image: var(--mask-url);
       -webkit-mask-repeat: no-repeat;
@@ -132,7 +107,6 @@
       mask-position: center;
     }
 
-    /* Mask-shaped glow when selected */
     .part-layer.selected::after {
       content: "";
       position: absolute;
@@ -184,151 +158,261 @@
       }
     }
 
-    /* ---------- Fixed palette bar under the controller ---------- */
+    /* ---------------- BOTTOM SHEET ---------------- */
 
-    .palette-container {
-      margin-top: 18px;
+    .sheet-backdrop {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9));
       display: flex;
+      align-items: flex-end;
       justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 14px;
-      opacity: 0;
-      transform: translateY(12px);
-      pointer-events: none;
-      transition: opacity 0.22s ease, transform 0.22s ease;
+      z-index: 30;
+      animation: sheet-fade-in 0.16s ease-out forwards;
     }
 
-    .palette-container.visible {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
+    @keyframes sheet-fade-in {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
 
-    .swatch {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.25);
+    .sheet-backdrop.hide {
+      animation: sheet-fade-out 0.18s ease-in forwards;
+    }
 
-      /* Strong 3D feel: outer + inner shadows */
+    @keyframes sheet-fade-out {
+      to {
+        opacity: 0;
+      }
+    }
+
+    .color-sheet {
+      width: 100%;
+      max-width: 1166px;
+      max-height: 72vh; /* higher drawer */
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.06),
+          rgba(5, 5, 5, 0.98));
+      border-radius: 24px 24px 0 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
       box-shadow:
-        0 18px 30px rgba(0, 0, 0, 0.9),
-        0 6px 12px rgba(0, 0, 0, 0.85),
-        0 0 0 2px rgba(0, 0, 0, 0.95) inset,
-        0 10px 18px rgba(0, 0, 0, 0.95) inset,
-        0 -4px 8px rgba(255, 255, 255, 0.45) inset;
+        0 -20px 40px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      padding: 12px 18px 18px;
+      transform: translateY(100%);
+      animation: sheet-slide-up 0.22s ease-out forwards;
+    }
 
+    @keyframes sheet-slide-up {
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .color-sheet.hide {
+      animation: sheet-slide-down 0.22s ease-in forwards;
+    }
+
+    @keyframes sheet-slide-down {
+      to {
+        transform: translateY(100%);
+      }
+    }
+
+    .sheet-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .sheet-handle {
+      width: 44px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    .sheet-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      opacity: 0.84;
+    }
+
+    .sheet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 14px;
+      padding-right: 4px;
+      overflow-y: auto;
+      max-height: calc(72vh - 80px);
+    }
+
+    .sheet-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      text-align: center;
+      opacity: 0.9;
+    }
+
+    .sheet-color-name {
+      max-width: 80px;
+      line-height: 1.15;
+      word-break: break-word;
+    }
+
+    .sheet-swatch {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.35);
       background-image:
         radial-gradient(circle at 28% 24%,
-          rgba(255, 255, 255, 0.75),
-          rgba(255, 255, 255, 0.1) 42%,
+          rgba(255, 255, 255, 0.8),
+          rgba(255, 255, 255, 0.1) 40%,
           rgba(255, 255, 255, 0) 60%),
         radial-gradient(circle at 76% 80%,
-          rgba(255, 255, 255, 0.18),
-          rgba(0, 0, 0, 0.5) 65%,
-          rgba(0, 0, 0, 0.85) 100%);
+          rgba(255, 255, 255, 0.15),
+          rgba(0, 0, 0, 0.55) 65%,
+          rgba(0, 0, 0, 0.9) 100%);
+      box-shadow:
+        0 18px 30px rgba(0, 0, 0, 0.95),
+        0 6px 12px rgba(0, 0, 0, 0.85),
+        0 0 0 2px rgba(0, 0, 0, 1) inset,
+        0 10px 18px rgba(0, 0, 0, 0.98) inset,
+        0 -4px 8px rgba(255, 255, 255, 0.55) inset;
+      cursor: pointer;
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        filter 0.12s ease-out;
+    }
 
-      /* same enhancement as controller tint */
-      filter: brightness(1.45) saturate(1.4) contrast(1.05);
+    .sheet-swatch:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow:
+        0 24px 40px rgba(0, 0, 0, 1),
+        0 0 0 2px rgba(0, 0, 0, 1) inset,
+        0 18px 30px rgba(0, 0, 0, 1) inset,
+        0 -8px 12px rgba(255, 255, 255, 1) inset,
+        0 0 28px rgba(255, 255, 255, 0.95);
+      filter: brightness(1.9) saturate(2.0) contrast(1.1);
+    }
 
-      opacity: 0;
-      transform: scale(0.6);
-      animation: swatch-pop 0.22s cubic-bezier(0.22, 0.9, 0.25, 1) forwards;
+    /* ---------------- SUMMARY ---------------- */
+
+    .summary-bar {
+      margin-top: 24px;
+      padding: 14px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.04),
+          rgba(0, 0, 0, 0.9));
+      box-shadow:
+        0 18px 36px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .summary-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .summary-label {
+      font-size: 0.9rem;
+      opacity: 0.75;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .summary-amount {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .add-to-cart-btn {
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #00e5ff, #2979ff);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.9),
+        0 0 18px rgba(0, 229, 255, 0.7);
+      white-space: nowrap;
       transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
     }
 
-    .swatch.gold-rim {
+    .add-to-cart-btn:hover {
+      transform: translateY(-1px);
       box-shadow:
-        0 20px 34px rgba(0, 0, 0, 0.95),
-        0 8px 14px rgba(0, 0, 0, 0.9),
-        0 0 0 2px rgba(0, 0, 0, 1) inset,
-        0 10px 20px rgba(0, 0, 0, 0.98) inset,
-        0 -4px 10px rgba(255, 255, 255, 0.5) inset,
-        0 0 0 2px rgba(255, 215, 128, 0.98),
-        0 0 18px rgba(255, 230, 160, 0.9),
-        0 0 16px rgba(255, 255, 255, 0.85) inset;
+        0 20px 40px rgba(0, 0, 0, 1),
+        0 0 24px rgba(0, 229, 255, 0.9);
+      filter: brightness(1.1);
     }
 
-    .swatch:hover {
-      transform: scale(1.08);
+    .add-to-cart-btn:active {
+      transform: translateY(1px) scale(0.98);
       box-shadow:
-        0 24px 40px rgba(0, 0, 0, 1),
-        0 10px 18px rgba(0, 0, 0, 0.95),
-        0 0 0 2px rgba(0, 0, 0, 1) inset,
-        0 12px 22px rgba(0, 0, 0, 1) inset,
-        0 -5px 10px rgba(255, 255, 255, 0.6) inset;
-      filter: brightness(1.6) saturate(1.6) contrast(1.08);
+        0 8px 20px rgba(0, 0, 0, 0.8),
+        0 0 14px rgba(0, 229, 255, 0.7);
     }
 
-    @keyframes swatch-pop {
-      0% {
-        opacity: 0;
-        transform: scale(0.3);
-      }
-
-      60% {
-        opacity: 1;
-        transform: scale(1.05);
-      }
-
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    /* ---------- SMALL DEVICES: fill width and enlarge controls ---------- */
-    @media (max-width: 768px) {
-      html,
+    @media (max-width: 900px) {
       body {
-        height: auto;
-      }
-
-      body {
-        justify-content: flex-start;
-        align-items: flex-start;
-        padding-top: 8px;
+        padding-top: 6px;
       }
 
       .controller-wrapper {
-        padding: 8px;
         width: 100vw;
         max-width: 100vw;
+        padding: 0 6px;
       }
 
-      .controller-area {
-        width: 100%;
+      .summary-bar {
+        margin-top: 18px;
+        padding: 12px 14px;
       }
 
-      .controller-area img {
-        width: 100%;
-        height: auto;
+      .summary-amount {
+        font-size: 1.3rem;
       }
 
-      .palette-container {
-        gap: 10px;
-        margin-top: 14px;
-      }
-
-      .swatch {
-        width: 72px;
-        height: 72px;
+      .add-to-cart-btn {
+        padding: 9px 16px;
       }
     }
   </style>
 </head>
 
 <body>
-  <!-- Sci-fi glowing lines background (desktop only, disabled on mobile in JS) -->
   <canvas id="bgCanvas"></canvas>
 
-  <div class="controller-wrapper">
+  <div class="controller-wrapper" id="controllerWrapper">
     <div class="controller-area" id="controllerArea">
       <img src="controller.png" alt="PS5 Controller" />
 
-      <!-- Masked layers for tint and highlight -->
+      <!-- Masked layers -->
       <div class="part-layer" data-part-id="leftShell" style="--mask-url: url('masks/leftShell.png');"></div>
       <div class="part-layer" data-part-id="rightShell" style="--mask-url: url('masks/rightShell.png');"></div>
       <div class="part-layer" data-part-id="centerBody" style="--mask-url: url('masks/centerBody.png');"></div>
@@ -345,28 +429,28 @@
       <div class="part-layer" data-part-id="speaker" style="--mask-url: url('masks/speaker.png');"></div>
     </div>
 
-    <!-- Fixed color palette centered under the controller -->
-    <div class="palette-container" id="paletteContainer"></div>
+    <div class="summary-bar">
+      <div class="summary-text">
+        <span class="summary-label">Configuration total</span>
+        <span class="summary-amount" id="summaryAmount">BHD 0.00</span>
+      </div>
+      <button class="add-to-cart-btn" id="addToCartBtn">ADD TO CART</button>
+    </div>
   </div>
 
   <script>
-    /* ---------- Mobile detection ---------- */
     const isMobile =
       /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
       window.innerWidth < 768;
 
-    /* ---------- Sci-fi diagonal glowing zigzag lines background (desktop only) ---------- */
+    /* ---------- Background sci-fi lines (desktop only) ---------- */
     (function () {
       const canvas = document.getElementById("bgCanvas");
-
-      // If mobile: disable the animated background completely to avoid lag
       if (isMobile) {
-        canvas.style.display = "none"; // static CSS gradient background only
+        canvas.style.display = "none";
         return;
       }
-
       const ctx = canvas.getContext("2d");
-
       let width = window.innerWidth;
       let height = window.innerHeight;
 
@@ -395,10 +479,8 @@
         const speed = 120 + Math.random() * 220;
         const thickness = 1 + Math.random() * 2;
         const color = LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)];
-
         const startX = Math.random() * (width + height) - height;
         const startY = -len - Math.random() * height;
-
         return {
           x: startX,
           y: startY,
@@ -413,12 +495,9 @@
         };
       }
 
-      for (let i = 0; i < LINE_COUNT; i++) {
-        lines.push(createLine());
-      }
+      for (let i = 0; i < LINE_COUNT; i++) lines.push(createLine());
 
       let lastTime = performance.now();
-
       function loop(now) {
         const dt = (now - lastTime) / 1000;
         lastTime = now;
@@ -428,7 +507,6 @@
         ctx.fillRect(0, 0, width, height);
 
         ctx.globalCompositeOperation = "lighter";
-
         lines.forEach((line, idx) => {
           const diagSpeed = line.speed;
           line.x += diagSpeed * dt * 0.7;
@@ -455,16 +533,11 @@
             const t = i / segments;
             const baseX = line.x - dx * t;
             const baseY = line.y - dy * t;
-
             const wobble = line.wiggleAmp * Math.sin(line.phase + t * line.wiggleFreq);
             const px = baseX + wobble;
             const py = baseY + wobble * 0.35;
-
-            if (i === 0) {
-              ctx.moveTo(px, py);
-            } else {
-              ctx.lineTo(px, py);
-            }
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
           }
 
           ctx.stroke();
@@ -477,10 +550,11 @@
       requestAnimationFrame(loop);
     })();
 
-    /* ---------- Controller configurator logic ---------- */
+    /* ---------- Controller + palettes ---------- */
 
     const BASE_WIDTH = 1166;
     const BASE_HEIGHT = 768;
+    const CURRENCY = "BHD ";
 
     const PARTS = [
       { id: "psButton", mask: "masks/psButton.png", priority: 4 },
@@ -499,14 +573,81 @@
       { id: "rightShell", mask: "masks/rightShell.png", priority: 1 }
     ];
 
-    const COLORS = [
-      "#ffffff", "#f5f5f5", "#000000", "#cccccc", "#777777",
-      "#00b0ff", "#ff4081", "#7c4dff", "#69f0ae",
-      "#ff1744", "#ff9100", "#ffc400", "#2979ff", "#00e676"
+    const PRICES = {
+      psButton: 4.0,
+      share: 3.0,
+      options: 3.0,
+      speaker: 4.0,
+      dpad: 6.0,
+      faceButtons: 6.0,
+      stickL: 5.0,
+      stickR: 5.0,
+      touchpad: 10.0,
+      bumperL: 8.0,
+      bumperR: 8.0,
+      centerBody: 12.0,
+      leftShell: 15.0,
+      rightShell: 15.0
+    };
+
+    // Shell palette (left/right shells + centerBody)
+    const SHELL_COLORS = [
+      { hex: "#FF7A21", name: "Orange" },
+      { hex: "#E6D63A", name: "Yellow" },
+      { hex: "#6ECFFF", name: "Light Blue" },
+      { hex: "#8E8E8E", name: "Steel Gray" },
+      { hex: "#0C4BFF", name: "Blue" },
+      { hex: "#001F63", name: "Midnight Blue" },
+      { hex: "#C2185B", name: "Magenta" },
+      { hex: "#F5F5F5", name: "Soft White" },
+      { hex: "#D400A8", name: "Hot Pink" },
+      { hex: "#0A0A0A", name: "Matte Black" }
     ];
 
+    // Accessory palette (buttons, touchpad, sticks, bumpers, dpad, share/options, etc.)
+    const ACCESSORY_COLORS = [
+      { hex: "#0A0A0A", name: "Black" },
+      { hex: "#D8D8D8", name: "Light Gray" },
+      { hex: "#C41E2E", name: "Red" },
+      { hex: "#2B2C79", name: "Dark Blue-Purple" },
+      { hex: "#F2D400", name: "Yellow" },
+      { hex: "#E56A1E", name: "Orange" },
+      { hex: "#A6DA8C", name: "Mint Green" },
+      { hex: "#4A23A8", name: "Royal Purple" },
+      { hex: "#E03875", name: "Hot Pink" },
+      { hex: "#77CBF7", name: "Sky Blue" },
+      { hex: "#C75AC9", name: "Pink-Violet" },
+      { hex: "#5C2DAF", name: "Indigo Purple" },
+      { hex: "#EDEDED", name: "Clear Transparent" },
+      { hex: "#D43838", name: "Transparent Red" },
+      { hex: "#2448B5", name: "Transparent Blue" },
+      { hex: "#68D78B", name: "Transparent Green" },
+      { hex: "#4E2B8C", name: "Transparent Purple" },
+      { hex: "#4A4A4A", name: "Gunmetal Gray" },
+      { hex: "#8C3B2F", name: "Transparent Brown" },
+      { hex: "#E3E3E3", name: "Frosted White" }
+    ];
+
+    // Colors we treat as "transparent plastic" (lower opacity overlay)
+    const TRANSPARENT_HEXES = new Set([
+      "#EDEDED", // Clear Transparent
+      "#D43838", // Transparent Red
+      "#2448B5", // Transparent Blue
+      "#68D78B", // Transparent Green
+      "#4E2B8C", // Transparent Purple
+      "#8C3B2F", // Transparent Brown / Amber
+      "#E3E3E3"  // Frosted Transparent White
+    ].map(c => c.toLowerCase()));
+
+    const SHELL_PART_IDS = new Set(["leftShell", "rightShell", "centerBody"]);
+
+    function getPaletteForPart(partId) {
+      return SHELL_PART_IDS.has(partId) ? SHELL_COLORS : ACCESSORY_COLORS;
+    }
+
     const controllerArea = document.getElementById("controllerArea");
-    const paletteContainer = document.getElementById("paletteContainer");
+    const summaryAmountEl = document.getElementById("summaryAmount");
+    const addToCartBtn = document.getElementById("addToCartBtn");
 
     const layers = Array.from(document.querySelectorAll(".part-layer"));
     const layerById = {};
@@ -539,48 +680,47 @@
 
     Promise.all(PARTS.map(loadMask)).then(() => {
       masksReady = true;
-    }).catch(err => {
-      console.error("Error loading masks:", err);
-    });
+    }).catch(err => console.error("Error loading masks:", err));
 
     const configState = {};
     PARTS.forEach(p => { configState[p.id] = null; });
 
     let selectedPartId = null;
+    let activeSheetBackdrop = null;
 
-    function buildPalette() {
-      paletteContainer.innerHTML = "";
-      COLORS.forEach((color, i) => {
-        const swatch = document.createElement("button");
-        swatch.className = "swatch";
-        swatch.style.background = color;
-        swatch.style.animationDelay = `${i * 18}ms`;
-
-        if (["#ffc400", "#ffea00", "#d4af37"].includes(color)) {
-          swatch.classList.add("gold-rim");
-        }
-
-        swatch.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (!selectedPartId) return;
-          applyColor(selectedPartId, color);
-          clearSelection();
-          hidePalette();
-        });
-
-        paletteContainer.appendChild(swatch);
-      });
+    function formatMoney(v) {
+      return CURRENCY + v.toFixed(2);
     }
 
-    function showPalette() {
-      buildPalette();
-      requestAnimationFrame(() => {
-        paletteContainer.classList.add("visible");
-      });
+    function computeTotal() {
+      let t = 0;
+      for (const p of PARTS) {
+        if (configState[p.id]) t += PRICES[p.id] || 0;
+      }
+      return t;
     }
 
-    function hidePalette() {
-      paletteContainer.classList.remove("visible");
+    function updateSummary() {
+      summaryAmountEl.textContent = formatMoney(computeTotal());
+    }
+
+    function applyColor(partId, colorHex) {
+      configState[partId] = colorHex;
+      const layer = layerById[partId];
+      if (!layer) return;
+      layer.style.setProperty("--tint", colorHex);
+
+      if (TRANSPARENT_HEXES.has(colorHex.toLowerCase())) {
+        layer.style.setProperty("--tint-opacity", "0.35");
+      } else {
+        layer.style.setProperty("--tint-opacity", "1");
+      }
+
+      layer.classList.add("apply-flash");
+      layer.addEventListener("animationend", () => {
+        layer.classList.remove("apply-flash");
+      }, { once: true });
+      updateSummary();
     }
 
     function clearSelection() {
@@ -590,28 +730,108 @@
       selectedPartId = null;
     }
 
-    function applyColor(partId, color) {
-      configState[partId] = color;
-      const layer = layerById[partId];
-      if (!layer) return;
-      layer.style.setProperty("--tint", color);
-      layer.classList.add("apply-flash");
-      layer.addEventListener("animationend", () => {
-        layer.classList.remove("apply-flash");
-      }, { once: true });
+    function closeSheet() {
+      if (!activeSheetBackdrop) return;
+      const backdrop = activeSheetBackdrop;
+      const sheet = backdrop.querySelector(".color-sheet");
+      backdrop.classList.add("hide");
+      sheet.classList.add("hide");
+      activeSheetBackdrop = null;
+      clearSelection();
+      setTimeout(() => {
+        if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+      }, 240);
+    }
+
+    function openColorSheet() {
+      if (!selectedPartId) return;
+
+      if (activeSheetBackdrop) {
+        closeSheet();
+      }
+
+      const palette = getPaletteForPart(selectedPartId);
+
+      const backdrop = document.createElement("div");
+      backdrop.className = "sheet-backdrop";
+
+      const sheet = document.createElement("div");
+      sheet.className = "color-sheet";
+
+      const header = document.createElement("div");
+      header.className = "sheet-header";
+      header.innerHTML = `
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Choose color</div>
+      `;
+      sheet.appendChild(header);
+
+      const gridEl = document.createElement("div");
+      gridEl.className = "sheet-grid";
+
+      palette.forEach(({ hex, name }) => {
+        const cell = document.createElement("div");
+        cell.className = "sheet-cell";
+
+        const sw = document.createElement("button");
+        sw.className = "sheet-swatch";
+        sw.style.backgroundColor = hex;
+        sw.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (selectedPartId) {
+            applyColor(selectedPartId, hex);
+          }
+          closeSheet();
+        });
+
+        const label = document.createElement("div");
+        label.className = "sheet-color-name";
+        label.textContent = name;
+
+        cell.appendChild(sw);
+        cell.appendChild(label);
+        gridEl.appendChild(cell);
+      });
+
+      sheet.appendChild(gridEl);
+      backdrop.appendChild(sheet);
+      document.body.appendChild(backdrop);
+      activeSheetBackdrop = backdrop;
+
+      // tap outside sheet to close
+      backdrop.addEventListener("click", (e) => {
+        if (e.target === backdrop) {
+          closeSheet();
+        }
+      });
+
+      // drag down to close
+      let startY = null;
+      let dragging = false;
+      sheet.addEventListener("pointerdown", (e) => {
+        startY = e.clientY;
+        dragging = true;
+      });
+      sheet.addEventListener("pointermove", (e) => {
+        if (!dragging || startY === null) return;
+        const dy = e.clientY - startY;
+        if (dy > 60) {
+          dragging = false;
+          closeSheet();
+        }
+      });
+      sheet.addEventListener("pointerup", () => { dragging = false; startY = null; });
+      sheet.addEventListener("pointercancel", () => { dragging = false; startY = null; });
     }
 
     function hitTestPart(designX, designY) {
       const sorted = [...PARTS].sort((a, b) => b.priority - a.priority);
-
       for (const part of sorted) {
         const mask = maskDataById[part.id];
         if (!mask) continue;
-
         const x = Math.floor(designX / BASE_WIDTH * mask.width);
         const y = Math.floor(designY / BASE_HEIGHT * mask.height);
         if (x < 0 || y < 0 || x >= mask.width || y >= mask.height) continue;
-
         const idx = (y * mask.width + x) * 4 + 3;
         const alpha = mask.data[idx];
         if (alpha > 20) return part.id;
@@ -627,8 +847,7 @@
       const relY = (e.clientY - rect.top) / rect.height;
 
       if (relX < 0 || relX > 1 || relY < 0 || relY > 1) {
-        hidePalette();
-        clearSelection();
+        closeSheet();
         return;
       }
 
@@ -636,30 +855,34 @@
       const designY = relY * BASE_HEIGHT;
 
       const partId = hitTestPart(designX, designY);
-
       if (!partId) {
-        hidePalette();
-        clearSelection();
+        closeSheet();
         return;
       }
 
       if (selectedPartId && selectedPartId !== partId) {
-        const prevLayer = layerById[selectedPartId];
-        if (prevLayer) prevLayer.classList.remove("selected");
+        const prev = layerById[selectedPartId];
+        if (prev) prev.classList.remove("selected");
       }
 
       selectedPartId = partId;
       const layer = layerById[partId];
       if (layer) layer.classList.add("selected");
 
-      showPalette();
+      openColorSheet();
     });
 
-    document.addEventListener("click", (e) => {
-      if (!controllerArea.contains(e.target) && !paletteContainer.contains(e.target)) {
-        hidePalette();
-        clearSelection();
+    /* ---------- Summary & cart ---------- */
+
+    updateSummary();
+
+    addToCartBtn.addEventListener("click", () => {
+      const total = computeTotal();
+      if (total <= 0) {
+        alert("No custom options selected yet.");
+        return;
       }
+      alert("Configuration added to cart.\nTotal: " + formatMoney(total));
     });
   </script>
 </body>
