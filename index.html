@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 
 <head>
   <meta charset="UTF-8" />
-  <title>EZ GAMING – Custom PS5 Controllers</title>
+  <title>EZ GAMING – ذراع تحكم بلايستيشن مخصص</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Cairo for consistency with configurator if you later add Arabic -->
+  <!-- Cairo for Arabic / English -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
       --bg: #050508;
-      --accent1: #00e5ff;
-      --accent2: #2979ff;
+      --accent1: lawngreen;
+      --accent2: rgb(68, 129, 7);
       --accent3: #ff4081;
       --card-bg: rgba(8, 8, 12, 0.96);
       --border-subtle: rgba(255, 255, 255, 0.12);
@@ -35,8 +35,7 @@
       margin: 0;
       min-height: 100vh;
       font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top, #111322 0, #05060a 45%, #000 100%);
+      background: radial-gradient(circle at top, #111322 0, #05060a 45%, #000 100%);
       color: #fff;
       overflow-x: hidden;
     }
@@ -66,7 +65,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
-      z-index: 20;
+      z-index: 30;
       background: radial-gradient(circle at top,
           rgba(6, 10, 20, 0.98),
           rgba(1, 2, 6, 0.96));
@@ -82,16 +81,22 @@
     }
 
     .nav-logo-mark {
-      width: 28px;
-      height: 28px;
-      border-radius: 10px;
-      background: conic-gradient(from 160deg,
-          var(--accent1),
-          var(--accent2),
-          var(--accent3),
+      width: 200px;
+      height: 40px;
+      /* border-radius: 8px; */
+      background-image: url("logo.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: right;
+      /* Do not repeat the image */
+
+      /* background: conic-gradient(from 160deg,
+          #00e5ff,
+          #2979ff,
+          #ff4081,
           #ffca28,
-          var(--accent1));
-      box-shadow: 0 0 18px rgba(0, 229, 255, 0.85);
+          #00e5ff); */
+      /* box-shadow: 0 0 18px rgba(0, 229, 255, 0.85); */
     }
 
     .nav-logo-text {
@@ -104,9 +109,9 @@
     .nav-right {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 16px;
       font-size: 0.85rem;
-      opacity: 0.85;
+      opacity: 0.9;
     }
 
     .nav-link {
@@ -115,6 +120,8 @@
       font-size: 0.75rem;
       padding-bottom: 2px;
       border-bottom: 1px solid transparent;
+      white-space: nowrap;
+      color: lawngreen;
     }
 
     .nav-link:hover {
@@ -140,41 +147,57 @@
       transform: translateY(-1px);
     }
 
-    /* HERO ------------------------------------------------------- */
+    .nav-lang {
+      padding-inline: 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(0, 0, 0, 0.45);
+    }
+
+    /* HERO WITH VIDEO -------------------------------------------- */
 
     .hero {
+      position: relative;
       padding-top: 80px;
       min-height: calc(100vh - 60px);
       display: flex;
       align-items: center;
       justify-content: center;
       padding-inline: 20px;
-      position: relative;
       overflow: hidden;
     }
 
     .hero-video {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transform: translate(-50%, -50%);
+      z-index: -2;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top, rgba(10, 16, 35, 0.9), rgba(0, 0, 0, 0.1)),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.16));
       z-index: -1;
-      opacity: 0.25;
-      /* adjust brightness */
-      filter: blur(2px);
-      /* optional */
     }
 
     .hero-inner {
-      max-width: 1200px;
+      max-width: 900px;
       width: 100%;
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-      gap: 40px;
-      align-items: center;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: start;
+      gap: 26px;
+    }
+
+    [dir="rtl"] .hero-inner {
+      align-items: flex-end;
+      text-align: end;
     }
 
     .hero-badge {
@@ -188,7 +211,7 @@
       font-size: 0.75rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
 
     .hero-badge-dot {
@@ -200,29 +223,35 @@
     }
 
     .hero-title {
-      font-size: clamp(2.2rem, 4vw, 3.1rem);
+      font-size: clamp(2.1rem, 4vw, 3.1rem);
       line-height: 1.1;
-      margin: 0 0 14px;
+      margin: 0 0 10px;
+      text-align: center;
     }
 
-    .hero-title span {
-      background: linear-gradient(135deg, var(--accent1), var(--accent3));
+    .hero-title span.highlight {
+      background: linear-gradient(135deg, var(--accent1), #00e676);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
 
     .hero-sub {
-      max-width: 520px;
+      max-width: 620px;
       font-size: 0.98rem;
-      opacity: 0.82;
-      margin-bottom: 22px;
+      opacity: 0.86;
+      margin-bottom: 18px;
     }
 
     .hero-actions {
-      display: flex;
+      display: block;
       flex-wrap: wrap;
       gap: 12px;
+      text-align: center;
+    }
+
+    [dir="rtl"] .hero-actions {
+      flex-direction: row-reverse;
     }
 
     .hero-btn {
@@ -236,6 +265,7 @@
       align-items: center;
       gap: 8px;
       white-space: nowrap;
+      color: lawngreen;
     }
 
     .hero-btn.primary {
@@ -243,6 +273,7 @@
       box-shadow:
         0 18px 32px rgba(0, 0, 0, 1),
         0 0 22px rgba(0, 229, 255, 0.9);
+      color: black;
     }
 
     .hero-btn.primary:hover {
@@ -264,45 +295,18 @@
     }
 
     .hero-note {
-      margin-top: 10px;
+      margin-top: 8px;
       font-size: 0.78rem;
-      opacity: 0.7;
-    }
-
-    .hero-visual {
-      position: relative;
-      min-height: 260px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .hero-orbit {
-      position: absolute;
-      width: 360px;
-      height: 360px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.25), transparent 55%),
-        conic-gradient(from 190deg,
-          rgba(0, 229, 255, 0.6),
-          rgba(41, 121, 255, 0.5),
-          rgba(255, 64, 129, 0.6),
-          rgba(255, 202, 40, 0.6),
-          rgba(0, 229, 255, 0.6));
-      filter: blur(10px);
-      opacity: 0.8;
-      animation: orbitPulse 8s ease-in-out infinite alternate;
+      opacity: 0.78;
     }
 
     .hero-controller {
-      position: relative;
       width: 380px;
       max-width: 100%;
-      aspect-ratio: 1166/768;
+      aspect-ratio: 1166 / 768;
       border-radius: 26px;
       background:
-        radial-gradient(circle at top left, rgba(255, 255, 255, 0.2), transparent 55%),
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.18), transparent 55%),
         radial-gradient(circle at bottom, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 1));
       box-shadow:
         0 26px 50px rgba(0, 0, 0, 0.95),
@@ -312,6 +316,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-top: 16px;
     }
 
     .hero-controller-inner {
@@ -325,29 +330,11 @@
     }
 
     .hero-controller-tag {
-      position: absolute;
-      bottom: 12px;
-      right: 14px;
-      padding: 4px 10px;
-      border-radius: 999px;
+      margin-top: 8px;
       font-size: 0.7rem;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      background: rgba(0, 0, 0, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.26);
-      opacity: 0.85;
-    }
-
-    @keyframes orbitPulse {
-      0% {
-        transform: scale(0.9) translateY(10px);
-        opacity: 0.7;
-      }
-
-      100% {
-        transform: scale(1.05) translateY(-6px);
-        opacity: 1;
-      }
+      opacity: 0.8;
     }
 
     /* SECTIONS WRAPPER ------------------------------------------- */
@@ -359,11 +346,17 @@
     }
 
     .section-header {
-      display: flex;
+      display: block;
       justify-content: space-between;
       align-items: flex-end;
       gap: 20px;
       margin-bottom: 20px;
+      text-align: center;
+    }
+
+    [dir="rtl"] .section-header {
+      flex-direction: row-reverse;
+      text-align: center;
     }
 
     .section-title {
@@ -394,25 +387,26 @@
 
     @media (max-width: 800px) {
       .hero-inner {
-        grid-template-columns: minmax(0, 1fr);
+        align-items: center;
         text-align: center;
       }
 
-      .hero-sub {
+      [dir="rtl"] .hero-inner {
+        align-items: center;
+        text-align: center;
+      }
+
+      .hero-controller {
         margin-inline: auto;
-      }
-
-      .hero-actions {
-        justify-content: center;
-      }
-
-      .hero-visual {
-        order: -1;
       }
 
       .section-header {
         flex-direction: column;
         align-items: flex-start;
+      }
+
+      [dir="rtl"] .section-header {
+        align-items: flex-end;
       }
 
       .build-grid {
@@ -440,26 +434,45 @@
     }
 
     .build-thumb {
-      position: relative;
-      height: 140px;
-      background-size: cover;
-      background-position: center;
+      padding: 6px;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.96));
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
     }
 
-    .build-thumb::after {
-      content: "";
+    .thumb-controller {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1166 / 768;
+    }
+
+    .thumb-base {
       position: absolute;
       inset: 0;
       background-image: url("controller.png");
-      background-size: 120%;
+      background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
-      filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.9));
-      opacity: 0.9;
+      filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.95));
+    }
+
+    .thumb-layer {
+      position: absolute;
+      inset: 0;
+      background: var(--tint, transparent);
+      opacity: var(--tint-opacity, 1);
+      filter: brightness(1.45) saturate(1.4) contrast(1.05);
+      mix-blend-mode: overlay;
+      -webkit-mask-image: var(--mask-url);
+      mask-image: var(--mask-url);
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-position: center;
+      mask-position: center;
     }
 
     .build-body {
@@ -471,12 +484,12 @@
     }
 
     .build-title {
-      font-size: 0.9rem;
+      font-size: 1.2rem;
       font-weight: 600;
     }
 
     .build-price {
-      font-size: 0.9rem;
+      font-size: 1.2rem;
       opacity: 0.85;
     }
 
@@ -520,10 +533,15 @@
       font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
+      color: lawngreen;
       border: 1px solid rgba(255, 255, 255, 0.35);
       background: radial-gradient(circle at top,
           rgba(255, 255, 255, 0.08),
           rgba(0, 0, 0, 0.96));
+    }
+
+    [dir="rtl"] .build-cta {
+      align-self: flex-end;
     }
 
     .build-cta:hover {
@@ -588,7 +606,7 @@
       border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.25);
       background: rgba(0, 0, 0, 0.8);
-      color: #fff;
+      color: lawngreen;
       padding: 8px 10px;
       font-size: 0.86rem;
       font-family: inherit;
@@ -650,63 +668,39 @@
   <!-- NAVBAR -->
   <header class="top-nav">
     <div class="nav-left">
-      <div class="nav-logo-mark"></div>
-      <div class="nav-logo-text">EZ GAMING</div>
+      <a href="index.html" class="nav-left" style="display:block;">
+        <div class="nav-logo-mark"></div>
+      </a>
     </div>
     <div class="nav-right">
-      <button class="nav-link" type="button" onclick="scrollToSection('premadeSection')">
-        Premade Controllers
-      </button>
-      <button class="nav-link" type="button" onclick="scrollToSection('contactSection')">
-        Contact
-      </button>
-      <button class="nav-cta" type="button" onclick="goToConfigurator()">
-        Build Your Own
-      </button>
+      <button class="nav-link" type="button" data-i18n="navPremade"
+        onclick="scrollToSection('premadeSection')"></button>
+      <button class="nav-link" type="button" data-i18n="navContact"
+        onclick="scrollToSection('contactSection')"></button>
+      <button class="nav-cta" type="button" data-i18n="navBuildCta" onclick="goToConfigurator()"></button>
+      <button class="nav-link nav-lang" id="langToggle" type="button">EN</button>
     </div>
   </header>
 
-  <!-- HERO / BANNER -->
+  <!-- HERO WITH VIDEO -->
   <section class="hero">
-    <!-- VIDEO BACKGROUND -->
     <video class="hero-video" autoplay muted loop playsinline>
       <source src="back.mp4" type="video/mp4" />
     </video>
-
+    <div class="hero-overlay"></div>
 
     <div class="hero-inner">
-      <div class="hero-text">
-        <div class="hero-badge">
-          <span class="hero-badge-dot"></span>
-          <span>Next-gen custom builds</span>
-        </div>
-        <h1 class="hero-title">
-          Craft your own <span>PS5 controller</span> with pro-grade finishes.
-        </h1>
-        <p class="hero-sub">
-          Choose every shell, button and trigger color. Save your design or start from one of our curated EZ GAMING
-          presets.
-        </p>
+      <div>
+        <h1 class="hero-title" data-i18n-html="heroTitle"></h1>
+        <p class="hero-sub" data-i18n="heroSub"></p>
         <div class="hero-actions">
-          <button class="hero-btn primary" type="button" onclick="goToConfigurator()">
-            Create your own controller
-          </button>
-          <button class="hero-btn secondary" type="button" onclick="scrollToSection('premadeSection')">
-            Premade controllers
-          </button>
-        </div>
-        <div class="hero-note">
-          Prices start from <strong>BHD 4.00</strong>. Fully modular, no subscription, no compromises.
+          <button class="hero-btn primary" type="button" data-i18n="heroCreateBtn"
+            onclick="goToConfigurator()"></button>
+          <button class="hero-btn secondary" type="button" data-i18n="heroPremadeBtn"
+            onclick="scrollToSection('premadeSection')"></button>
         </div>
       </div>
 
-      <div class="hero-visual">
-        <div class="hero-orbit"></div>
-        <div class="hero-controller">
-          <div class="hero-controller-inner"></div>
-          <div class="hero-controller-tag">Live preview</div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -714,11 +708,7 @@
   <section class="section" id="premadeSection">
     <div class="section-header">
       <div>
-        <div class="section-title">Premade Controllers</div>
-        <div class="section-sub">
-          Pick from 20 ready-made builds generated from the same color system used in the configurator. Use them as-is
-          or open them in the builder for fine-tuning.
-        </div>
+        <div class="section-title" data-i18n="premadeTitle"></div>
       </div>
     </div>
 
@@ -730,62 +720,45 @@
   <!-- CONTACT ---------------------------------------------------- -->
   <section class="section" id="contactSection">
     <div class="section-header">
-      <div class="section-title">Contact Us</div>
+      <div class="section-title" data-i18n="contactTitle"></div>
     </div>
 
     <div class="contact-grid">
       <div class="contact-card">
-        <h3>Send us a message</h3>
-        <p>Have a question about bulk orders, special finishes, or sponsorships? Drop your details and we’ll get back to
-          you.</p>
+        <h3 data-i18n="contactCardTitle"></h3>
+        <p data-i18n="contactCardText"></p>
 
         <form id="contactForm">
           <div class="contact-form-group">
-            <label class="contact-label" for="name">Name</label>
+            <label class="contact-label" for="name" data-i18n="contactLabelName"></label>
             <input class="contact-input" id="name" name="name" required />
           </div>
           <div class="contact-form-group">
-            <label class="contact-label" for="email">Email</label>
+            <label class="contact-label" for="email" data-i18n="contactLabelEmail"></label>
             <input class="contact-input" id="email" name="email" type="email" required />
           </div>
           <div class="contact-form-group">
-            <label class="contact-label" for="message">Message</label>
+            <label class="contact-label" for="message" data-i18n="contactLabelMessage"></label>
             <textarea class="contact-textarea" id="message" name="message" required></textarea>
           </div>
-          <button class="contact-submit" type="submit">Send message</button>
+          <button class="contact-submit" type="submit" data-i18n="contactSubmit"></button>
         </form>
       </div>
 
-      <div class="contact-meta">
-        <p><strong>Custom shop for players who care about every millimeter.</strong></p>
-        <p>
-          EZ GAMING specializes in high-end PS5 controller customization – ideal for streamers,
-          esports teams, and serious players who want their gear to look as sharp as it plays.
-        </p>
-        <p>
-          Looking for branded controllers for your organization, gaming café, or tournament?
-          We can help with:
-        </p>
-        <ul>
-          <li>Bulk corporate &amp; team orders</li>
-          <li>Special colorways exclusive to your brand</li>
-          <li>Marketing collaborations and giveaways</li>
-        </ul>
-        <p>
-          Tell us what you need and our team will reply with options and pricing within 1–2 business days.
-        </p>
-      </div>
+      <div class="contact-meta" data-i18n-html="contactMeta"></div>
     </div>
   </section>
 
   <!-- FOOTER ----------------------------------------------------- -->
   <footer class="footer">
-    © <span id="year"></span> EZ GAMING. All rights reserved.
+    <span data-i18n="footerText"></span>
+    <span id="year"></span>
   </footer>
 
   <script>
+    /* ------------ CONFIGURATOR LINK + SCROLL ------------------- */
     function goToConfigurator() {
-      // Change this to your actual configurator page filename if different
+      // Change if your customizer file is named differently
       window.location.href = "configurator.html";
     }
 
@@ -797,7 +770,7 @@
 
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    /* -------------------- PREMADE BUILDS DATA ------------------- */
+    /* ------------ COLORS / PARTS (same as configurator) -------- */
 
     const FRONT_PARTS = [
       { id: "shell", side: "front" },
@@ -844,54 +817,73 @@
     ]);
 
     const SHELL_COLORS = [
-      { hex: "#FF7A21", name: "Orange" },
-      { hex: "#E6D63A", name: "Yellow" },
-      { hex: "#6ECFFF", name: "Light Blue" },
-      { hex: "#8E8E8E", name: "Steel Gray" },
-      { hex: "#0C4BFF", name: "Blue" },
-      { hex: "#001F63", name: "Midnight Blue" },
-      { hex: "#C2185B", name: "Magenta" },
-      { hex: "#F5F5F5", name: "Soft White" },
-      { hex: "#D400A8", name: "Hot Pink" },
-      { hex: "#0A0A0A", name: "Matte Black" }
+      { hex: "#FF7A21", name_en: "Orange", name_ar: "برتقالي" },
+      { hex: "#E6D63A", name_en: "Yellow", name_ar: "أصفر" },
+      { hex: "#6ECFFF", name_en: "Light Blue", name_ar: "أزرق فاتح" },
+      { hex: "#8E8E8E", name_en: "Steel Gray", name_ar: "رمادي معدني" },
+      { hex: "#0C4BFF", name_en: "Blue", name_ar: "أزرق" },
+      { hex: "#001F63", name_en: "Midnight Blue", name_ar: "أزرق داكن" },
+      { hex: "#C2185B", name_en: "Magenta", name_ar: "ماجنتا" },
+      { hex: "#F5F5F5", name_en: "Soft White", name_ar: "أبيض ناعم" },
+      { hex: "#D400A8", name_en: "Hot Pink", name_ar: "وردي فاقع" },
+      { hex: "#0A0A0A", name_en: "Matte Black", name_ar: "أسود مطفي" }
     ];
 
     const ACCESSORY_COLORS = [
-      { hex: "#0A0A0A", name: "Black" },
-      { hex: "#D8D8D8", name: "Light Gray" },
-      { hex: "#C41E2E", name: "Red" },
-      { hex: "#2B2C79", name: "Dark Blue-Purple" },
-      { hex: "#F2D400", name: "Yellow" },
-      { hex: "#E56A1E", name: "Orange" },
-      { hex: "#A6DA8C", name: "Mint Green" },
-      { hex: "#4A23A8", name: "Royal Purple" },
-      { hex: "#E03875", name: "Hot Pink" },
-      { hex: "#77CBF7", name: "Sky Blue" },
-      { hex: "#C75AC9", name: "Pink-Violet" },
-      { hex: "#5C2DAF", name: "Indigo Purple" },
-      { hex: "#EDEDED", name: "Clear Transparent" },
-      { hex: "#D43838", name: "Transparent Red" },
-      { hex: "#2448B5", name: "Transparent Blue" },
-      { hex: "#68D78B", name: "Transparent Green" },
-      { hex: "#4E2B8C", name: "Transparent Purple" },
-      { hex: "#4A4A4A", name: "Gunmetal Gray" },
-      { hex: "#8C3B2F", name: "Transparent Brown" },
-      { hex: "#E3E3E3", name: "Frosted White" }
+      { hex: "#0A0A0A", name_en: "Black", name_ar: "أسود" },
+      { hex: "#D8D8D8", name_en: "Light Gray", name_ar: "رمادي فاتح" },
+      { hex: "#C41E2E", name_en: "Red", name_ar: "أحمر" },
+      { hex: "#2B2C79", name_en: "Dark Blue-Purple", name_ar: "أزرق بنفسجي داكن" },
+      { hex: "#F2D400", name_en: "Yellow", name_ar: "أصفر" },
+      { hex: "#E56A1E", name_en: "Orange", name_ar: "برتقالي" },
+      { hex: "#A6DA8C", name_en: "Mint Green", name_ar: "أخضر نعناعي" },
+      { hex: "#4A23A8", name_en: "Royal Purple", name_ar: "بنفسجي ملكي" },
+      { hex: "#E03875", name_en: "Hot Pink", name_ar: "وردي فاقع" },
+      { hex: "#77CBF7", name_en: "Sky Blue", name_ar: "أزرق سماوي" },
+      { hex: "#C75AC9", name_en: "Pink-Violet", name_ar: "بنفسجي وردي" },
+      { hex: "#5C2DAF", name_en: "Indigo Purple", name_ar: "نيلي بنفسجي" },
+      { hex: "#EDEDED", name_en: "Clear Transparent", name_ar: "شفاف" },
+      { hex: "#D43838", name_en: "Transparent Red", name_ar: "أحمر شفاف" },
+      { hex: "#2448B5", name_en: "Transparent Blue", name_ar: "أزرق شفاف" },
+      { hex: "#68D78B", name_en: "Transparent Green", name_ar: "أخضر شفاف" },
+      { hex: "#4E2B8C", name_en: "Transparent Purple", name_ar: "بنفسجي شفاف" },
+      { hex: "#4A4A4A", name_en: "Gunmetal Gray", name_ar: "رمادي معدني داكن" },
+      { hex: "#8C3B2F", name_en: "Transparent Brown", name_ar: "بني شفاف" },
+      { hex: "#E3E3E3", name_en: "Frosted White", name_ar: "أبيض متجمد" }
+    ];
+
+    const TRANSPARENT_HEXES = new Set([
+      "#ededed",
+      "#d43838",
+      "#2448b5",
+      "#68d78b",
+      "#4e2b8c",
+      "#8c3b2f",
+      "#e3e3e3"
+    ]);
+
+    const THUMB_PARTS = [
+      { id: "shell", mask: "masks/leftShell.png" },
+      { id: "trimpiece", mask: "masks/centerBody.png" },
+      { id: "faceButtons", mask: "masks/faceButtons.png" },
+      { id: "stickL", mask: "masks/stickL.png" },
+      { id: "stickR", mask: "masks/stickR.png" },
+      { id: "touchpad", mask: "masks/touchpad.png" },
+      { id: "share", mask: "masks/share.png" },
+      { id: "options", mask: "masks/options.png" },
+      { id: "psButton", mask: "masks/psButton.png" },
+      { id: "bumpers", mask: "masks/bumperL.png" }
     ];
 
     function getPaletteForPart(partId) {
       return SHELL_PART_IDS.has(partId) ? SHELL_COLORS : ACCESSORY_COLORS;
     }
 
-    function formatMoneyBHD(v) {
-      return "BHD " + v.toFixed(2);
-    }
-
     function randomFrom(arr) {
       return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    function generateRandomBuild(index) {
+    function generateRandomBuild(index, lang) {
       const config = {};
       let total = 0;
 
@@ -902,29 +894,184 @@
         total += PRICES[part.id] || 0;
       });
 
+      const baseName = lang === "ar" ? "ذزاع مخصص" : "Custom Controller";
+
       return {
         id: index,
-        name: "Custom Controller #" + (index + 1),
+        name: baseName + " #" + (index + 1),
         colors: config,
         total
       };
     }
 
-    function renderBuildCard(build) {
-      const shellColor = build.colors.shell || randomFrom(SHELL_COLORS);
-      const trimColor = build.colors.trimpiece || shellColor;
+    function formatMoneyBHD(v, lang) {
+      const num = v.toFixed(2);
+      return lang === "ar" ? num + " د.ب" : "BHD " + num;
+    }
 
-      const bg = `
-        radial-gradient(circle at top left, rgba(255,255,255,0.22), rgba(0,0,0,0.9) 55%),
-        linear-gradient(135deg, ${shellColor.hex}, ${trimColor.hex})
-      `;
+    /* ------------ I18N ------------------------------------------ */
+
+    const translations = {
+      ar: {
+        navPremade: "تصاميم جاهزة",
+        navContact: "تواصل معنا",
+        navBuildCta: "صمّم ذراعك الآن",
+        heroBadge: "متجر إلكتروني لتخصيص أذرع التحكم",
+        heroTitle: 'اصنع <span class="highlight">ذراع بلايستيشن 5</span> الخاص فيك',
+        heroSub: "اختر ألوان الهيكل والأزرار والمقابض، وابدأ بذراع فارغ أو انطلق من تصاميم EZ GAMING الجاهزة.",
+        heroCreateBtn: "ابدأ التصميم",
+        heroPremadeBtn: "استعرض التصاميم الجاهزة",
+        heroNote: "الأسعار تبدأ من <strong>4.00 دينار بحريني</strong> – بدون اشتراك، تخصيص كامل حسب ذوقك.",
+        heroLiveTag: "معاينة فورية",
+        premadeTitle: "تصاميم جاهزة من EZ GAMING",
+        premadeSub: "مجموعة من ٢٠ ذراع تحكم جاهزة تم توليدها من نفس نظام الألوان المستخدم في صفحة التخصيص، مع معاينة حقيقية لكل جزء.",
+        contactTitle: "تواصل معنا",
+        contactCardTitle: "أرسل لنا رسالة",
+        contactCardText: "عندك طلبات خاصة، كميات كبيرة، أو شراكات دعائية؟ اكتب لنا التفاصيل وسنرجع لك بأسرع وقت.",
+        contactLabelName: "الاسم",
+        contactLabelEmail: "البريد الإلكتروني",
+        contactLabelMessage: "رسالتك",
+        contactSubmit: "إرسال الرسالة",
+        contactMeta: `
+          <p><strong>متجر مخصص للاعبين اللي يهتمون بكل تفصيلة في أجهزتهم.</strong></p>
+          <p>
+          EZ GAMING متخصص في تخصيص أذرع بلايستيشن 5 بجودة عالية – مناسب للستريمرز،
+          فرق الرياضات الإلكترونية، واللاعبين اللي يحبون طقم مميز يعكس هويتهم.
+          </p>
+          <p>نقدر نوفّر لك:</p>
+          <ul>
+            <li>طلبات شركات وفرق بكميات كبيرة</li>
+            <li>تصاميم وألوان حصرية تحمل هوية علامتك</li>
+            <li>تعاونات دعائية وجوائز للمسابقات</li>
+          </ul>
+          <p>اكتب لنا فكرتك، وفريقنا بيرجع لك بخيارات وأسعار خلال يوم عمل إلى يومين.</p>
+        `,
+        footerText: "جميع الحقوق محفوظة ©",
+        buildTotalLabel: "الإجمالي:",
+        preview: "معاينة",
+        partNames: {
+          shell: "الهيكل الأمامي",
+          trimpiece: "الجزء الأوسط",
+          faceButtons: "أزرار الأوجه",
+          stickL: "العصا اليسرى",
+          stickR: "العصا اليمنى",
+          backShellMain: "الجزء الخلفي"
+        },
+        formSuccess: "شكرًا لتواصلك معنا! استلمنا رسالتك وسنرد عليك قريبًا."
+      },
+      en: {
+        navPremade: "Premade controllers",
+        navContact: "Contact",
+        navBuildCta: "Build your own",
+        heroBadge: "Next-gen custom shop",
+        heroTitle: 'Craft your own <span class="highlight">custom PS5 controller</span>',
+        heroSub: "Choose shell, buttons and triggers. Start from a clean build or pick one of our EZ GAMING presets.",
+        heroCreateBtn: "Create your own controller",
+        heroPremadeBtn: "Browse premade builds",
+        heroNote: "Prices start from <strong>BHD 4.00</strong>. No subscription – just fully custom gear.",
+        heroLiveTag: "Live preview",
+        premadeTitle: "Premade EZ GAMING builds",
+        premadeSub: "A curated set of 20 controllers generated from the same color system used in the configurator, with true previews for each part.",
+        contactTitle: "Contact us",
+        contactCardTitle: "Send us a message",
+        contactCardText: "Questions about bulk orders, finishes, or sponsorships? Share the details and we'll get back to you.",
+        contactLabelName: "Name",
+        contactLabelEmail: "Email",
+        contactLabelMessage: "Message",
+        contactSubmit: "Send message",
+        contactMeta: `
+          <p><strong>A custom shop for players who care about every detail.</strong></p>
+          <p>
+          EZ GAMING focuses on high-end PS5 controller customization – perfect for streamers,
+          esports teams, and players who want hardware that matches their identity.
+          </p>
+          <p>We can help you with:</p>
+          <ul>
+            <li>Bulk and corporate orders</li>
+            <li>Exclusive colorways for your brand</li>
+            <li>Marketing collaborations and giveaway campaigns</li>
+          </ul>
+          <p>Tell us what you have in mind and we'll reply with options and pricing within 1–2 business days.</p>
+        `,
+        footerText: "All rights reserved ©",
+        buildTotalLabel: "Total:",
+        preview: "Preview",
+        partNames: {
+          shell: "Shell",
+          trimpiece: "Center",
+          faceButtons: "Face buttons",
+          stickL: "Left stick",
+          stickR: "Right stick",
+          backShellMain: "Back"
+        },
+        formSuccess: "Thank you! Your message has been received. We’ll get back to you shortly."
+      }
+    };
+
+    let currentLang = localStorage.getItem("ez_lang") || "ar";
+
+    function applyLangAttributes() {
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
+    }
+
+    function t(key) {
+      return translations[currentLang][key] || key;
+    }
+
+    function applyTranslations() {
+      const dict = translations[currentLang];
+
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) el.textContent = dict[key];
+      });
+
+      document.querySelectorAll("[data-i18n-html]").forEach(el => {
+        const key = el.getAttribute("data-i18n-html");
+        if (dict[key]) el.innerHTML = dict[key];
+      });
+
+      const langToggle = document.getElementById("langToggle");
+      langToggle.textContent = currentLang === "ar" ? "EN" : "عربي";
+    }
+
+    /* ------------ PREMADE GRID RENDERING ------------------------ */
+
+    let currentBuilds = [];
+
+    function createBuildCard(build) {
+      const dict = translations[currentLang];
 
       const card = document.createElement("article");
       card.className = "build-card";
 
       const thumb = document.createElement("div");
       thumb.className = "build-thumb";
-      thumb.style.backgroundImage = bg;
+
+      const tc = document.createElement("div");
+      tc.className = "thumb-controller";
+
+      const base = document.createElement("div");
+      base.className = "thumb-base";
+      tc.appendChild(base);
+
+      THUMB_PARTS.forEach(p => {
+        const color = build.colors[p.id];
+        if (!color) return;
+        const layer = document.createElement("div");
+        layer.className = "thumb-layer";
+        layer.style.setProperty("--mask-url", `url('${p.mask}')`);
+        layer.style.setProperty("--tint", color.hex);
+        if (TRANSPARENT_HEXES.has(color.hex.toLowerCase())) {
+          layer.style.setProperty("--tint-opacity", "0.35");
+        } else {
+          layer.style.setProperty("--tint-opacity", "1");
+        }
+        tc.appendChild(layer);
+      });
+
+      thumb.appendChild(tc);
 
       const body = document.createElement("div");
       body.className = "build-body";
@@ -935,46 +1082,40 @@
 
       const price = document.createElement("div");
       price.className = "build-price";
-      price.innerHTML = "Total: <span>" + formatMoneyBHD(build.total) + "</span>";
-
+      price.innerHTML = formatMoneyBHD(build.total, currentLang) + "</span>";
+      // dict.buildTotalLabel + " <span>" + 
       const colorsRow = document.createElement("div");
       colorsRow.className = "build-color-row";
 
       const showParts = ["shell", "trimpiece", "faceButtons", "stickL", "stickR", "backShellMain"];
 
-      showParts.forEach(pid => {
-        const color = build.colors[pid];
-        if (!color) return;
-        const pill = document.createElement("div");
-        pill.className = "color-pill";
+      // showParts.forEach(pid => {
+      //   const color = build.colors[pid];
+      //   if (!color) return;
+      //   const pill = document.createElement("div");
+      //   pill.className = "color-pill";
 
-        const dot = document.createElement("span");
-        dot.className = "color-dot";
-        dot.style.backgroundColor = color.hex;
+      //   const dot = document.createElement("span");
+      //   dot.className = "color-dot";
+      //   dot.style.backgroundColor = color.hex;
 
-        const label = document.createElement("span");
-        let labelName;
-        switch (pid) {
-          case "shell": labelName = "Shell"; break;
-          case "trimpiece": labelName = "Center"; break;
-          case "faceButtons": labelName = "Buttons"; break;
-          case "stickL": labelName = "Left Stick"; break;
-          case "stickR": labelName = "Right Stick"; break;
-          case "backShellMain": labelName = "Back"; break;
-          default: labelName = pid;
-        }
-        label.textContent = labelName + ": " + color.name;
+      //   const namesDict = translations[currentLang].partNames || {};
+      //   const labelName = namesDict[pid] || pid;
 
-        pill.appendChild(dot);
-        pill.appendChild(label);
-        colorsRow.appendChild(pill);
-      });
+      //   const label = document.createElement("span");
+      //   const colorName = currentLang === "ar" ? color.name_ar : color.name_en;
+      //   label.textContent = labelName + ": " + colorName;
+
+      //   pill.appendChild(dot);
+      //   pill.appendChild(label);
+      //   colorsRow.appendChild(pill);
+      // });
 
       const cta = document.createElement("button");
       cta.className = "build-cta";
       cta.type = "button";
-      cta.textContent = "Customize this build";
-      cta.addEventListener("click", goToConfigurator); // you can extend later with query params
+      cta.textContent = dict.preview;
+      cta.addEventListener("click", goToConfigurator);
 
       body.appendChild(title);
       body.appendChild(price);
@@ -983,28 +1124,54 @@
 
       card.appendChild(thumb);
       card.appendChild(body);
+
       return card;
     }
 
-    function initPremadeGrid() {
+    function rebuildPremadeGrid() {
       const grid = document.getElementById("buildGrid");
-      const builds = [];
-      for (let i = 0; i < 20; i++) {
-        builds.push(generateRandomBuild(i));
+      grid.innerHTML = "";
+
+      if (!currentBuilds.length) {
+        for (let i = 0; i < 20; i++) {
+          currentBuilds.push(generateRandomBuild(i, currentLang));
+        }
+      } else {
+        // update names to current language
+        currentBuilds = currentBuilds.map((b, i) => generateRandomBuild(i, currentLang));
       }
-      builds.forEach(b => grid.appendChild(renderBuildCard(b)));
+
+      currentBuilds.forEach(b => grid.appendChild(createBuildCard(b)));
     }
 
-    initPremadeGrid();
+    /* ------------ LANGUAGE TOGGLE ------------------------------- */
 
-    /* CONTACT FORM ----------------------------------------------- */
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem("ez_lang", lang);
+      applyLangAttributes();
+      applyTranslations();
+      rebuildPremadeGrid();
+    }
+
+    document.getElementById("langToggle").addEventListener("click", () => {
+      setLanguage(currentLang === "ar" ? "en" : "ar");
+    });
+
+    /* ------------ CONTACT FORM ---------------------------------- */
 
     const contactForm = document.getElementById("contactForm");
     contactForm.addEventListener("submit", function (e) {
       e.preventDefault();
-      alert("Thank you! Your message has been received. We’ll get back to you shortly.");
+      alert(translations[currentLang].formSuccess);
       contactForm.reset();
     });
+
+    /* ------------ INIT ------------------------------------------ */
+
+    applyLangAttributes();
+    applyTranslations();
+    rebuildPremadeGrid();
   </script>
 </body>
 
