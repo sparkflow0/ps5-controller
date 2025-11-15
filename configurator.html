@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PS5 Controller Configurator – Fixed Side Panels</title>
+
+  <!-- Cairo font for Arabic (default) -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #151515;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body,
+    button {
+      -webkit-tap-highlight-color: transparent !important;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #05060b 0, #020308 50%, #000 100%);
+      color: #fff;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+      display: block;
+    }
+
+    button {
+      border: none;
+      background: none;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    img {
+      user-select: none;
+    }
+
+    /* ---------- TOP NAVBAR ---------- */
+
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      z-index: 50;
+      background: radial-gradient(circle at top,
+          rgba(10, 12, 20, 0.98),
+          rgba(0, 0, 0, 0.96));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .nav-logo-mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: conic-gradient(from 160deg,
+          #00e5ff,
+          #2979ff,
+          #ff4081,
+          #ffca28,
+          #00e5ff);
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.85);
+    }
+
+    .nav-summary {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-amount-block {
+      text-align: start;
+    }
+
+    .nav-amount-label {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-amount-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .add-to-cart-btn {
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #00e5ff, #2979ff);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.9),
+        0 0 18px rgba(0, 229, 255, 0.7);
+      white-space: nowrap;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    }
+
+    .add-to-cart-btn:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 20px 40px rgba(0, 0, 0, 1),
+        0 0 24px rgba(0, 229, 255, 0.9);
+      filter: brightness(1.1);
+    }
+
+    .add-to-cart-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.8),
+        0 0 14px rgba(0, 229, 255, 0.7);
+    }
+
+    /* Language toggle */
+    .lang-toggle {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.06),
+          rgba(0, 0, 0, 0.9));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.85);
+      gap: 3px;
+    }
+
+    .lang-btn {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.7);
+      background: transparent;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #00e5ff, #2979ff);
+      color: #0b1020;
+      box-shadow:
+        0 10px 20px rgba(0, 0, 0, 1),
+        0 0 14px rgba(0, 229, 255, 0.9);
+    }
+
+    .lang-btn.active:hover {
+      transform: translateY(-1px);
+    }
+
+    /* ---------- MAIN LAYOUT ---------- */
+
+    .page-content {
+      padding-top: 70px;
+      padding-bottom: 24px;
+    }
+
+    .main-layout {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 16px 16px 24px;
+      display: grid;
+      /* Desktop: controller | colors | parts */
+      grid-template-columns: minmax(0, 1.2fr) minmax(240px, 320px) minmax(230px, 280px);
+      grid-template-areas: "controller colors parts";
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .parts-column {
+      position: relative;
+      grid-area: parts;
+    }
+
+    .colors-column {
+      position: relative;
+      grid-area: colors;
+    }
+
+    .controller-column {
+      position: relative;
+      grid-area: controller;
+    }
+
+    /* ---------- CONTROLLER ---------- */
+
+    .controller-wrapper {
+      width: 100%;
+      position: relative;
+    }
+
+    .controller-area {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1166 / 768;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: manipulation;
+      transform-origin: center;
+      perspective: 1600px;
+    }
+
+    .controller-flip {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(0.22, 0.68, 0.16, 1);
+    }
+
+    .controller-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+    }
+
+    .controller-face img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.9));
+      pointer-events: none;
+    }
+
+    .controller-face-back {
+      transform: rotateY(180deg);
+    }
+
+    .controller-wrapper.is-back .controller-flip {
+      transform: rotateY(180deg);
+    }
+
+    .part-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .part-layer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--tint, transparent);
+      opacity: var(--tint-opacity, 1);
+      filter: brightness(1.45) saturate(1.4) contrast(1.05);
+      mix-blend-mode: overlay;
+      -webkit-mask-image: var(--mask-url);
+      mask-image: var(--mask-url);
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-position: center;
+      mask-position: center;
+    }
+
+    .part-layer.selected::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center,
+          rgba(255, 255, 255, 0.9),
+          rgba(255, 255, 255, 0) 60%);
+      -webkit-mask-image: var(--mask-url);
+      mask-image: var(--mask-url);
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-position: center;
+      mask-position: center;
+      mix-blend-mode: screen;
+      filter:
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.9))
+        drop-shadow(0 0 22px rgba(0, 0, 0, 0.9));
+      opacity: 0.7;
+      animation: breathe 1.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes breathe {
+
+      0%,
+      100% {
+        opacity: 0.55;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.03);
+      }
+    }
+
+    .side-toggle-container {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .side-toggle {
+      display: inline-flex;
+      padding: 3px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.08),
+          rgba(0, 0, 0, 0.9));
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      gap: 3px;
+    }
+
+    .side-btn {
+      position: relative;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: rgba(255, 255, 255, 0.7);
+      background: transparent;
+      transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+
+    .side-btn.active {
+      color: #0b1020;
+      background: linear-gradient(135deg, #00e5ff, #2979ff);
+      box-shadow:
+        0 10px 20px rgba(0, 0, 0, 1),
+        0 0 14px rgba(0, 229, 255, 0.9);
+    }
+
+    .side-btn.active:hover {
+      transform: translateY(-1px);
+    }
+
+    /* ---------- PARTS PANEL ---------- */
+
+    .parts-panel {
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.06),
+          rgba(4, 4, 4, 0.98));
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow:
+        0 18px 30px rgba(0, 0, 0, 1),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      padding: 12px 14px 14px;
+      max-height: calc(100vh - 90px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .parts-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .parts-title {
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.85;
+    }
+
+    .parts-list {
+      margin-top: 8px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .parts-section-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      opacity: 0.6;
+      margin: 6px 2px 4px;
+    }
+
+    .parts-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 8px;
+      border-radius: 12px;
+      margin-bottom: 4px;
+      background: radial-gradient(circle at left,
+          rgba(255, 255, 255, 0.04),
+          rgba(0, 0, 0, 0.95));
+      box-shadow:
+        0 10px 18px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(255, 255, 255, 0.03);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.78rem;
+      text-align: left;
+      position: relative;
+    }
+
+    .parts-item:hover {
+      box-shadow:
+        0 16px 26px rgba(0, 0, 0, 0.95),
+        0 0 0 1px rgba(0, 229, 255, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .parts-item.active {
+      box-shadow:
+        0 18px 30px rgba(0, 0, 0, 1),
+        0 0 0 1px rgba(0, 229, 255, 0.9);
+    }
+
+    .parts-thumb {
+      width: 40px;
+      height: 26px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.3),
+          rgba(120, 120, 120, 1));
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 10px 18px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(0, 0, 0, 1) inset,
+        0 0 0 1px rgba(255, 255, 255, 0.3);
+    }
+
+    .parts-thumb::before {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      background: rgba(255, 255, 255, 0.9);
+      -webkit-mask-image: var(--mask-url);
+      mask-image: var(--mask-url);
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: cover;
+      mask-size: cover;
+      -webkit-mask-position: center;
+      mask-position: center;
+      opacity: 0.9;
+    }
+
+    .parts-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+    }
+
+    .parts-name {
+      font-size: 0.8rem;
+    }
+
+    .parts-meta {
+      font-size: 0.7rem;
+      opacity: 0.6;
+    }
+
+    .parts-side-pill {
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(0, 0, 0, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.8;
+    }
+
+    /* ---------- COLOR PANEL ---------- */
+
+    .color-panel {
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.08),
+          rgba(4, 4, 4, 0.98));
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow:
+        0 18px 30px rgba(0, 0, 0, 1),
+        0 0 0 1px rgba(255, 255, 255, 0.03);
+      padding: 10px 12px 12px;
+      max-height: calc(100vh - 90px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .color-panel-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .color-panel-title {
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+    }
+
+    .color-panel-sub {
+      font-size: 0.75rem;
+      opacity: 0.65;
+    }
+
+    .color-panel-grid {
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(80px, 1fr));
+      gap: 10px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .cd-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      text-align: center;
+      opacity: 0.9;
+    }
+
+    .cd-color-name {
+      max-width: 100%;
+      line-height: 1.1;
+      word-break: break-word;
+    }
+
+    .cd-swatch {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background-image:
+        radial-gradient(circle at 28% 24%,
+          rgba(255, 255, 255, 0.8),
+          rgba(255, 255, 255, 0.1) 40%,
+          rgba(255, 255, 255, 0) 60%),
+        radial-gradient(circle at 76% 80%,
+          rgba(255, 255, 255, 0.15),
+          rgba(0, 0, 0, 0.55) 65%,
+          rgba(0, 0, 0, 0.9) 100%);
+      cursor: pointer;
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        filter 0.12s ease-out;
+    }
+
+    .cd-swatch:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow:
+        0 24px 40px rgba(0, 0, 0, 1),
+        0 0 0 2px rgba(0, 0, 0, 1) inset,
+        0 18px 30px rgba(0, 0, 0, 1) inset,
+        0 -8px 12px rgba(255, 255, 255, 1) inset,
+        0 0 28px rgba(255, 255, 255, 0.95);
+      filter: brightness(1.9) saturate(2.0) contrast(1.1);
+    }
+
+    /* ---------- HOVER TOOLTIP ---------- */
+
+    .part-tooltip {
+      position: fixed;
+      z-index: 60;
+      pointer-events: none;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 14px rgba(0, 0, 0, 0.85);
+      font-size: 0.72rem;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translate(-50%, -120%) scale(0.96);
+      transition: opacity 0.14s ease, transform 0.14s ease;
+    }
+
+    .part-tooltip.visible {
+      opacity: 1;
+      transform: translate(-50%, -120%) scale(1);
+    }
+
+    /* ---------- RESPONSIVE: MOBILE ---------- */
+
+    @media (max-width: 900px) {
+      .nav-summary {
+        gap: 10px;
+      }
+
+      .nav-amount-value {
+        font-size: 1rem;
+      }
+
+      .add-to-cart-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (max-width: 700px) {
+      #bgCanvas {
+        display: none;
+      }
+
+      .page-content {
+        padding-top: 66px;
+      }
+
+      .main-layout {
+        max-width: 100%;
+        padding: 10px 10px 18px;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+          "controller controller"
+          "colors parts";
+        gap: 10px;
+      }
+
+      .parts-panel,
+      .color-panel {
+        max-height: none;
+      }
+
+      .color-panel-grid {
+        grid-template-columns: repeat(3, minmax(70px, 1fr));
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- Sounds -->
+  <audio id="sfxClick" src="sounds/click.mp3" preload="auto"></audio>
+  <audio id="sfxClick2" src="sounds/click2.mp3" preload="auto"></audio>
+
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <div class="nav-logo">
+      <div class="nav-logo-mark"></div>
+      <span data-i18n="logo">EZ GAMING</span>
+    </div>
+    <div class="nav-summary">
+      <div class="lang-toggle" id="langToggle">
+        <button class="lang-btn active" data-lang="ar">ع</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <div class="nav-amount-block">
+        <div class="nav-amount-label" data-i18n="totalLabel">الإجمالي</div>
+        <div class="nav-amount-value" id="summaryAmount">د.ب 0.00</div>
+      </div>
+      <button class="add-to-cart-btn" id="addToCartBtn" data-i18n="addToCart">أضِف إلى السلة</button>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="main-layout">
+      <!-- CONTROLLER COLUMN (LEFT) -->
+      <div class="controller-column">
+        <div class="controller-wrapper" id="controllerWrapper">
+          <div class="controller-area" id="controllerArea">
+            <div class="controller-flip" id="controllerFlip">
+              <div class="controller-face controller-face-front" id="controllerFaceFront">
+                <img src="controller.png" alt="PS5 Controller Front" />
+              </div>
+              <div class="controller-face controller-face-back" id="controllerFaceBack">
+                <img src="controller_back.png" alt="PS5 Controller Back" />
+              </div>
+            </div>
+          </div>
+          <div class="side-toggle-container">
+            <div class="side-toggle" id="sideToggle">
+              <button class="side-btn active" data-side="front" type="button" data-i18n="front">الأمام</button>
+              <button class="side-btn" data-side="back" type="button" data-i18n="back">الخلف</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLORS COLUMN (MIDDLE) -->
+      <div class="colors-column">
+        <div class="color-panel">
+          <div class="color-panel-header">
+            <div class="color-panel-title" id="colorPanelTitle">اختر جزءًا</div>
+            <div class="color-panel-sub" id="colorPanelSub">الألوان المتاحة</div>
+          </div>
+          <div class="color-panel-grid" id="colorPanelGrid"></div>
+        </div>
+      </div>
+
+      <!-- PARTS COLUMN (RIGHT) -->
+      <div class="parts-column">
+        <div class="parts-panel">
+          <div class="parts-panel-header">
+            <div class="parts-title" data-i18n="partsTitle">الأجزاء</div>
+          </div>
+          <div class="parts-list" id="partsList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hover tooltip -->
+  <div class="part-tooltip" id="partTooltip"></div>
+
+  <script>
+    const isMobile =
+      /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      window.innerWidth < 700;
+
+    const sfxClickEl = document.getElementById("sfxClick");
+    const sfxClick2El = document.getElementById("sfxClick2");
+
+    function playSfx(el) {
+      if (!el) return;
+      try {
+        el.currentTime = 0;
+        el.play();
+      } catch { }
+    }
+    const playClick = () => playSfx(sfxClickEl);
+    const playClick2 = () => playSfx(sfxClick2El);
+
+    /* -------- Background lines (desktop only) -------- */
+    (function () {
+      const canvas = document.getElementById("bgCanvas");
+      if (isMobile) {
+        canvas.style.display = "none";
+        return;
+      }
+      const ctx = canvas.getContext("2d");
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+
+      function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+      resize();
+      window.addEventListener("resize", resize);
+
+      const LINE_COLORS = [
+        { stroke: "rgba(0, 255, 255, 0.08)", glow: "rgba(0, 255, 255, 0.35)" },
+        { stroke: "rgba(0, 180, 255, 0.08)", glow: "rgba(0, 180, 255, 0.35)" },
+        { stroke: "rgba(140, 100, 255, 0.1)", glow: "rgba(140, 100, 255, 0.40)" },
+        { stroke: "rgba(0, 255, 170, 0.08)", glow: "rgba(0, 255, 170, 0.35)" },
+        { stroke: "rgba(255, 140, 0, 0.07)", glow: "rgba(255, 140, 0, 0.32)" }
+      ];
+
+      const LINE_COUNT = 65;
+      const lines = [];
+      function createLine() {
+        const len = 100 + Math.random() * 260;
+        const speed = 120 + Math.random() * 220;
+        const thickness = 1 + Math.random() * 2;
+        const color = LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)];
+        const startX = Math.random() * (width + height) - height;
+        const startY = -len - Math.random() * height;
+        return {
+          x: startX,
+          y: startY,
+          len,
+          speed,
+          thickness,
+          color,
+          wiggleAmp: 10 + Math.random() * 30,
+          wiggleFreq: 8 + Math.random() * 18,
+          wiggleSpeed: 4 + Math.random() * 8,
+          phase: Math.random() * Math.PI * 2
+        };
+      }
+      for (let i = 0; i < LINE_COUNT; i++) lines.push(createLine());
+
+      let lastTime = performance.now();
+      function loop(now) {
+        const dt = (now - lastTime) / 1000;
+        lastTime = now;
+
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.18)";
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.globalCompositeOperation = "lighter";
+        lines.forEach((line, idx) => {
+          const diagSpeed = line.speed;
+          line.x += diagSpeed * dt * 0.7;
+          line.y += diagSpeed * dt;
+          line.phase += line.wiggleSpeed * dt;
+
+          if (line.y - line.len > height || line.x - line.len > width) {
+            lines[idx] = createLine();
+            return;
+          }
+
+          const dx = line.len * 0.7;
+          const dy = line.len;
+          const segments = 12;
+
+          ctx.save();
+          ctx.strokeStyle = line.color.stroke;
+          ctx.lineWidth = line.thickness;
+          ctx.shadowColor = line.color.glow;
+          ctx.shadowBlur = 18 + Math.random() * 10;
+          ctx.beginPath();
+
+          for (let i = 0; i <= segments; i++) {
+            const t = i / segments;
+            const baseX = line.x - dx * t;
+            const baseY = line.y - dy * t;
+            const wobble = line.wiggleAmp * Math.sin(line.phase + t * line.wiggleFreq);
+            const px = baseX + wobble;
+            const py = baseY + wobble * 0.35;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+          ctx.restore();
+        });
+
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    })();
+
+    /* ---------- I18N ---------- */
+
+    const i18n = {
+      ar: {
+        logo: "EZ GAMING",
+        totalLabel: "الإجمالي",
+        addToCart: "أضِف إلى السلة",
+        front: "الأمام",
+        back: "الخلف",
+        selectPart: "اختر جزءًا",
+        availableColors: "الألوان المتاحة",
+        partsTitle: "الأجزاء",
+        sectionFront: "الوجه الأمامي",
+        sectionBack: "الوجه الخلفي",
+        side_front: "أمام",
+        side_back: "خلف",
+        currencyPrefix: "د.ب ",
+        pricePrefix: "+ ",
+        alertNone: "لم يتم اختيار أي تخصيص بعد.",
+        alertAdded: "تمت إضافة التخصيص إلى السلة.",
+        /* Parts */
+        part_shell: "هيكل المقدّمة",
+        part_trimpiece: "القطعة الوسطى",
+        part_psButton: "زر PS",
+        part_share: "زر المشاركة",
+        part_options: "زر الخيارات",
+        part_faceButtons: "أزرار الأوجه",
+        part_stickL: "عصا التحكّم اليسرى",
+        part_stickR: "عصا التحكّم اليمنى",
+        part_touchpad: "لوحة اللمس",
+        part_bumpers: "الأزرار العلوية",
+        part_backShellMain: "هيكل الخلف",
+        part_backHandles: "مقابض الخلف",
+        part_backTriggers: "أزرار الزناد الخلفية",
+        /* Colors */
+        color_orange: "برتقالي",
+        color_yellow: "أصفر",
+        color_lightBlue: "أزرق فاتح",
+        color_steelGray: "رمادي معدني",
+        color_blue: "أزرق",
+        color_midnightBlue: "أزرق داكن",
+        color_magenta: "أرجواني محمر",
+        color_softWhite: "أبيض ناعم",
+        color_hotPink_shell: "وردي فاقع",
+        color_matteBlack: "أسود مطفي",
+        color_black: "أسود",
+        color_lightGray: "رمادي فاتح",
+        color_red: "أحمر",
+        color_darkBluePurple: "أزرق بنفسجي داكن",
+        color_mintGreen: "أخضر نعناعي",
+        color_royalPurple: "بنفسجي ملكي",
+        color_hotPink: "وردي فاقع",
+        color_skyBlue: "أزرق سماوي",
+        color_pinkViolet: "وردي بنفسجي",
+        color_indigoPurple: "نيلي بنفسجي",
+        color_clear: "شفاف",
+        color_transRed: "أحمر شفاف",
+        color_transBlue: "أزرق شفاف",
+        color_transGreen: "أخضر شفاف",
+        color_transPurple: "بنفسجي شفاف",
+        color_gunmetal: "رمادي معدني داكن",
+        color_transBrown: "بني شفاف",
+        color_frostedWhite: "أبيض ضبابي"
+      },
+      en: {
+        logo: "EZ GAMING",
+        totalLabel: "Total",
+        addToCart: "ADD TO CART",
+        front: "Front",
+        back: "Back",
+        selectPart: "Select a part",
+        availableColors: "Available colors",
+        partsTitle: "Parts",
+        sectionFront: "Front",
+        sectionBack: "Back",
+        side_front: "Front",
+        side_back: "Back",
+        currencyPrefix: "BHD ",
+        pricePrefix: "+ ",
+        alertNone: "No custom options selected yet.",
+        alertAdded: "Configuration added to cart.",
+        /* Parts */
+        part_shell: "Shell",
+        part_trimpiece: "Trim Piece",
+        part_psButton: "PS Button",
+        part_share: "Share Button",
+        part_options: "Options Button",
+        part_faceButtons: "Face Buttons",
+        part_stickL: "Left Stick",
+        part_stickR: "Right Stick",
+        part_touchpad: "Touchpad",
+        part_bumpers: "Bumpers",
+        part_backShellMain: "Back Shell",
+        part_backHandles: "Back Handles",
+        part_backTriggers: "Back Triggers",
+        /* Colors */
+        color_orange: "Orange",
+        color_yellow: "Yellow",
+        color_lightBlue: "Light Blue",
+        color_steelGray: "Steel Gray",
+        color_blue: "Blue",
+        color_midnightBlue: "Midnight Blue",
+        color_magenta: "Magenta",
+        color_softWhite: "Soft White",
+        color_hotPink_shell: "Hot Pink",
+        color_matteBlack: "Matte Black",
+        color_black: "Black",
+        color_lightGray: "Light Gray",
+        color_red: "Red",
+        color_darkBluePurple: "Dark Blue-Purple",
+        color_mintGreen: "Mint Green",
+        color_royalPurple: "Royal Purple",
+        color_hotPink: "Hot Pink",
+        color_skyBlue: "Sky Blue",
+        color_pinkViolet: "Pink-Violet",
+        color_indigoPurple: "Indigo Purple",
+        color_clear: "Clear Transparent",
+        color_transRed: "Transparent Red",
+        color_transBlue: "Transparent Blue",
+        color_transGreen: "Transparent Green",
+        color_transPurple: "Transparent Purple",
+        color_gunmetal: "Gunmetal Gray",
+        color_transBrown: "Transparent Brown",
+        color_frostedWhite: "Frosted White"
+      }
+    };
+
+    let currentLang = "ar";
+
+    function t(key) {
+      return (i18n[currentLang] && i18n[currentLang][key]) || key;
+    }
+
+    /* ---------- Controller / color configuration ---------- */
+
+    const BASE_WIDTH = 1166;
+    const BASE_HEIGHT = 768;
+
+    const FRONT_PARTS = [
+      { id: "shell", mask: "masks/leftShell.png", priority: 4, side: "front" },
+      { id: "psButton", mask: "masks/psButton.png", priority: 1, side: "front" },
+      { id: "share", mask: "masks/share.png", priority: 4, side: "front" },
+      { id: "options", mask: "masks/options.png", priority: 4, side: "front" },
+      { id: "faceButtons", mask: "masks/faceButtons.png", priority: 4, side: "front" },
+      { id: "stickL", mask: "masks/stickL.png", priority: 3, side: "front" },
+      { id: "stickR", mask: "masks/stickR.png", priority: 3, side: "front" },
+      { id: "touchpad", mask: "masks/touchpad.png", priority: 2, side: "front" },
+      { id: "bumpers", mask: "masks/bumperL.png", priority: 2, side: "front" },
+      { id: "trimpiece", mask: "masks/centerBody.png", priority: 1, side: "front" }
+    ];
+
+    const BACK_PARTS = [
+      { id: "backShellMain", mask: "masks/backShellMain.png", priority: 1, side: "back" },
+      { id: "backHandles", mask: "masks/backHandles.png", priority: 1, side: "back" },
+      { id: "backTriggers", mask: "masks/backTriggers.png", priority: 2, side: "back" }
+    ];
+
+    const ALL_PARTS = [...FRONT_PARTS, ...BACK_PARTS];
+
+    const PART_KEYS = {
+      shell: "part_shell",
+      trimpiece: "part_trimpiece",
+      psButton: "part_psButton",
+      share: "part_share",
+      options: "part_options",
+      faceButtons: "part_faceButtons",
+      stickL: "part_stickL",
+      stickR: "part_stickR",
+      touchpad: "part_touchpad",
+      bumpers: "part_bumpers",
+      backShellMain: "part_backShellMain",
+      backHandles: "part_backHandles",
+      backTriggers: "part_backTriggers"
+    };
+
+    function getPartLabel(partId) {
+      const key = PART_KEYS[partId] || partId;
+      return t(key);
+    }
+
+    const PRICES = {
+      psButton: 4.0,
+      share: 3.0,
+      options: 3.0,
+      faceButtons: 6.0,
+      stickL: 5.0,
+      stickR: 5.0,
+      touchpad: 10.0,
+      bumpers: 8.0,
+      trimpiece: 12.0,
+      shell: 15.0,
+      backShellMain: 15.0,
+      backHandles: 10.0,
+      backTriggers: 8.0
+    };
+
+    const SHELL_COLORS = [
+      { hex: "#FF7A21", key: "color_orange" },
+      { hex: "#E6D63A", key: "color_yellow" },
+      { hex: "#6ECFFF", key: "color_lightBlue" },
+      { hex: "#8E8E8E", key: "color_steelGray" },
+      { hex: "#0C4BFF", key: "color_blue" },
+      { hex: "#001F63", key: "color_midnightBlue" },
+      { hex: "#C2185B", key: "color_magenta" },
+      { hex: "#F5F5F5", key: "color_softWhite" },
+      { hex: "#D400A8", key: "color_hotPink_shell" },
+      { hex: "#0A0A0A", key: "color_matteBlack" }
+    ];
+
+    const ACCESSORY_COLORS = [
+      { hex: "#0A0A0A", key: "color_black" },
+      { hex: "#D8D8D8", key: "color_lightGray" },
+      { hex: "#C41E2E", key: "color_red" },
+      { hex: "#2B2C79", key: "color_darkBluePurple" },
+      { hex: "#F2D400", key: "color_yellow" },
+      { hex: "#E56A1E", key: "color_orange" },
+      { hex: "#A6DA8C", key: "color_mintGreen" },
+      { hex: "#4A23A8", key: "color_royalPurple" },
+      { hex: "#E03875", key: "color_hotPink" },
+      { hex: "#77CBF7", key: "color_skyBlue" },
+      { hex: "#C75AC9", key: "color_pinkViolet" },
+      { hex: "#5C2DAF", key: "color_indigoPurple" },
+      { hex: "#EDEDED", key: "color_clear" },
+      { hex: "#D43838", key: "color_transRed" },
+      { hex: "#2448B5", key: "color_transBlue" },
+      { hex: "#68D78B", key: "color_transGreen" },
+      { hex: "#4E2B8C", key: "color_transPurple" },
+      { hex: "#4A4A4A", key: "color_gunmetal" },
+      { hex: "#8C3B2F", key: "color_transBrown" },
+      { hex: "#E3E3E3", key: "color_frostedWhite" }
+    ];
+
+    const TRANSPARENT_HEXES = new Set([
+      "#ededed",
+      "#d43838",
+      "#2448b5",
+      "#68d78b",
+      "#4e2b8c",
+      "#8c3b2f",
+      "#e3e3e3"
+    ]);
+
+    const SHELL_PART_IDS = new Set([
+      "shell",
+      "trimpiece",
+      "backShellMain",
+      "backHandles"
+    ]);
+
+    function getPaletteForPart(partId) {
+      return SHELL_PART_IDS.has(partId) ? SHELL_COLORS : ACCESSORY_COLORS;
+    }
+
+    const controllerWrapper = document.getElementById("controllerWrapper");
+    const controllerArea = document.getElementById("controllerArea");
+    const faceFrontEl = document.getElementById("controllerFaceFront");
+    const faceBackEl = document.getElementById("controllerFaceBack");
+
+    const sideToggle = document.getElementById("sideToggle");
+    const sideButtons = sideToggle.querySelectorAll(".side-btn");
+
+    const summaryAmountEl = document.getElementById("summaryAmount");
+    const addToCartBtn = document.getElementById("addToCartBtn");
+
+    const colorPanelTitle = document.getElementById("colorPanelTitle");
+    const colorPanelSub = document.getElementById("colorPanelSub");
+    const colorPanelGrid = document.getElementById("colorPanelGrid");
+
+    const partsListEl = document.getElementById("partsList");
+    const partTooltip = document.getElementById("partTooltip");
+
+    const langToggle = document.getElementById("langToggle");
+    const langButtons = langToggle.querySelectorAll(".lang-btn");
+
+    const layers = {};
+    const maskDataById = {};
+    let masksReady = false;
+    let currentSide = "front";
+    let selectedPartId = null;
+    let hoverPartId = null;
+    let tooltipVisible = false;
+
+    const partsRowsById = {};
+    const configState = {};
+    ALL_PARTS.forEach(p => { configState[p.id] = null; });
+
+    /* ----- Layers & masks ----- */
+
+    function buildPartLayers() {
+      ALL_PARTS.forEach(part => {
+        const layer = document.createElement("div");
+        layer.className = "part-layer";
+        layer.dataset.partId = part.id;
+        layer.style.setProperty("--mask-url", `url('${part.mask}')`);
+        if (part.side === "front") faceFrontEl.appendChild(layer);
+        else faceBackEl.appendChild(layer);
+        layers[part.id] = layer;
+      });
+    }
+    buildPartLayers();
+
+    function loadMask(part) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.src = part.mask;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          maskDataById[part.id] = {
+            width: canvas.width,
+            height: canvas.height,
+            data: imageData.data
+          };
+          resolve();
+        };
+        img.onerror = () => resolve();
+      });
+    }
+
+    (async function () {
+      for (const part of ALL_PARTS) await loadMask(part);
+      masksReady = true;
+    })();
+
+    /* ----- Money & summary ----- */
+
+    function formatMoney(v) {
+      return i18n[currentLang].currencyPrefix + v.toFixed(2);
+    }
+
+    function computeTotal() {
+      let tSum = 0;
+      for (const p of ALL_PARTS) if (configState[p.id]) tSum += PRICES[p.id] || 0;
+      return tSum;
+    }
+
+    function updateSummary() {
+      summaryAmountEl.textContent = formatMoney(computeTotal());
+    }
+
+    /* ----- Color application ----- */
+
+    function applyColor(partId, colorHex) {
+      configState[partId] = colorHex;
+      const layer = layers[partId];
+      if (!layer) return;
+      layer.style.setProperty("--tint", colorHex);
+      if (TRANSPARENT_HEXES.has(colorHex.toLowerCase())) {
+        layer.style.setProperty("--tint-opacity", "0.35");
+      } else {
+        layer.style.setProperty("--tint-opacity", "1");
+      }
+      updateSummary();
+    }
+
+    function clearSelection() {
+      if (!selectedPartId) return;
+      const layer = layers[selectedPartId];
+      if (layer) layer.classList.remove("selected");
+      selectedPartId = null;
+      Object.values(partsRowsById).forEach(row => {
+        if (!row) return;
+        row.classList.remove("active");
+      });
+    }
+
+    function resetColorPanel() {
+      colorPanelTitle.textContent = t("selectPart");
+      colorPanelSub.textContent = t("availableColors");
+      colorPanelGrid.innerHTML = "";
+    }
+
+    /* ----- Palette panel ----- */
+
+    function openColorPanelForPart(partId) {
+      const label = getPartLabel(partId);
+      colorPanelTitle.textContent = label;
+      colorPanelSub.textContent = t("availableColors");
+      colorPanelGrid.innerHTML = "";
+
+      const palette = getPaletteForPart(partId);
+      palette.forEach(({ hex, key }) => {
+        const cell = document.createElement("div");
+        cell.className = "cd-cell";
+
+        const sw = document.createElement("button");
+        sw.className = "cd-swatch";
+        sw.style.backgroundColor = hex;
+        sw.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (!selectedPartId) return;
+          applyColor(selectedPartId, hex);
+          playClick2();
+        });
+
+        const lbl = document.createElement("div");
+        lbl.className = "cd-color-name";
+        lbl.textContent = t(key);
+
+        cell.appendChild(sw);
+        cell.appendChild(lbl);
+        colorPanelGrid.appendChild(cell);
+      });
+    }
+
+    /* ----- Side toggle ----- */
+
+    function setSide(side) {
+      if (side === currentSide) return;
+      currentSide = side;
+
+      if (currentSide === "back") controllerWrapper.classList.add("is-back");
+      else controllerWrapper.classList.remove("is-back");
+
+      sideButtons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.side === currentSide);
+      });
+
+      clearSelection();
+      resetColorPanel();
+    }
+
+    sideButtons.forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setSide(btn.dataset.side);
+      });
+    });
+
+    /* ----- Parts list ----- */
+
+    function createPartRow(part) {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "parts-item";
+      row.dataset.partId = part.id;
+      row.dataset.side = part.side;
+
+      const thumb = document.createElement("div");
+      thumb.className = "parts-thumb";
+      thumb.style.setProperty("--mask-url", `url('${part.mask}')`);
+
+      const info = document.createElement("div");
+      info.className = "parts-info";
+
+      const nameEl = document.createElement("div");
+      nameEl.className = "parts-name";
+      nameEl.textContent = getPartLabel(part.id);
+
+      const metaEl = document.createElement("div");
+      metaEl.className = "parts-meta";
+      const price = PRICES[part.id] || 0;
+      metaEl.textContent = t("pricePrefix") + formatMoney(price);
+
+      info.appendChild(nameEl);
+      info.appendChild(metaEl);
+
+      const sidePill = document.createElement("div");
+      sidePill.className = "parts-side-pill";
+      sidePill.textContent = part.side === "front" ? t("side_front") : t("side_back");
+
+      row.appendChild(thumb);
+      row.appendChild(info);
+      row.appendChild(sidePill);
+
+      row.addEventListener("click", () => {
+        const targetSide = part.side;
+        if (currentSide !== targetSide) setSide(targetSide);
+
+        clearSelection();
+        selectedPartId = part.id;
+
+        const layer = layers[part.id];
+        if (layer) layer.classList.add("selected");
+
+        Object.values(partsRowsById).forEach(r => r.classList.remove("active"));
+        row.classList.add("active");
+
+        playClick();
+        openColorPanelForPart(part.id);
+      });
+
+      partsRowsById[part.id] = row;
+      return row;
+    }
+
+    function buildPartsList() {
+      partsListEl.innerHTML = "";
+      Object.keys(partsRowsById).forEach(k => delete partsRowsById[k]);
+
+      const frontLabel = document.createElement("div");
+      frontLabel.className = "parts-section-label";
+      frontLabel.textContent = t("sectionFront");
+      partsListEl.appendChild(frontLabel);
+      FRONT_PARTS.forEach(p => partsListEl.appendChild(createPartRow(p)));
+
+      const backLabel = document.createElement("div");
+      backLabel.className = "parts-section-label";
+      backLabel.textContent = t("sectionBack");
+      partsListEl.appendChild(backLabel);
+      BACK_PARTS.forEach(p => partsListEl.appendChild(createPartRow(p)));
+    }
+
+    /* ----- Hit testing ----- */
+
+    function getPartsForSide(side) {
+      return side === "back" ? BACK_PARTS : FRONT_PARTS;
+    }
+
+    function hitTestPart(designX, designY, side) {
+      const parts = getPartsForSide(side);
+      const sorted = [...parts].sort((a, b) => b.priority - a.priority);
+      for (const part of sorted) {
+        const mask = maskDataById[part.id];
+        if (!mask) continue;
+        const x = Math.floor(designX / BASE_WIDTH * mask.width);
+        const y = Math.floor(designY / BASE_HEIGHT * mask.height);
+        if (x < 0 || y < 0 || x >= mask.width || y >= mask.height) continue;
+        const idx = (y * mask.width + x) * 4 + 3;
+        const alpha = mask.data[idx];
+        if (alpha > 20) return part.id;
+      }
+      return null;
+    }
+
+    /* ----- Controller click ----- */
+
+    controllerArea.addEventListener("click", (e) => {
+      if (!masksReady) return;
+      const rect = controllerArea.getBoundingClientRect();
+      const relX = (e.clientX - rect.left) / rect.width;
+      const relY = (e.clientY - rect.top) / rect.height;
+      if (relX < 0 || relX > 1 || relY < 0 || relY > 1) return;
+      const designX = relX * BASE_WIDTH;
+      const designY = relY * BASE_HEIGHT;
+      const partId = hitTestPart(designX, designY, currentSide);
+      if (!partId) return;
+
+      clearSelection();
+      selectedPartId = partId;
+
+      const layer = layers[partId];
+      if (layer) layer.classList.add("selected");
+
+      const row = partsRowsById[partId];
+      if (row) {
+        Object.values(partsRowsById).forEach(r => r.classList.remove("active"));
+        row.classList.add("active");
+        row.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
+
+      playClick();
+      openColorPanelForPart(partId);
+    });
+
+    /* ----- Hover tooltip (desktop only) ----- */
+
+    controllerArea.addEventListener("mousemove", (e) => {
+      if (!masksReady || isMobile) return;
+
+      const rect = controllerArea.getBoundingClientRect();
+      const relX = (e.clientX - rect.left) / rect.width;
+      const relY = (e.clientY - rect.top) / rect.height;
+
+      if (relX < 0 || relX > 1 || relY < 0 || relY > 1) {
+        if (tooltipVisible) {
+          partTooltip.classList.remove("visible");
+          tooltipVisible = false;
+          hoverPartId = null;
+        }
+        return;
+      }
+
+      const designX = relX * BASE_WIDTH;
+      const designY = relY * BASE_HEIGHT;
+      const partId = hitTestPart(designX, designY, currentSide);
+
+      if (!partId) {
+        if (tooltipVisible) {
+          partTooltip.classList.remove("visible");
+          tooltipVisible = false;
+          hoverPartId = null;
+        }
+        return;
+      }
+
+      const label = getPartLabel(partId);
+      partTooltip.textContent = label;
+      partTooltip.style.left = e.clientX + "px";
+      partTooltip.style.top = e.clientY + "px";
+
+      if (!tooltipVisible || hoverPartId !== partId) {
+        hoverPartId = partId;
+        partTooltip.classList.add("visible");
+        tooltipVisible = true;
+      }
+    });
+
+    controllerArea.addEventListener("mouseleave", () => {
+      if (tooltipVisible) {
+        partTooltip.classList.remove("visible");
+        tooltipVisible = false;
+        hoverPartId = null;
+      }
+    });
+
+    /* ----- Click outside → stop editing + clear color drawer ----- */
+
+    document.addEventListener("click", (e) => {
+      const clickInsideController = controllerArea.contains(e.target);
+      const clickInsideColors = colorPanelGrid.contains(e.target) ||
+        document.getElementById("colorPanelTitle").contains(e.target) ||
+        document.getElementById("colorPanelSub").contains(e.target);
+      const clickInsideParts = partsListEl.contains(e.target);
+      const clickInsideSideToggle = sideToggle.contains(e.target);
+      const clickInsideNav = document.querySelector(".top-nav").contains(e.target);
+
+      if (
+        !clickInsideController &&
+        !clickInsideColors &&
+        !clickInsideParts &&
+        !clickInsideSideToggle &&
+        !clickInsideNav
+      ) {
+        clearSelection();
+        resetColorPanel();
+      }
+    });
+
+    /* ----- Add to cart button ----- */
+
+    addToCartBtn.addEventListener("click", () => {
+      const total = computeTotal();
+      if (total <= 0) {
+        alert(t("alertNone"));
+        return;
+      }
+      alert(t("alertAdded") + "\n" + t("totalLabel") + ": " + formatMoney(total));
+    });
+
+    /* ----- Language toggle ----- */
+
+    langToggle.addEventListener("click", (e) => {
+      const btn = e.target.closest(".lang-btn");
+      if (!btn) return;
+      const lang = btn.dataset.lang;
+      if (!lang || lang === currentLang) return;
+      currentLang = lang;
+      langButtons.forEach(b => b.classList.toggle("active", b.dataset.lang === currentLang));
+      applyLanguage();
+    });
+
+    /* ----- Apply language to UI ----- */
+
+    function applyLanguage() {
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
+
+      if (currentLang === "ar") {
+        document.body.style.fontFamily = "'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+      } else {
+        document.body.style.fontFamily = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+      }
+
+      // Static elements
+      const logoEl = document.querySelector("[data-i18n='logo']");
+      if (logoEl) logoEl.textContent = t("logo");
+
+      const totalLabelEl = document.querySelector("[data-i18n='totalLabel']");
+      if (totalLabelEl) totalLabelEl.textContent = t("totalLabel");
+
+      const addToCartTextEl = document.querySelector("[data-i18n='addToCart']");
+      if (addToCartTextEl) addToCartTextEl.textContent = t("addToCart");
+
+      const partsTitleEl = document.querySelector("[data-i18n='partsTitle']");
+      if (partsTitleEl) partsTitleEl.textContent = t("partsTitle");
+
+      sideButtons.forEach(btn => {
+        if (btn.dataset.side === "front") btn.textContent = t("front");
+        else btn.textContent = t("back");
+      });
+
+      // Rebuild parts list with new labels
+      buildPartsList();
+
+      // Restore selected part state if any
+      if (selectedPartId) {
+        const row = partsRowsById[selectedPartId];
+        if (row) row.classList.add("active");
+        const layer = layers[selectedPartId];
+        if (layer) layer.classList.add("selected");
+        openColorPanelForPart(selectedPartId);
+      } else {
+        resetColorPanel();
+      }
+
+      updateSummary();
+    }
+
+    // Initial language application
+    applyLanguage();
+  </script>
+</body>
+
+</html>
