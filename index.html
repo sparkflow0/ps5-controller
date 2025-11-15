@@ -842,27 +842,22 @@
     const CURRENCY = "BHD ";
 
     const FRONT_PARTS = [
-      { id: "psButton", mask: "masks/psButton.png", priority: 4, side: "front" },
+      { id: "shell", mask: "masks/leftShell.png", priority: 4, side: "front" },
+      { id: "psButton", mask: "masks/psButton.png", priority: 1, side: "front" },
       { id: "share", mask: "masks/share.png", priority: 4, side: "front" },
       { id: "options", mask: "masks/options.png", priority: 4, side: "front" },
-      { id: "speaker", mask: "masks/speaker.png", priority: 4, side: "front" },
-      { id: "dpad", mask: "masks/dpad.png", priority: 4, side: "front" },
       { id: "faceButtons", mask: "masks/faceButtons.png", priority: 4, side: "front" },
       { id: "stickL", mask: "masks/stickL.png", priority: 3, side: "front" },
       { id: "stickR", mask: "masks/stickR.png", priority: 3, side: "front" },
       { id: "touchpad", mask: "masks/touchpad.png", priority: 2, side: "front" },
-      { id: "bumperL", mask: "masks/bumperL.png", priority: 2, side: "front" },
-      { id: "bumperR", mask: "masks/bumperR.png", priority: 2, side: "front" },
-      { id: "centerBody", mask: "masks/centerBody.png", priority: 1, side: "front" },
-      { id: "leftShell", mask: "masks/leftShell.png", priority: 1, side: "front" },
-      { id: "rightShell", mask: "masks/rightShell.png", priority: 1, side: "front" }
+      { id: "bumpers", mask: "masks/bumperL.png", priority: 2, side: "front" },
+      { id: "trimpiece", mask: "masks/centerBody.png", priority: 1, side: "front" },
     ];
 
     const BACK_PARTS = [
       { id: "backShellMain", mask: "masks/backShellMain.png", priority: 1, side: "back" },
       { id: "backHandles", mask: "masks/backHandles.png", priority: 1, side: "back" },
       { id: "backTriggers", mask: "masks/backTriggers.png", priority: 2, side: "back" },
-      { id: "backLogoPanel", mask: "masks/backLogoPanel.png", priority: 3, side: "back" }
     ];
 
     const ALL_PARTS = [...FRONT_PARTS, ...BACK_PARTS];
@@ -871,42 +866,32 @@
       psButton: "PS Button",
       share: "Share Button",
       options: "Options Button",
-      speaker: "Speaker Grill",
-      dpad: "D-Pad",
       faceButtons: "Face Buttons",
       stickL: "Left Stick",
       stickR: "Right Stick",
       touchpad: "Touchpad",
-      bumperL: "Left Bumper",
-      bumperR: "Right Bumper",
-      centerBody: "Center Body",
-      leftShell: "Left Shell",
-      rightShell: "Right Shell",
+      bumpers: "Bumpers",
+      trimpiece: "Trim Piece",
+      shell: "Shell",
       backShellMain: "Back Shell",
       backHandles: "Back Handles",
       backTriggers: "Back Triggers",
-      backLogoPanel: "Back Logo Panel"
     };
 
     const PRICES = {
       psButton: 4.0,
       share: 3.0,
       options: 3.0,
-      speaker: 4.0,
-      dpad: 6.0,
       faceButtons: 6.0,
       stickL: 5.0,
       stickR: 5.0,
       touchpad: 10.0,
-      bumperL: 8.0,
-      bumperR: 8.0,
-      centerBody: 12.0,
-      leftShell: 15.0,
-      rightShell: 15.0,
+      bumpers: 8.0,
+      trimpiece: 12.0,
+      shell: 15.0,
       backShellMain: 15.0,
       backHandles: 10.0,
       backTriggers: 8.0,
-      backLogoPanel: 6.0
     };
 
     const SHELL_COLORS = [
@@ -956,9 +941,8 @@
     ]);
 
     const SHELL_PART_IDS = new Set([
-      "leftShell",
-      "rightShell",
-      "centerBody",
+      "shell",
+      "trimpiece",
       "backShellMain",
       "backHandles"
     ]);
