@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سلة المشتريات – EZ GAMING</title>
+
+  <!-- Cairo font -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #151515;
+      --selected-mask-url: none;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body,
+    button {
+      -webkit-tap-highlight-color: transparent !important;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #05060b 0, #020308 50%, #000 100%);
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+      display: block;
+    }
+
+    button {
+      border: none;
+      background: none;
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    img {
+      user-select: none;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ---------- TOP NAVBAR ---------- */
+
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      z-index: 50;
+      background: radial-gradient(circle at top,
+          rgba(10, 12, 20, 0.98),
+          rgba(0, 0, 0, 0.96));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-logo {
+      display: block;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-logo-mark {
+      width: 160px;
+      height: 40px;
+      background-image: url("logo.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: right;
+    }
+
+    .nav-page-title {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .nav-summary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-amount-block {
+      text-align: start;
+    }
+
+    .nav-amount-label {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-amount-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .checkout-nav-btn {
+      padding: 7px 16px;
+      border-radius: 999px;
+      color: #000;
+      font-size: 0.85rem;
+      background: linear-gradient(135deg, lawngreen, rgb(68, 129, 7));
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.9),
+        0 0 18px rgba(0, 229, 255, 0.7);
+      white-space: nowrap;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    }
+
+    .checkout-nav-btn:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 20px 40px rgba(0, 0, 0, 1),
+        0 0 24px rgba(0, 229, 255, 0.9);
+      filter: brightness(1.1);
+    }
+
+    .checkout-nav-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.8),
+        0 0 14px rgba(0, 229, 255, 0.7);
+    }
+
+    /* Language toggle (same look as configurator) */
+    .lang-toggle {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.06),
+          rgba(0, 0, 0, 0.9));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.85);
+      gap: 3px;
+    }
+
+    .lang-btn {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.7);
+      background: transparent;
+      font-weight: 800;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, lawngreen, rgb(68, 129, 7));
+      color: #0b1020;
+      box-shadow:
+        0 10px 20px rgba(0, 0, 0, 1),
+        0 0 14px rgba(0, 229, 255, 0.9);
+    }
+
+    .lang-btn.active:hover {
+      transform: translateY(-1px);
+    }
+
+    /* ---------- LAYOUT ---------- */
+
+    .page-content {
+      padding-top: 70px;
+      padding-bottom: 24px;
+    }
+
+    .cart-layout {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(260px, 1fr);
+      gap: 18px;
+    }
+
+    .cart-main-card,
+    .cart-summary-card {
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.06),
+          rgba(4, 4, 4, 0.98));
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow:
+        0 18px 30px rgba(0, 0, 0, 1),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      padding: 14px 16px 16px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.85;
+      margin-bottom: 8px;
+    }
+
+    .cart-empty {
+      padding: 24px 8px;
+      text-align: center;
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    /* ---------- CART ITEMS ---------- */
+
+    .cart-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.2fr) minmax(0, 1.8fr);
+      gap: 14px;
+      border-radius: 16px;
+      padding: 12px;
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.03),
+          rgba(0, 0, 0, 0.98));
+      box-shadow:
+        0 10px 18px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(255, 255, 255, 0.03);
+      position: relative;
+    }
+
+    .cart-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 10px;
+    }
+
+    .cart-item-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .cart-item-remove {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    .cart-item-remove:hover {
+      opacity: 1;
+    }
+
+    /* ---- controller thumbnail (same concept as premade page) ---- */
+
+    .cart-controller-preview {
+      display: block;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .thumb-controller {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      aspect-ratio: 1166 / 768;
+    }
+
+    .thumb-base {
+      position: absolute;
+      inset: 0;
+      background-image: url("controller.png");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: drop-shadow(0 16px 26px rgba(0, 0, 0, 0.95));
+    }
+
+    .thumb-layer {
+      position: absolute;
+      inset: 0;
+      background: var(--tint, transparent);
+      opacity: var(--tint-opacity, 1);
+      filter: brightness(1.45) saturate(1.4) contrast(1.05);
+      mix-blend-mode: overlay;
+      -webkit-mask-image: var(--mask-url);
+      mask-image: var(--mask-url);
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-position: center;
+      mask-position: center;
+    }
+
+    .cart-item-details {
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cart-item-parts-heading {
+      font-weight: 600;
+      margin-bottom: 2px;
+      opacity: 0.9;
+    }
+
+    .cart-item-parts-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 120px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .cart-item-parts-list li {
+      margin-bottom: 4px;
+    }
+
+    /* lines: color circle + text */
+    .cart-color-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .cart-color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      flex-shrink: 0;
+    }
+
+    .cart-color-text {
+      white-space: nowrap;
+    }
+
+    .cart-item-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .cart-qty-controls {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      overflow: hidden;
+    }
+
+    .cart-qty-btn {
+      padding: 4px 10px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .cart-qty-value {
+      padding: 4px 10px;
+      font-size: 0.85rem;
+      min-width: 32px;
+      text-align: center;
+      border-left: 1px solid rgba(255, 255, 255, 0.18);
+      border-right: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .cart-item-price-block {
+      text-align: end;
+    }
+
+    .cart-item-price-label {
+      font-size: 0.72rem;
+      opacity: 0.7;
+    }
+
+    .cart-item-price-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    /* ---------- SUMMARY CARD ---------- */
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+
+    .summary-row.total {
+      margin-top: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .summary-row small {
+      opacity: 0.7;
+    }
+
+    .summary-hr {
+      height: 1px;
+      border: none;
+      margin: 8px 0;
+      background: linear-gradient(to right,
+          rgba(255, 255, 255, 0),
+          rgba(255, 255, 255, 0.22),
+          rgba(255, 255, 255, 0));
+    }
+
+    .summary-checkout-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      color: #000000;
+      font-size: 0.9rem;
+      background: linear-gradient(135deg, lawngreen, rgb(68, 129, 7));
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.9),
+        0 0 18px rgba(0, 229, 255, 0.7);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    }
+
+    .summary-checkout-btn:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 20px 40px rgba(0, 0, 0, 1),
+        0 0 24px rgba(0, 0, 0, 0.9);
+      filter: brightness(1.1);
+    }
+
+    .summary-checkout-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.8),
+        0 0 14px rgba(0, 229, 255, 0.7);
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+
+    @media (max-width: 900px) {
+      .cart-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .cart-item {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <div class="nav-logo">
+      <a href="index.html" class="nav-left">
+        <div class="nav-logo-mark"></div>
+        <div class="nav-page-title" data-i18n="cartTitle">سلة المشتريات</div>
+      </a>
+    </div>
+    <div class="nav-summary">
+      <div class="lang-toggle" id="langToggle">
+        <button class="lang-btn" data-lang="ar">ع</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <div class="nav-amount-block">
+        <div class="nav-amount-label" data-i18n="totalLabel">الإجمالي</div>
+        <div class="nav-amount-value" id="navTotal">د.ب 0.00</div>
+      </div>
+      <button class="checkout-nav-btn" id="navCheckoutBtn" data-i18n="checkoutCta">إتمام الشراء</button>
+    </div>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-content">
+    <div class="cart-layout">
+      <!-- LEFT: CART ITEMS -->
+      <div class="cart-main-card">
+        <div class="card-title" data-i18n="cartTitle">سلة المشتريات</div>
+        <div id="cartEmpty" class="cart-empty" data-i18n="cartEmpty">
+          السلة فارغة حاليًا. يمكنك تخصيص متحكم جديد من صفحة التخصيص.
+        </div>
+        <div id="cartItems" class="cart-items-list"></div>
+      </div>
+
+      <!-- RIGHT: SUMMARY -->
+      <div class="cart-summary-card">
+        <div class="card-title" data-i18n="summaryTitle">الملخص</div>
+        <div class="summary-row">
+          <div data-i18n="itemsCountLabel">عدد القطع</div>
+          <div id="summaryItemsCount">0</div>
+        </div>
+        <div class="summary-row">
+          <div data-i18n="subtotalLabel">الإجمالي الفرعي</div>
+          <div id="summarySubtotal">د.ب 0.00</div>
+        </div>
+        <hr class="summary-hr" />
+        <div class="summary-row">
+          <div data-i18n="shippingLabel">الشحن</div>
+          <div><small data-i18n="shippingNote">سيتم تحديده لاحقًا</small></div>
+        </div>
+        <div class="summary-row total">
+          <div data-i18n="totalLabelBold">الإجمالي</div>
+          <div id="summaryTotal">د.ب 0.00</div>
+        </div>
+        <button class="summary-checkout-btn" id="checkoutBtn" data-i18n="checkoutCta">إتمام الشراء</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CART_KEY = "ezCart";
+
+    // ---------- I18N ----------
+    const i18n = {
+      ar: {
+        cartTitle: "سلة المشتريات",
+        summaryTitle: "الملخص",
+        cartEmpty: "السلة فارغة حاليًا. يمكنك تخصيص متحكم جديد من صفحة التخصيص.",
+        itemsCountLabel: "عدد القطع",
+        subtotalLabel: "الإجمالي الفرعي",
+        shippingLabel: "الشحن",
+        shippingNote: "سيتم تحديده لاحقًا",
+        totalLabel: "الإجمالي",
+        totalLabelBold: "الإجمالي",
+        checkoutCta: "إتمام الشراء",
+        itemRemove: "إزالة",
+        itemDetailsHeading: "تفاصيل التخصيص:",
+        itemLineTotalLabel: "المجموع لهذا العنصر",
+        alertEmptyForCheckout: "السلة فارغة، يرجى إضافة متحكم واحد على الأقل.",
+        currencyPrefix: "د.ب ",
+        productName: "متحكم PS5 مخصّص",
+        parts: {
+          shell: "هيكل المقدّمة",
+          trimpiece: "القطعة الوسطى",
+          psButton: "زر PS",
+          share: "زر المشاركة",
+          options: "زر الخيارات",
+          faceButtons: "أزرار الأوجه",
+          stickL: "عصا التحكم اليسرى",
+          stickR: "عصا التحكم اليمنى",
+          touchpad: "لوحة اللمس",
+          bumpers: "الأزرار العلوية",
+          backShellMain: "هيكل الخلف",
+          backHandles: "مقابض الخلف",
+          backTriggers: "أزرار الزناد الخلفية"
+        }
+      },
+      en: {
+        cartTitle: "Shopping Cart",
+        summaryTitle: "Summary",
+        cartEmpty: "Your cart is currently empty. You can create a new custom controller from the configurator page.",
+        itemsCountLabel: "Items",
+        subtotalLabel: "Subtotal",
+        shippingLabel: "Shipping",
+        shippingNote: "To be calculated later",
+        totalLabel: "Total",
+        totalLabelBold: "Total",
+        checkoutCta: "Checkout",
+        itemRemove: "Remove",
+        itemDetailsHeading: "Customization details:",
+        itemLineTotalLabel: "Line total",
+        alertEmptyForCheckout: "Your cart is empty. Please add at least one controller.",
+        currencyPrefix: "BHD ",
+        productName: "Custom PS5 Controller",
+        parts: {
+          shell: "Front shell",
+          trimpiece: "Center trim",
+          psButton: "PS button",
+          share: "Share button",
+          options: "Options button",
+          faceButtons: "Face buttons",
+          stickL: "Left stick",
+          stickR: "Right stick",
+          touchpad: "Touchpad",
+          bumpers: "Bumpers",
+          backShellMain: "Back shell",
+          backHandles: "Back handles",
+          backTriggers: "Back triggers"
+        }
+      }
+    };
+
+    let currentLang = localStorage.getItem("ez_lang") || "ar";
+
+    function t(key) {
+      return (i18n[currentLang] && i18n[currentLang][key]) || key;
+    }
+
+    function getPartLabel(partId) {
+      const dict = i18n[currentLang].parts || {};
+      return dict[partId] || partId;
+    }
+
+    function applyLanguage() {
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
+
+      document.querySelectorAll(".lang-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.lang === currentLang);
+      });
+
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        el.textContent = t(key);
+      });
+
+      renderCart();
+    }
+
+    document.getElementById("langToggle").addEventListener("click", (e) => {
+      const btn = e.target.closest(".lang-btn");
+      if (!btn) return;
+      const lang = btn.dataset.lang;
+      if (!lang || lang === currentLang) return;
+      currentLang = lang;
+      localStorage.setItem("ez_lang", currentLang);
+      applyLanguage();
+    });
+
+    function formatMoney(value) {
+      const prefix = i18n[currentLang].currencyPrefix || "";
+      return prefix + value.toFixed(2);
+    }
+
+    // ---------- CART CORE ----------
+
+    function loadCart() {
+      try {
+        const raw = localStorage.getItem(CART_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveCart(items) {
+      try {
+        localStorage.setItem(CART_KEY, JSON.stringify(items));
+      } catch { }
+    }
+
+    const TRANSPARENT_HEXES = new Set([
+      "#ededed",
+      "#d43838",
+      "#2448b5",
+      "#68d78b",
+      "#4e2b8c",
+      "#8c3b2f",
+      "#e3e3e3"
+    ]);
+
+    // masks as in configurator (front view only – for thumbnail)
+    const THUMB_PARTS = [
+      { id: "shell", mask: "masks/leftShell.png" },
+      { id: "trimpiece", mask: "masks/centerBody.png" },
+      { id: "stickL", mask: "masks/stickL.png" },
+      { id: "stickR", mask: "masks/stickR.png" },
+      { id: "faceButtons", mask: "masks/faceButtons.png" },
+      { id: "touchpad", mask: "masks/touchpad.png" },
+      { id: "bumpers", mask: "masks/bumperL.png" },
+      { id: "psButton", mask: "masks/psButton.png" },
+      { id: "share", mask: "masks/share.png" },
+      { id: "options", mask: "masks/options.png" }
+    ];
+
+    // order of parts to display in the details list
+    const ORDERED_PART_IDS = [
+      "shell",
+      "trimpiece",
+      "faceButtons",
+      "stickL",
+      "stickR",
+      "touchpad",
+      "share",
+      "options",
+      "psButton",
+      "bumpers",
+      "backShellMain",
+      "backHandles",
+      "backTriggers"
+    ];
+
+    const cartItemsContainer = document.getElementById("cartItems");
+    const cartEmptyEl = document.getElementById("cartEmpty");
+    const navTotalEl = document.getElementById("navTotal");
+    const summaryItemsCountEl = document.getElementById("summaryItemsCount");
+    const summarySubtotalEl = document.getElementById("summarySubtotal");
+    const summaryTotalEl = document.getElementById("summaryTotal");
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    const navCheckoutBtn = document.getElementById("navCheckoutBtn");
+
+    let cartItems = loadCart();
+
+    function computeCartTotals() {
+      let total = 0;
+      let count = 0;
+      for (const item of cartItems) {
+        count += item.quantity;
+        total += item.unitPrice * item.quantity;
+      }
+      return { total, count };
+    }
+
+    // build thumbnail of controller with same colors as configurator
+    function buildThumb(container, config) {
+      container.innerHTML = "";
+      const tc = document.createElement("div");
+      tc.className = "thumb-controller";
+
+      const base = document.createElement("div");
+      base.className = "thumb-base";
+      tc.appendChild(base);
+
+      THUMB_PARTS.forEach(part => {
+        const value = (config || {})[part.id];
+        if (!value) return;
+
+        const hex = typeof value === "string" ? value : value.hex;
+        if (!hex) return;
+
+        const layer = document.createElement("div");
+        layer.className = "thumb-layer";
+        layer.style.setProperty("--mask-url", `url('${part.mask}')`);
+        layer.style.setProperty("--tint", hex);
+
+        if (TRANSPARENT_HEXES.has(hex.toLowerCase())) {
+          layer.style.setProperty("--tint-opacity", "0.35");
+        } else {
+          layer.style.setProperty("--tint-opacity", "1");
+        }
+        tc.appendChild(layer);
+      });
+
+      container.appendChild(tc);
+    }
+
+    function renderCart() {
+      cartItemsContainer.innerHTML = "";
+
+      if (!cartItems.length) {
+        cartEmptyEl.style.display = "block";
+        cartEmptyEl.textContent = t("cartEmpty");
+      } else {
+        cartEmptyEl.style.display = "none";
+      }
+
+      cartItems.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "cart-item";
+        card.dataset.index = index;
+
+        const header = document.createElement("div");
+        header.className = "cart-item-header";
+
+        const nameEl = document.createElement("div");
+        nameEl.className = "cart-item-name";
+        nameEl.textContent = item.name || t("productName");
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "cart-item-remove";
+        removeBtn.dataset.action = "remove";
+        removeBtn.textContent = t("itemRemove");
+
+        header.appendChild(nameEl);
+        header.appendChild(removeBtn);
+
+        const previewCol = document.createElement("div");
+        previewCol.className = "cart-controller-preview";
+        const thumbContainer = document.createElement("div");
+        buildThumb(thumbContainer, item.config || {});
+        previewCol.appendChild(thumbContainer);
+
+        const detailsCol = document.createElement("div");
+        detailsCol.className = "cart-item-details";
+
+        const partsHeading = document.createElement("div");
+        partsHeading.className = "cart-item-parts-heading";
+        partsHeading.textContent = t("itemDetailsHeading");
+        detailsCol.appendChild(partsHeading);
+
+        const ul = document.createElement("ul");
+        ul.className = "cart-item-parts-list";
+
+        const config = item.config || {};
+
+        // show each configured part as: colored circle + part label (+ optional color name if available)
+        ORDERED_PART_IDS.forEach(partId => {
+          const value = config[partId];
+          if (!value) return;
+
+          let hex = "";
+          let colorName = "";
+
+          if (typeof value === "string") {
+            hex = value;
+          } else if (value && typeof value === "object") {
+            hex = value.hex || "";
+            if (currentLang === "ar") {
+              colorName = value.name_ar || "";
+            } else {
+              colorName = value.name_en || "";
+            }
+          }
+
+          if (!hex) return;
+
+          const li = document.createElement("li");
+          li.className = "cart-color-line";
+
+          const dot = document.createElement("span");
+          dot.className = "cart-color-dot";
+          dot.style.backgroundColor = hex;
+
+          const text = document.createElement("span");
+          text.className = "cart-color-text";
+
+          const partLabel = getPartLabel(partId);
+          text.textContent = colorName
+            ? `${partLabel}: ${colorName}`
+            : partLabel;
+
+          li.appendChild(dot);
+          li.appendChild(text);
+          ul.appendChild(li);
+        });
+
+        detailsCol.appendChild(ul);
+
+        const footer = document.createElement("div");
+        footer.className = "cart-item-footer";
+
+        const qtyControls = document.createElement("div");
+        qtyControls.className = "cart-qty-controls";
+
+        const decBtn = document.createElement("button");
+        decBtn.type = "button";
+        decBtn.className = "cart-qty-btn";
+        decBtn.dataset.action = "dec";
+        decBtn.textContent = "-";
+
+        const qtyValue = document.createElement("div");
+        qtyValue.className = "cart-qty-value";
+        qtyValue.textContent = item.quantity;
+
+        const incBtn = document.createElement("button");
+        incBtn.type = "button";
+        incBtn.className = "cart-qty-btn";
+        incBtn.dataset.action = "inc";
+        incBtn.textContent = "+";
+
+        qtyControls.appendChild(decBtn);
+        qtyControls.appendChild(qtyValue);
+        qtyControls.appendChild(incBtn);
+
+        const priceBlock = document.createElement("div");
+        priceBlock.className = "cart-item-price-block";
+
+        const priceLabel = document.createElement("div");
+        priceLabel.className = "cart-item-price-label";
+        priceLabel.textContent = t("itemLineTotalLabel");
+
+        const priceValue = document.createElement("div");
+        priceValue.className = "cart-item-price-value";
+        const lineTotal = item.unitPrice * item.quantity;
+        priceValue.textContent = formatMoney(lineTotal);
+
+        priceBlock.appendChild(priceLabel);
+        priceBlock.appendChild(priceValue);
+
+        footer.appendChild(qtyControls);
+        footer.appendChild(priceBlock);
+
+        detailsCol.appendChild(footer);
+
+        card.appendChild(header);
+        card.appendChild(previewCol);
+        card.appendChild(detailsCol);
+
+        cartItemsContainer.appendChild(card);
+      });
+
+      const { total, count } = computeCartTotals();
+      navTotalEl.textContent = formatMoney(total);
+      summaryItemsCountEl.textContent = count;
+      summarySubtotalEl.textContent = formatMoney(total);
+      summaryTotalEl.textContent = formatMoney(total);
+    }
+
+    // Quantity / remove handlers via delegation
+    cartItemsContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+
+      const card = btn.closest(".cart-item");
+      if (!card) return;
+
+      const index = parseInt(card.dataset.index, 10);
+      if (Number.isNaN(index) || index < 0 || index >= cartItems.length) return;
+
+      const action = btn.dataset.action;
+      if (action === "inc") {
+        cartItems[index].quantity += 1;
+      } else if (action === "dec") {
+        if (cartItems[index].quantity > 1) {
+          cartItems[index].quantity -= 1;
+        } else {
+          cartItems.splice(index, 1);
+        }
+      } else if (action === "remove") {
+        cartItems.splice(index, 1);
+      }
+
+      saveCart(cartItems);
+      renderCart();
+    });
+
+    function goToCheckout() {
+      if (!cartItems.length) {
+        alert(t("alertEmptyForCheckout"));
+        return;
+      }
+      window.location.href = "checkout.html";
+    }
+
+    checkoutBtn.addEventListener("click", goToCheckout);
+    navCheckoutBtn.addEventListener("click", goToCheckout);
+
+    // initial
+    applyLanguage();
+  </script>
+</body>
+
+</html>

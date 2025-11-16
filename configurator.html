@@ -203,11 +203,9 @@
     }
 
     .main-layout {
-      /* max-width: 1400px; */
       margin: 0 auto;
       padding: 16px 16px 24px;
       display: grid;
-      /* grid-template-columns: minmax(0, 1.2fr) minmax(240px, 320px) minmax(230px, 280px); */
       grid-template-columns: minmax(0, 1.2fr) minmax(80px, 140px) minmax(230px, 280px);
       grid-template-areas: "controller colors parts";
       gap: 18px;
@@ -327,26 +325,71 @@
       mask-position: center;
     }
 
-    .side-toggle-container {
-      margin-top: 10px;
+    /* ----- NEW: circular buttons row under controller ----- */
+
+    .controller-buttons-bar {
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
-      flex-direction: column;
+      gap: 22px;
       align-items: center;
-      gap: 10px;
+      z-index: 6;
     }
 
-    .side-toggle {
-      display: inline-flex;
-      padding: 3px;
-      border-radius: 999px;
+    .side-buttons-group {
+      display: flex;
+      gap: 16px;
+    }
+
+    /* Base circular button */
+    .circle-btn {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+
+      font-size: 0.8rem;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+      color: rgba(255, 255, 255, 0.95);
       background: radial-gradient(circle at top,
-          rgba(255, 255, 255, 0.08),
-          rgba(0, 0, 0, 0.9));
-      border: 1px solid rgba(255, 255, 255, 0.16);
+          rgba(0, 0, 0, 0.95),
+          rgba(20, 20, 20, 1));
+      border: 1px solid rgba(10, 215, 95, 0.7);
       box-shadow:
-        0 12px 26px rgba(0, 0, 0, 0.9),
-        0 0 0 1px rgba(255, 255, 255, 0.04);
-      gap: 3px;
+        0 12px 26px rgba(0, 0, 0, 0.95),
+        0 0 18px rgba(4, 255, 0, 0.75);
+
+      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+      cursor: pointer;
+      overflow: visible;
+    }
+
+    .circle-btn:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 18px 32px rgba(0, 0, 0, 1),
+        0 0 22px rgba(13, 255, 0, 0.9);
+      filter: brightness(1.05);
+      cursor: pointer;
+    }
+
+    .circle-btn:active {
+      transform: translateY(1px) scale(0.97);
+      box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.9),
+        0 0 12px rgba(38, 255, 0, 0.7);
     }
 
     .side-btn {
@@ -368,47 +411,138 @@
       background: linear-gradient(135deg, lawngreen, rgb(68, 129, 7));
       font-weight: 800;
       font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      box-shadow:
-        0 10px 20px rgba(0, 0, 0, 1),
-        0 0 14px rgba(0, 229, 255, 0.9);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 1), 0 0 14px rgba(0, 229, 255, 0.9);
     }
 
     .side-btn.active:hover {
       transform: translateY(-1px);
+      cursor: pointer;
     }
 
+    .controller-buttons-stack {
+      position: absolute;
+      left: 50%;
+      bottom: 80px;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      z-index: 10;
+    }
+
+    /* Cancel the big margin when inside the stack */
+    .controller-buttons-stack .side-toggle-container {
+      margin-top: 0;
+    }
+
+
+    /* Preview button over the controller with pulsing rings */
     .preview-btn {
-      padding: 6px 18px;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      letter-spacing: 0.06em;
+      position: relative;
+
+      /* perfect circle */
+      width: 100px;
+      height: 100px;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
       text-transform: uppercase;
+      letter-spacing: 0.06em;
       font-weight: 700;
       font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255, 255, 255, 0.95);
+
       background: radial-gradient(circle at top,
-          rgba(0, 0, 0, 0.9),
+          rgba(0, 0, 0, 0.95),
           rgba(20, 20, 20, 1));
-      border: 1px solid rgba(0, 229, 255, 0.3);
+      border: 1px solid rgba(10, 215, 95, 0.7);
       box-shadow:
-        0 10px 20px rgba(0, 0, 0, 0.9),
-        0 0 14px rgba(0, 0, 0, 1);
+        0 12px 26px rgba(0, 0, 0, 0.95),
+        0 0 18px rgba(4, 255, 0, 0.75);
       transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+      cursor: pointer;
+      overflow: visible;
+    }
+
+    /* Two animated rings pulsing out from the button */
+    .preview-btn::before,
+    .preview-btn::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 120%;
+      height: 120%;
+      border-radius: 50%;
+      border: 1px solid rgba(13, 255, 0, 0.7);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+      transform-origin: center center;
+      pointer-events: none;
+      animation: previewPulse 2.2s ease-out infinite;
+    }
+
+    .preview-btn::after {
+      animation-delay: 1.1s;
+    }
+
+    @keyframes previewPulse {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+
+      20% {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) scale(0.95);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.25);
+      }
     }
 
     .preview-btn:hover {
-      transform: translateY(-1px);
+      transform: translateY(-2px);
       box-shadow:
-        0 16px 28px rgba(0, 0, 0, 1),
-        0 0 18px rgba(0, 229, 255, 0.6);
+        0 18px 32px rgba(0, 0, 0, 1),
+        0 0 22px rgba(13, 255, 0, 0.9);
       filter: brightness(1.1);
+      cursor: pointer;
     }
 
     .preview-btn:active {
-      transform: translateY(1px) scale(0.98);
+      transform: translateY(1px) scale(0.97);
       box-shadow:
         0 8px 20px rgba(0, 0, 0, 0.9),
-        0 0 12px rgba(0, 229, 255, 0.5);
+        0 0 12px rgba(38, 255, 0, 0.7);
+    }
+
+    .side-toggle-container {
+      /* a bit more space so it doesn’t collide with the button */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .side-toggle {
+      display: inline-flex;
+      padding: 3px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.08),
+          rgba(0, 0, 0, 0.9));
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      gap: 3px;
     }
 
     /* ---------- PARTS PANEL ---------- */
@@ -476,11 +610,9 @@
 
     .parts-item:hover {
       border: solid white;
-      
     }
 
     .parts-item.active {
-
       border: solid white;
     }
 
@@ -497,7 +629,6 @@
       box-shadow: none;
     }
 
-    /* New: real <img> inside the thumb */
     .parts-thumb img {
       max-width: 100%;
       max-height: 100%;
@@ -707,6 +838,7 @@
       <!-- CONTROLLER COLUMN (LEFT) -->
       <div class="controller-column">
         <div class="controller-wrapper" id="controllerWrapper">
+
           <div class="controller-area" id="controllerArea">
             <div class="controller-flip" id="controllerFlip">
               <div class="controller-face controller-face-front" id="controllerFaceFront">
@@ -716,16 +848,23 @@
                 <img src="controller_back.png" alt="PS5 Controller Back" />
               </div>
             </div>
-          </div>
-          <div class="side-toggle-container">
-            <div class="side-toggle" id="sideToggle">
-              <button class="side-btn active" data-side="front" type="button" data-i18n="front">الأمام</button>
-              <button class="side-btn" data-side="back" type="button" data-i18n="back">الخلف</button>
+
+            <!-- Preview above Front/Back, all centered -->
+            <div class="controller-buttons-stack">
+              <button class="preview-btn" id="previewBtn" type="button" data-i18n="preview">
+                معاينة التغيرات
+              </button>
+
+              <div class="side-toggle-container">
+                <div class="side-toggle" id="sideToggle">
+                  <button class="side-btn active" data-side="front" type="button" data-i18n="front">الأمام</button>
+                  <button class="side-btn" data-side="back" type="button" data-i18n="back">الخلف</button>
+                </div>
+              </div>
             </div>
-            <button class="preview-btn" id="previewBtn" type="button" data-i18n="preview">
-              معاينة التغيرات
-            </button>
           </div>
+
+
         </div>
       </div>
 
@@ -915,15 +1054,15 @@
 
     const FRONT_PARTS = [
       { id: "shell", icon: "icons/shells.png", mask: "masks/leftShell.png", priority: 4, side: "front" },
+      { id: "trimpiece", icon: "icons/trimpiece.png", mask: "masks/centerBody.png", priority: 1, side: "front" },
+      { id: "stickL", icon: "icons/stickL.png", mask: "masks/stickL.png", priority: 3, side: "front" },
+      { id: "stickR", icon: "icons/stickR.png", mask: "masks/stickR.png", priority: 3, side: "front" },
+      { id: "faceButtons", icon: "icons/faceButtons.png", mask: "masks/faceButtons.png", priority: 4, side: "front" },
+      { id: "touchpad", icon: "icons/touchpad.png", mask: "masks/touchpad.png", priority: 2, side: "front" },
+      { id: "bumpers", icon: "icons/bumpers.png", mask: "masks/bumperL.png", priority: 2, side: "front" },
       { id: "psButton", icon: "icons/psButton.png", mask: "masks/psButton.png", priority: 1, side: "front" },
       { id: "share", icon: "icons/share.png", mask: "masks/share.png", priority: 4, side: "front" },
       { id: "options", icon: "icons/options.png", mask: "masks/options.png", priority: 4, side: "front" },
-      { id: "faceButtons", icon: "icons/faceButtons.png", mask: "masks/faceButtons.png", priority: 4, side: "front" },
-      { id: "stickL", icon: "icons/stickL.png", mask: "masks/stickL.png", priority: 3, side: "front" },
-      { id: "stickR", icon: "icons/stickR.png", mask: "masks/stickR.png", priority: 3, side: "front" },
-      { id: "touchpad", icon: "icons/touchpad.png", mask: "masks/touchpad.png", priority: 2, side: "front" },
-      { id: "bumpers", icon: "icons/bumpers.png", mask: "masks/bumperL.png", priority: 2, side: "front" },
-      { id: "trimpiece", icon: "icons/trimpiece.png", mask: "masks/centerBody.png", priority: 1, side: "front" }
     ];
 
     const BACK_PARTS = [
@@ -1234,7 +1373,7 @@
       thumb.className = "parts-thumb";
 
       const img = document.createElement("img");
-      img.src = part.icon || "icons/shells.png"; // fallback just in case
+      img.src = part.icon || "icons/shells.png";
       img.alt = getPartLabel(part.id);
       thumb.appendChild(img);
 
@@ -1409,7 +1548,38 @@
       }
     });
 
-    /* ----- Add to cart button ----- */
+    /* ----- Add to cart button (with localStorage + redirect to cart) ----- */
+
+    const CART_KEY = "ezCart";
+
+    function buildConfigSnapshot() {
+      const snapshot = {};
+      for (const partId in configState) {
+        if (Object.prototype.hasOwnProperty.call(configState, partId)) {
+          snapshot[partId] = configState[partId];
+        }
+      }
+      return snapshot;
+    }
+
+    function loadCart() {
+      try {
+        const raw = localStorage.getItem(CART_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveCart(items) {
+      try {
+        localStorage.setItem(CART_KEY, JSON.stringify(items));
+      } catch {
+        // ignore
+      }
+    }
 
     addToCartBtn.addEventListener("click", () => {
       const total = computeTotal();
@@ -1417,7 +1587,26 @@
         alert(t("alertNone"));
         return;
       }
-      alert(t("alertAdded") + "\n" + t("totalLabel") + ": " + formatMoney(total));
+
+      const cartItems = loadCart();
+      const snapshot = buildConfigSnapshot();
+
+      const cartItem = {
+        id: Date.now(),
+        name: currentLang === "ar" ? "متحكم PS5 مخصّص" : "Custom PS5 Controller",
+        unitPrice: total,       // price for a single controller – from configurator
+        quantity: 1,
+        config: snapshot        // all selected part colors (by partId -> hex)
+      };
+
+      cartItems.push(cartItem);
+      saveCart(cartItems);
+
+      // Optionally small confirmation
+      // alert(t("alertAdded") + "\n" + t("totalLabel") + ": " + formatMoney(total));
+
+      // Go to cart page
+      window.location.href = "cart.html";
     });
 
     /* ----- Language toggle ----- */
