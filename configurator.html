@@ -198,16 +198,17 @@
     .page-content {
       padding-top: 70px;
       padding-bottom: 0;
-      height: calc(100vh - 70px);
+      height: calc(100vh - 20px);
       overflow: hidden;
     }
 
     .main-layout {
-      max-width: 1400px;
+      /* max-width: 1400px; */
       margin: 0 auto;
       padding: 16px 16px 24px;
       display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(240px, 320px) minmax(230px, 280px);
+      /* grid-template-columns: minmax(0, 1.2fr) minmax(240px, 320px) minmax(230px, 280px); */
+      grid-template-columns: minmax(0, 1.2fr) minmax(80px, 140px) minmax(230px, 280px);
       grid-template-areas: "controller colors parts";
       gap: 18px;
       align-items: stretch;
@@ -236,12 +237,11 @@
       position: relative;
     }
 
-    /* Dim all controller except selected part */
     .controller-area.has-selection::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(0, 0, 0, 0.80);
       pointer-events: none;
       z-index: 3;
 
@@ -451,104 +451,64 @@
       opacity: 0.85;
     }
 
-    .parts-section-label {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.13em;
-      opacity: 0.6;
-      margin: 6px 2px 4px;
-    }
-
     .parts-item {
       width: 100%;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
-      padding: 7px 8px;
-      border-radius: 12px;
-      margin-bottom: 4px;
-      background: radial-gradient(circle at left,
-          rgba(255, 255, 255, 0.04),
-          rgba(0, 0, 0, 0.95));
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 8px;
+      border-radius: 16px;
+      margin-bottom: 6px;
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.03),
+          rgba(0, 0, 0, 0.98));
       box-shadow:
         0 10px 18px rgba(0, 0, 0, 0.7),
         0 0 0 1px rgba(255, 255, 255, 0.03);
       color: rgba(255, 255, 255, 0.9);
-      font-size: 0.78rem;
-      text-align: left;
+      font-size: 0.8rem;
+      text-align: center;
       position: relative;
+      border: solid rgb(0, 0, 0);
     }
 
     .parts-item:hover {
-      box-shadow:
-        0 16px 26px rgba(0, 0, 0, 0.95),
-        0 0 0 1px rgba(0, 229, 255, 0.4);
-      transform: translateY(-1px);
+      border: solid white;
+      
     }
 
     .parts-item.active {
-      box-shadow:
-        0 18px 30px rgba(0, 0, 0, 1),
-        0 0 0 1px rgba(0, 229, 255, 0.9);
+
+      border: solid white;
     }
 
     .parts-thumb {
-      width: 40px;
-      height: 26px;
-      border-radius: 999px;
-      background: radial-gradient(circle at top,
-          rgba(255, 255, 255, 0.3),
-          rgba(120, 120, 120, 1));
+      width: 220px;
+      height: auto;
+      border-radius: 0;
       position: relative;
       overflow: hidden;
-      box-shadow:
-        0 10px 18px rgba(0, 0, 0, 0.9),
-        0 0 0 1px rgba(0, 0, 0, 1) inset,
-        0 0 0 1px rgba(255, 255, 255, 0.3);
-    }
-
-    .parts-thumb::before {
-      content: "";
-      position: absolute;
-      inset: -6px;
-      background: rgba(255, 255, 255, 0.9);
-      -webkit-mask-image: var(--mask-url);
-      mask-image: var(--mask-url);
-      -webkit-mask-repeat: no-repeat;
-      mask-repeat: no-repeat;
-      -webkit-mask-size: cover;
-      mask-size: cover;
-      -webkit-mask-position: center;
-      mask-position: center;
-      opacity: 0.9;
-    }
-
-    .parts-info {
       display: flex;
-      flex-direction: column;
-      gap: 2px;
-      flex: 1;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    /* New: real <img> inside the thumb */
+    .parts-thumb img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
     }
 
     .parts-name {
-      font-size: 0.8rem;
+      font-size: 1rem;
       font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    .parts-meta {
-      font-size: 0.7rem;
-      opacity: 0.6;
-    }
-
-    .parts-side-pill {
-      font-size: 0.65rem;
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      background: rgba(0, 0, 0, 0.7);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      opacity: 0.8;
+      font-weight: 700;
     }
 
     /* ---------- COLOR PANEL ---------- */
@@ -593,7 +553,7 @@
     .color-panel-grid {
       margin-top: 6px;
       display: grid;
-      grid-template-columns: repeat(2, minmax(80px, 1fr));
+      grid-template-columns: repeat(1, minmax(80px, 1fr));
       gap: 10px;
       padding-right: 2px;
       overflow-y: auto;
@@ -605,6 +565,7 @@
       flex-direction: column;
       align-items: center;
       gap: 4px;
+      margin-bottom: 10px;
       font-size: 0.72rem;
       text-align: center;
       opacity: 0.9;
@@ -617,8 +578,8 @@
     }
 
     .cd-swatch {
-      width: 54px;
-      height: 54px;
+      width: 74px;
+      height: 74px;
       border-radius: 50%;
       border: 1px solid rgba(255, 255, 255, 0.35);
       background-image:
@@ -953,22 +914,21 @@
     const BASE_HEIGHT = 768;
 
     const FRONT_PARTS = [
-      { id: "shell", mask: "masks/leftShell.png", priority: 4, side: "front" },
-      { id: "psButton", mask: "masks/psButton.png", priority: 1, side: "front" },
-      { id: "share", mask: "masks/share.png", priority: 4, side: "front" },
-      { id: "options", mask: "masks/options.png", priority: 4, side: "front" },
-      { id: "faceButtons", mask: "masks/faceButtons.png", priority: 4, side: "front" },
-      { id: "stickL", mask: "masks/stickL.png", priority: 3, side: "front" },
-      { id: "stickR", mask: "masks/stickR.png", priority: 3, side: "front" },
-      { id: "touchpad", mask: "masks/touchpad.png", priority: 2, side: "front" },
-      { id: "bumpers", mask: "masks/bumperL.png", priority: 2, side: "front" },
-      { id: "trimpiece", mask: "masks/centerBody.png", priority: 1, side: "front" }
+      { id: "shell", icon: "icons/shells.png", mask: "masks/leftShell.png", priority: 4, side: "front" },
+      { id: "psButton", icon: "icons/psButton.png", mask: "masks/psButton.png", priority: 1, side: "front" },
+      { id: "share", icon: "icons/share.png", mask: "masks/share.png", priority: 4, side: "front" },
+      { id: "options", icon: "icons/options.png", mask: "masks/options.png", priority: 4, side: "front" },
+      { id: "faceButtons", icon: "icons/faceButtons.png", mask: "masks/faceButtons.png", priority: 4, side: "front" },
+      { id: "stickL", icon: "icons/stickL.png", mask: "masks/stickL.png", priority: 3, side: "front" },
+      { id: "stickR", icon: "icons/stickR.png", mask: "masks/stickR.png", priority: 3, side: "front" },
+      { id: "touchpad", icon: "icons/touchpad.png", mask: "masks/touchpad.png", priority: 2, side: "front" },
+      { id: "bumpers", icon: "icons/bumpers.png", mask: "masks/bumperL.png", priority: 2, side: "front" },
+      { id: "trimpiece", icon: "icons/trimpiece.png", mask: "masks/centerBody.png", priority: 1, side: "front" }
     ];
 
     const BACK_PARTS = [
-      { id: "backShellMain", mask: "masks/backShellMain.png", priority: 1, side: "back" },
-      { id: "backHandles", mask: "masks/backHandles.png", priority: 1, side: "back" },
-      { id: "backTriggers", mask: "masks/backTriggers.png", priority: 2, side: "back" }
+      { id: "backShellMain", icon: "icons/backShellMain.png", mask: "masks/backShellMain.png", priority: 1, side: "back" },
+      { id: "backTriggers", icon: "icons/backTriggers.png", mask: "masks/backTriggers.png", priority: 2, side: "back" }
     ];
 
     const ALL_PARTS = [...FRONT_PARTS, ...BACK_PARTS];
@@ -1272,30 +1232,18 @@
 
       const thumb = document.createElement("div");
       thumb.className = "parts-thumb";
-      thumb.style.setProperty("--mask-url", `url('${part.mask}')`);
 
-      const info = document.createElement("div");
-      info.className = "parts-info";
+      const img = document.createElement("img");
+      img.src = part.icon || "icons/shells.png"; // fallback just in case
+      img.alt = getPartLabel(part.id);
+      thumb.appendChild(img);
 
       const nameEl = document.createElement("div");
       nameEl.className = "parts-name";
       nameEl.textContent = getPartLabel(part.id);
 
-      const metaEl = document.createElement("div");
-      metaEl.className = "parts-meta";
-      const price = PRICES[part.id] || 0;
-      metaEl.textContent = t("pricePrefix") + formatMoney(price);
-
-      info.appendChild(nameEl);
-      info.appendChild(metaEl);
-
-      const sidePill = document.createElement("div");
-      sidePill.className = "parts-side-pill";
-      sidePill.textContent = part.side === "front" ? t("side_front") : t("side_back");
-
       row.appendChild(thumb);
-      row.appendChild(info);
-      row.appendChild(sidePill);
+      row.appendChild(nameEl);
 
       row.addEventListener("click", () => {
         const targetSide = part.side;
@@ -1325,16 +1273,7 @@
       partsListEl.innerHTML = "";
       Object.keys(partsRowsById).forEach(k => delete partsRowsById[k]);
 
-      const frontLabel = document.createElement("div");
-      frontLabel.className = "parts-section-label";
-      frontLabel.textContent = t("sectionFront");
-      partsListEl.appendChild(frontLabel);
       FRONT_PARTS.forEach(p => partsListEl.appendChild(createPartRow(p)));
-
-      const backLabel = document.createElement("div");
-      backLabel.className = "parts-section-label";
-      backLabel.textContent = t("sectionBack");
-      partsListEl.appendChild(backLabel);
       BACK_PARTS.forEach(p => partsListEl.appendChild(createPartRow(p)));
     }
 
