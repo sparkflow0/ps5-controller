@@ -269,6 +269,21 @@
       touch-action: manipulation;
       transform-origin: center;
       perspective: 1600px;
+      overflow: hidden;
+    }
+
+    .controller-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url("back.png");
+      /* change path/name as you like */
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.25);
+      /* dim it */
+      opacity: 0.85;
+      z-index: 0;
+      pointer-events: none;
     }
 
     .controller-flip {
@@ -277,6 +292,7 @@
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.7s cubic-bezier(0.22, 0.68, 0.16, 1);
+      z-index: 1;
     }
 
     .controller-face {
@@ -840,6 +856,8 @@
         <div class="controller-wrapper" id="controllerWrapper">
 
           <div class="controller-area" id="controllerArea">
+              <div class="controller-bg"></div>
+
             <div class="controller-flip" id="controllerFlip">
               <div class="controller-face controller-face-front" id="controllerFaceFront">
                 <img src="controller.png" alt="PS5 Controller Front" />
