@@ -233,6 +233,10 @@
     .controller-wrapper {
       width: 100%;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* keeps controller + buttons centered */
     }
 
     .controller-area.has-selection::before {
@@ -279,7 +283,7 @@
       /* change path/name as you like */
       background-size: cover;
       background-position: center;
-      filter: brightness(0.25);
+      filter: brightness(0.45);
       /* dim it */
       opacity: 0.85;
       z-index: 0;
@@ -341,7 +345,7 @@
       mask-position: center;
     }
 
-    /* ----- NEW: circular buttons row under controller ----- */
+    /* ----- NEW: buttons under controller ----- */
 
     .controller-buttons-bar {
       position: absolute;
@@ -359,7 +363,6 @@
       gap: 16px;
     }
 
-    /* Base circular button */
     .circle-btn {
       position: relative;
       width: 90px;
@@ -370,14 +373,12 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-
       font-size: 0.8rem;
       line-height: 1.2;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       font-weight: 700;
       font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-
       color: rgba(255, 255, 255, 0.95);
       background: radial-gradient(circle at top,
           rgba(0, 0, 0, 0.95),
@@ -386,7 +387,6 @@
       box-shadow:
         0 12px 26px rgba(0, 0, 0, 0.95),
         0 0 18px rgba(4, 255, 0, 0.75);
-
       transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
       cursor: pointer;
       overflow: visible;
@@ -436,42 +436,86 @@
     }
 
     .controller-buttons-stack {
-      position: absolute;
-      left: 50%;
-      bottom: 80px;
-      transform: translateX(-50%);
+      position: relative;
+      margin-top: -28vh;
+      /* under controller shell */
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 22px;
+      gap: 33px;
       z-index: 10;
+      margin-bottom: 2vw;
     }
 
-    /* Cancel the big margin when inside the stack */
+    /* ---------- FIXED BOTTOM BAR (TOTAL + ADD TO CART) ---------- */
+
+    .controller-bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 18px;
+      z-index: 45;
+      background: radial-gradient(circle at bottom,
+          rgba(10, 12, 20, 0.96),
+          rgba(0, 0, 0, 0.98));
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow:
+        0 -18px 30px rgba(0, 0, 0, 1),
+        0 0 0 1px rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(18px);
+    }
+
+    .controller-bottom-bar .nav-amount-block {
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .controller-bottom-bar {
+        bottom: 8px;
+        padding: 8px 12px;
+        gap: 10px;
+      }
+
+      .nav-amount-label {
+        font-size: 0.7rem;
+      }
+
+      .nav-amount-value {
+        font-size: 1rem;
+      }
+
+      .add-to-cart-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+      }
+    }
+
     .controller-buttons-stack .side-toggle-container {
       margin-top: 0;
     }
 
+    /* Preview button */
 
-    /* Preview button over the controller with pulsing rings */
     .preview-btn {
       position: relative;
-
-      /* perfect circle */
-      width: 100px;
-      height: 100px;
+      width: 6rem;
+      height: 6rem;
       padding: 0;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       font-weight: 700;
       font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: rgba(255, 255, 255, 0.95);
-
       background: radial-gradient(circle at top,
           rgba(0, 0, 0, 0.95),
           rgba(20, 20, 20, 1));
@@ -484,7 +528,6 @@
       overflow: visible;
     }
 
-    /* Two animated rings pulsing out from the button */
     .preview-btn::before,
     .preview-btn::after {
       content: "";
@@ -540,7 +583,6 @@
     }
 
     .side-toggle-container {
-      /* a bit more space so it doesn’t collide with the button */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -562,6 +604,7 @@
     }
 
     /* ---------- PARTS PANEL ---------- */
+
     .parts-panel {
       background: radial-gradient(circle at top,
           rgba(255, 255, 255, 0.06),
@@ -572,7 +615,7 @@
         0 18px 30px rgba(0, 0, 0, 1),
         0 0 0 1px rgba(255, 255, 255, 0.04);
       padding: 12px 14px 14px;
-      height: calc(100vh - 90px);
+      height: calc(100vh - 20vh);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -670,7 +713,7 @@
         0 18px 30px rgba(0, 0, 0, 1),
         0 0 0 1px rgba(255, 255, 255, 0.03);
       padding: 10px 12px 12px;
-      height: calc(100vh - 90px);
+      height: calc(100vh - 20vh);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -779,44 +822,185 @@
       transform: translate(-50%, -120%) scale(1);
     }
 
-    /* ---------- RESPONSIVE: MOBILE ---------- */
+    /* ---------- RESPONSIVE ---------- */
 
-    @media (max-width: 900px) {
-      .nav-summary {
-        gap: 10px;
-      }
-
-      .nav-amount-value {
-        font-size: 1rem;
-      }
-
-      .add-to-cart-btn {
-        padding: 6px 12px;
-        font-size: 0.8rem;
+    @media (max-width: 1600px) {
+      .controller-buttons-stack {
+        position: relative;
+        margin-top: -12vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        z-index: 10;
+        margin-bottom: 2vw;
       }
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 900px) {
+
+      #bgCanvas {
+        display: block;
+      }
+
+      /* Make main content scrollable on tablets/phones */
+      .page-content {
+        padding-top: 70px;
+        height: auto;
+        min-height: calc(100vh - 70px);
+        overflow-y: auto;
+      }
+
+      .main-layout {
+        max-width: 100%;
+        padding: 12px 14px 20px;
+        grid-template-columns: 1fr 0.9fr;
+        grid-template-areas:
+          "controller controller"
+          "colors parts";
+        gap: 14px;
+      }
+
+      .controller-column,
+      .colors-column,
+      .parts-column {
+        padding: 0 6px;
+      }
+
+      .controller-wrapper {
+        max-width: 560px;
+        margin: 0 auto;
+      }
+
+      .controller-area {
+        max-width: 100%;
+        margin: 0 auto;
+      }
+
+      /* Panels: allow internal scroll, limit height within viewport */
+      .parts-panel,
+      .color-panel {
+        width: 100%;
+        box-sizing: border-box;
+        height: auto;
+        max-height: calc(100vh - 260px);
+        /* room for nav, controller, bottom bar */
+      }
+
+      .parts-thumb {
+        width: 100%;
+      }
+
+      .color-panel-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .controller-buttons-stack {
+        position: relative;
+        margin-top: -12vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        z-index: 10;
+        margin-bottom: 2vw;
+      }
+
+      .side-toggle {
+        transform: scale(1.1);
+      }
+
+      .side-btn {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+      }
+    }
+
+    @media (max-width: 500px) {
+
       #bgCanvas {
         display: none;
       }
 
+      .controller-buttons-stack {
+        position: relative;
+        margin-top: -12vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        z-index: 10;
+        margin-bottom: 2vw;
+      }
+
       .page-content {
         padding-top: 66px;
+        height: auto;
+        min-height: calc(100vh - 66px);
+        overflow-y: auto;
       }
 
       .main-layout {
         max-width: 100%;
         padding: 10px 10px 18px;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1.5fr;
         grid-template-areas:
           "controller controller"
           "colors parts";
         gap: 10px;
       }
 
+      .preview-btn {
+        margin-top: 15px;
+        position: relative;
+        width: 4rem;
+        height: 4rem;
+        padding: 0;
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      .controller-column,
+      .colors-column,
+      .parts-column {
+        padding: 0 4px;
+        height: auto;
+      }
+
+      .controller-wrapper {
+        max-width: 4380px;
+        margin: 0 auto;
+      }
+
+      .controller-area {
+        max-width: 100%;
+        margin: 0 auto;
+      }
+
+      .parts-panel,
+      .color-panel {
+        width: 100%;
+        box-sizing: border-box;
+        height: auto;
+        max-height: calc(100vh - 460px);
+      }
+
+      .parts-thumb {
+        width: 100%;
+      }
+
       .color-panel-grid {
-        grid-template-columns: repeat(3, minmax(70px, 1fr));
+        grid-template-columns: 1fr;
+      }
+
+      .side-toggle {
+        transform: scale(1.2);
+      }
+
+      .side-btn {
+        padding: 4px 10px;
+        font-size: 0.7rem;
       }
     }
   </style>
@@ -841,11 +1025,6 @@
         <button class="lang-btn active" data-lang="ar">ع</button>
         <button class="lang-btn" data-lang="en">EN</button>
       </div>
-      <div class="nav-amount-block">
-        <div class="nav-amount-label" data-i18n="totalLabel">الإجمالي</div>
-        <div class="nav-amount-value" id="summaryAmount">د.ب 0.00</div>
-      </div>
-      <button class="add-to-cart-btn" id="addToCartBtn" data-i18n="addToCart">أضِف إلى السلة</button>
     </div>
   </div>
 
@@ -856,7 +1035,7 @@
         <div class="controller-wrapper" id="controllerWrapper">
 
           <div class="controller-area" id="controllerArea">
-              <div class="controller-bg"></div>
+            <div class="controller-bg"></div>
 
             <div class="controller-flip" id="controllerFlip">
               <div class="controller-face controller-face-front" id="controllerFaceFront">
@@ -866,22 +1045,21 @@
                 <img src="controller_back.png" alt="PS5 Controller Back" />
               </div>
             </div>
+          </div>
 
-            <!-- Preview above Front/Back, all centered -->
-            <div class="controller-buttons-stack">
-              <button class="preview-btn" id="previewBtn" type="button" data-i18n="preview">
-                معاينة التغيرات
-              </button>
+          <!-- buttons under the controller -->
+          <div class="controller-buttons-stack">
+            <button class="preview-btn" id="previewBtn" type="button" data-i18n="preview">
+              معاينة التغيرات
+            </button>
 
-              <div class="side-toggle-container">
-                <div class="side-toggle" id="sideToggle">
-                  <button class="side-btn active" data-side="front" type="button" data-i18n="front">الأمام</button>
-                  <button class="side-btn" data-side="back" type="button" data-i18n="back">الخلف</button>
-                </div>
+            <div class="side-toggle-container">
+              <div class="side-toggle" id="sideToggle">
+                <button class="side-btn active" data-side="front" type="button" data-i18n="front">الأمام</button>
+                <button class="side-btn" data-side="back" type="button" data-i18n="back">الخلف</button>
               </div>
             </div>
           </div>
-
 
         </div>
       </div>
@@ -907,6 +1085,18 @@
         </div>
       </div>
     </div>
+
+    <!-- FIXED BOTTOM BAR: total + add to cart -->
+    <div class="controller-bottom-bar">
+      <div class="nav-amount-block">
+        <div class="nav-amount-label" data-i18n="totalLabel">الإجمالي</div>
+        <div class="nav-amount-value" id="summaryAmount">د.ب 0.00</div>
+      </div>
+      <button class="add-to-cart-btn" id="addToCartBtn" data-i18n="addToCart">
+        أضِف إلى السلة
+      </button>
+    </div>
+
   </div>
 
   <!-- Hover tooltip -->
@@ -1612,18 +1802,14 @@
       const cartItem = {
         id: Date.now(),
         name: currentLang === "ar" ? "متحكم PS5 مخصّص" : "Custom PS5 Controller",
-        unitPrice: total,       // price for a single controller – from configurator
+        unitPrice: total,
         quantity: 1,
-        config: snapshot        // all selected part colors (by partId -> hex)
+        config: snapshot
       };
 
       cartItems.push(cartItem);
       saveCart(cartItems);
 
-      // Optionally small confirmation
-      // alert(t("alertAdded") + "\n" + t("totalLabel") + ": " + formatMoney(total));
-
-      // Go to cart page
       window.location.href = "cart.html";
     });
 
