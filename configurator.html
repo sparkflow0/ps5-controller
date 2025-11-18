@@ -206,7 +206,7 @@
       margin: 0 auto;
       padding: 16px 16px 24px;
       display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(80px, 260px) minmax(230px, 150px);
+      grid-template-columns: minmax(0, 1.2fr) minmax(80px, 360px) minmax(230px, 150px);
       grid-template-areas: "controller colors parts";
       gap: 18px;
       align-items: stretch;
@@ -219,6 +219,7 @@
     }
 
     .colors-column {
+      /* display: none; */
       position: relative;
       grid-area: colors;
     }
@@ -279,7 +280,7 @@
     .controller-bg {
       position: absolute;
       inset: 0;
-      background-image: url("back.png");
+      /* background-image: url("back.png"); */
       /* change path/name as you like */
       background-size: cover;
       background-position: center;
@@ -437,7 +438,7 @@
 
     .controller-buttons-stack {
       position: relative;
-      margin-top: -28vh;
+      margin-top: -20vh;
       /* under controller shell */
       display: flex;
       flex-direction: column;
@@ -743,7 +744,17 @@
     .color-panel-grid {
       margin-top: 6px;
       display: grid;
-      grid-template-columns: repeat(2, minmax(80px, 1fr));
+      grid-template-columns: repeat(3, minmax(80px, 1fr));
+      gap: 10px;
+      padding-right: 2px;
+      overflow-y: auto;
+      flex: 0.2;
+    }
+
+    .color-panel-grid2 {
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(80px, 1fr));
       gap: 10px;
       padding-right: 2px;
       overflow-y: auto;
@@ -1104,7 +1115,7 @@
       </div>
 
       <!-- COLORS COLUMN (MIDDLE) -->
-      <div class="colors-column">
+      <div class="colors-column" id="colors-column">
         <div class="color-panel">
           <div class="color-panel-header">
             <div class="color-panel-title" id="colorPanelTitle">اختر جزءًا</div>
@@ -1116,7 +1127,7 @@
             <div class="color-panel-sub" id="colorPanelSub">الألوان المتاحة</div>
           </div>
 
-          <div class="color-panel-grid" id="colorPanelGrid"></div>
+          <div class="color-panel-grid2" id="colorPanelGrid"></div>
         </div>
       </div>
 
@@ -1383,9 +1394,9 @@
     ];
 
     const THUMB_OPTIONS = [
-      { hex: "#FF7A21", key: "option_standard" },
+      { hex: "#6ECFFF", key: "option_tmr" },
       { hex: "#E6D63A", key: "option_halleffect" },
-      { hex: "#6ECFFF", key: "option_tmr" }
+      { hex: "#FF7A21", key: "option_standard" }
     ];
 
     const ACCESSORY_COLORS = [
@@ -1583,12 +1594,18 @@
       colorPanelTitle.textContent = t("selectPart");
       colorPanelSub.textContent = t("availableColors");
       colorPanelGrid.innerHTML = "";
+
+      // colorPanelSub.style.display = "none";
+      // colorPanelGrid.style.display = "none";
+
     }
 
     function resetOptionsPanel() {
-      optionsPanelTitle.textContent = t("selectPart");
       optionsPanelSub.textContent = t("availableOptions");
       optionsPanelGrid.innerHTML = "";
+            // optionsPanelSub.style.display = "none";
+      // optionsPanelGrid.style.display = "none";
+
     }
 
     /* ----- Palette panel ----- */
@@ -1675,6 +1692,7 @@
 
       clearSelection();
       resetColorPanel();
+      resetOptionsPanel();
     }
 
     sideButtons.forEach(btn => {
@@ -1701,6 +1719,8 @@
       row.dataset.partId = part.id;
       row.dataset.side = part.side;
 
+      const colorsColumn = document.getElementById("colors-column");
+
       const thumb = document.createElement("div");
       thumb.className = "parts-thumb";
 
@@ -1720,6 +1740,7 @@
         const targetSide = part.side;
         if (currentSide !== targetSide) setSide(targetSide);
 
+        // colorsColumn.style.display = "block";
         clearSelection();
 
         selectedPartId = part.id;
@@ -1877,6 +1898,9 @@
       ) {
         clearSelection();
         resetColorPanel();
+        resetOptionsPanel();
+        // const colorsColumn = document.getElementById("colors-column");
+        // colorsColumn.style.display = "none";
       }
     });
 
@@ -1999,6 +2023,8 @@
         controllerArea.classList.remove("has-selection");
         controllerArea.style.removeProperty("--selected-mask-url");
         resetColorPanel();
+        resetOptionsPanel();
+
       }
 
       updateSummary();
