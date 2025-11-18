@@ -761,6 +761,20 @@
       flex: 1;
     }
 
+    .color-empty-placeholder {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .color-empty-placeholder img {
+      max-width: 70%;
+      height: auto;
+      opacity: 0.2;
+      filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.9));
+    }
+
     .cd-cell {
       display: flex;
       flex-direction: column;
@@ -1117,17 +1131,30 @@
       <!-- COLORS COLUMN (MIDDLE) -->
       <div class="colors-column" id="colors-column">
         <div class="color-panel">
-          <div class="color-panel-header">
+
+          <!-- Top header: part name + options title -->
+          <div class="color-panel-header" id="colorPanelHeaderTop">
             <div class="color-panel-title" id="colorPanelTitle">اختر جزءًا</div>
             <div class="color-panel-sub" id="optionsPanelSub">خيارات القطعة</div>
           </div>
+
+          <!-- Options grid (stick type ...) -->
           <div class="color-panel-grid" id="optionsPanelGrid"></div>
 
-          <div class="color-panel-header">
+          <!-- Bottom header: colors title -->
+          <div class="color-panel-header" id="colorPanelHeaderBottom">
             <div class="color-panel-sub" id="colorPanelSub">الألوان المتاحة</div>
           </div>
 
+          <!-- Colors grid -->
           <div class="color-panel-grid2" id="colorPanelGrid"></div>
+
+          <!-- Empty state (shown when no part is selected) -->
+          <div class="color-empty-placeholder" id="colorEmptyState">
+            <!-- change the image path to whatever big icon you want -->
+            <img src="icons/shells.png" alt="Select a part" />
+          </div>
+
         </div>
       </div>
 
@@ -1464,11 +1491,13 @@
     const addToCartBtn = document.getElementById("addToCartBtn");
 
     const colorPanelTitle = document.getElementById("colorPanelTitle");
-    const optionsPanelTitle = document.getElementById("optionsPanelTitle");
     const colorPanelSub = document.getElementById("colorPanelSub");
     const optionsPanelSub = document.getElementById("optionsPanelSub");
-    const colorPanelGrid = document.getElementById("colorPanelGrid");
-    const optionsPanelGrid = document.getElementById("optionsPanelGrid");
+    const colorPanelGrid = document.getElementById("colorPanelGrid");       // colors grid
+    const optionsPanelGrid = document.getElementById("optionsPanelGrid");   // options grid
+    const colorPanelHeaderTop = document.getElementById("colorPanelHeaderTop");
+    const colorPanelHeaderBottom = document.getElementById("colorPanelHeaderBottom");
+    const colorEmptyState = document.getElementById("colorEmptyState");
 
     const partsListEl = document.getElementById("partsList");
     const partTooltip = document.getElementById("partTooltip");
@@ -1592,26 +1621,38 @@
 
     function resetColorPanel() {
       colorPanelTitle.textContent = t("selectPart");
-      colorPanelSub.textContent = t("availableColors");
+      colorPanelSub.textContent = "";
+      optionsPanelSub.textContent = "";
+
       colorPanelGrid.innerHTML = "";
+      optionsPanelGrid.innerHTML = "";
 
-      // colorPanelSub.style.display = "none";
-      // colorPanelGrid.style.display = "none";
+      // hide headers + grids
+      colorPanelHeaderTop.style.display = "none";
+      colorPanelHeaderBottom.style.display = "none";
+      colorPanelGrid.style.display = "none";
+      optionsPanelGrid.style.display = "none";
 
+      // show empty placeholder
+      colorEmptyState.style.display = "flex";
     }
 
     function resetOptionsPanel() {
-      optionsPanelSub.textContent = t("availableOptions");
+      optionsPanelSub.textContent = "";
       optionsPanelGrid.innerHTML = "";
-            // optionsPanelSub.style.display = "none";
-      // optionsPanelGrid.style.display = "none";
-
     }
 
     /* ----- Palette panel ----- */
 
     function openColorPanelForPart(partId) {
       const label = getPartLabel(partId);
+
+      // show headers + grids, hide empty state
+      colorEmptyState.style.display = "none";
+      colorPanelHeaderTop.style.display = "block";
+      colorPanelHeaderBottom.style.display = "block";
+      colorPanelGrid.style.display = "grid";
+      optionsPanelGrid.style.display = "grid";
 
       colorPanelTitle.textContent = label;
       colorPanelSub.textContent = t("availableColors");
@@ -1623,6 +1664,7 @@
       const palette = getPaletteForPart(partId);
       const optionspalette = getOptionsForPart(partId);
 
+      // colors
       palette.forEach(({ hex, key }) => {
         const cell = document.createElement("div");
         cell.className = "cd-cell";
@@ -1646,9 +1688,11 @@
         colorPanelGrid.appendChild(cell);
       });
 
+      // options (stick types) – only for sticks
       if (optionspalette) {
         optionsPanelSub.style.display = "block";
         optionsPanelGrid.style.display = "grid";
+
         optionspalette.forEach(({ hex, key }) => {
           const cell2 = document.createElement("div");
           cell2.className = "cd-cell-op";
@@ -1660,7 +1704,6 @@
             e.stopPropagation();
             if (!selectedPartId) return;
             applyOptions(selectedPartId, hex);
-            //playClick2();
           });
 
           const lbl = document.createElement("div");
@@ -1882,9 +1925,14 @@
 
     document.addEventListener("click", (e) => {
       const clickInsideController = controllerArea.contains(e.target);
-      const clickInsideColors = colorPanelGrid.contains(e.target) ||
-        document.getElementById("colorPanelTitle").contains(e.target) ||
-        document.getElementById("colorPanelSub").contains(e.target);
+
+      const clickInsideColors =
+        colorPanelGrid.contains(e.target) ||
+        optionsPanelGrid.contains(e.target) ||
+        colorPanelHeaderTop.contains(e.target) ||
+        colorPanelHeaderBottom.contains(e.target) ||
+        colorEmptyState.contains(e.target);
+
       const clickInsideParts = partsListEl.contains(e.target);
       const clickInsideSideToggle = sideToggle.contains(e.target);
       const clickInsideNav = document.querySelector(".top-nav").contains(e.target);
