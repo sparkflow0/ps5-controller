@@ -617,25 +617,86 @@
         0 0 0 1px rgba(255, 255, 255, 0.04);
       padding: 12px 14px 14px;
       height: calc(100vh - 20vh);
-      overflow: hidden;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
+      gap: 10px;
     }
 
-    .parts-list {
-      margin-top: 8px;
-      padding-right: 2px;
-      overflow-y: auto;
-      flex: 1;
+    .parts-accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    .parts-panel-header {
+    .accordion-item {
+      background: radial-gradient(circle at top,
+          rgba(255, 255, 255, 0.04),
+          rgba(0, 0, 0, 0.94));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      box-shadow:
+        0 10px 18px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(255, 255, 255, 0.03);
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 10px;
+      color: rgba(255, 255, 255, 0.85);
+      background: linear-gradient(135deg, rgba(13, 13, 13, 0.85), rgba(10, 10, 10, 0.7));
+      border: none;
+      text-align: start;
+      cursor: pointer;
+    }
+
+    .accordion-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: rgba(255, 255, 255, 0.7);
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .accordion-icon::before {
+      content: "+";
+      font-weight: 800;
+    }
+
+    .accordion-item.open .accordion-icon {
+      transform: rotate(180deg);
+      background: rgba(0, 255, 128, 0.08);
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .accordion-item.open .accordion-icon::before {
+      content: "-";
+    }
+
+    .accordion-content {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.35s ease;
+    }
+
+    .accordion-body {
+      padding: 8px 6px 10px;
+    }
+
+    .parts-list {
+      margin-top: 2px;
+      padding-right: 2px;
+      overflow-y: auto;
+      max-height: 48vh;
     }
 
     .parts-title {
@@ -959,9 +1020,9 @@
         width: 100%;
       }
 
-      .color-panel-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      /* .color-panel-grid {
+        grid-template-columns: repeat(3, 1fr);
+      } */
 
       .controller-buttons-stack {
         position: relative;
@@ -1051,17 +1112,36 @@
         width: 100%;
         box-sizing: border-box;
         height: auto;
-        max-height: calc(100vh - 460px);
+        max-height: calc(100vh - 360px);
       }
 
       .parts-thumb {
         width: 100%;
       }
 
-      .color-panel-grid {
-        grid-template-columns: 1fr;
-      }
+      /* .color-panel-grid {
+        grid-template-columns: 3fr;
+      } */
 
+      .color-panel-grid {
+        display: none;
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(80px, 1fr));
+      gap: 10px;
+      padding-right: 2px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .color-panel-grid2 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(80px, 1fr));
+      gap: 10px;
+      padding-right: 2px;
+      overflow-y: auto;
+      flex: 1;
+    }
       .side-toggle {
         transform: scale(1.2);
       }
@@ -1161,10 +1241,30 @@
       <!-- PARTS COLUMN (RIGHT) -->
       <div class="parts-column">
         <div class="parts-panel">
-          <div class="parts-panel-header">
-            <div class="parts-title" data-i18n="partsTitle">الأجزاء</div>
+          <div class="parts-accordion">
+            <div class="accordion-item open">
+              <button class="accordion-header" type="button">
+                <div class="parts-title" data-i18n="partsOptionsHeading">خيارات القطعة</div>
+                <span class="accordion-icon" aria-hidden="true"></span>
+              </button>
+              <div class="accordion-content">
+                <div class="accordion-body">
+                  <div class="parts-list" data-list="primary"></div>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <button class="accordion-header" type="button">
+                <div class="parts-title" data-i18n="partsColorsHeading">الألوان المتاحة</div>
+                <span class="accordion-icon" aria-hidden="true"></span>
+              </button>
+              <div class="accordion-content">
+                <div class="accordion-body">
+                  <div class="parts-list" data-list="secondary"></div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="parts-list" id="partsList"></div>
         </div>
       </div>
     </div>
@@ -1499,7 +1599,10 @@
     const colorPanelHeaderBottom = document.getElementById("colorPanelHeaderBottom");
     const colorEmptyState = document.getElementById("colorEmptyState");
 
-    const partsListEl = document.getElementById("partsList");
+    const partsLists = Array.from(document.querySelectorAll(".parts-list"));
+    const primaryList = document.querySelector('.parts-list[data-list="primary"]');
+    const secondaryList = document.querySelector('.parts-list[data-list="secondary"]');
+    const accordionItems = Array.from(document.querySelectorAll(".accordion-item"));
     const partTooltip = document.getElementById("partTooltip");
 
     const langToggle = document.getElementById("langToggle");
@@ -1613,9 +1716,9 @@
         layer.classList.remove("selected");
       });
 
-      Object.values(partsRowsById).forEach(row => {
-        if (!row) return;
-        row.classList.remove("active");
+      Object.values(partsRowsById).forEach(rows => {
+        if (!rows) return;
+        rows.forEach(row => row.classList.remove("active"));
       });
     }
 
@@ -1762,8 +1865,6 @@
       row.dataset.partId = part.id;
       row.dataset.side = part.side;
 
-      const colorsColumn = document.getElementById("colors-column");
-
       const thumb = document.createElement("div");
       thumb.className = "parts-thumb";
 
@@ -1783,7 +1884,6 @@
         const targetSide = part.side;
         if (currentSide !== targetSide) setSide(targetSide);
 
-        // colorsColumn.style.display = "block";
         clearSelection();
 
         selectedPartId = part.id;
@@ -1793,23 +1893,35 @@
         const layer = layers[part.id];
         if (layer) layer.classList.add("selected");
 
-        Object.values(partsRowsById).forEach(r => r && r.classList.remove("active"));
-        row.classList.add("active");
+        Object.values(partsRowsById).forEach(rArr => {
+          if (!rArr) return;
+          rArr.forEach(r => r.classList.remove("active"));
+        });
+        (partsRowsById[part.id] || []).forEach(r => r.classList.add("active"));
 
         playClick();
         openColorPanelForPart(part.id);
       });
 
-      partsRowsById[part.id] = row;
+      if (!partsRowsById[part.id]) partsRowsById[part.id] = [];
+      partsRowsById[part.id].push(row);
       return row;
     }
 
     function buildPartsList() {
-      partsListEl.innerHTML = "";
+      partsLists.forEach(list => list.innerHTML = "");
       Object.keys(partsRowsById).forEach(k => delete partsRowsById[k]);
 
-      FRONT_PARTS.forEach(p => partsListEl.appendChild(createPartRow(p)));
-      BACK_PARTS.forEach(p => partsListEl.appendChild(createPartRow(p)));
+      const optionParts = [...FRONT_PARTS, ...BACK_PARTS].filter(p => getOptionsForPart(p.id));
+      const colorOnlyParts = [...FRONT_PARTS, ...BACK_PARTS].filter(p => !getOptionsForPart(p.id));
+
+      if (primaryList) {
+        optionParts.forEach(p => primaryList.appendChild(createPartRow(p)));
+      }
+      if (secondaryList) {
+        colorOnlyParts.forEach(p => secondaryList.appendChild(createPartRow(p)));
+      }
+      refreshAccordionHeights();
     }
 
     /* ----- Hit testing ----- */
@@ -1860,10 +1972,13 @@
       const layer = layers[partId];
       if (layer) layer.classList.add("selected");
 
-      const row = partsRowsById[partId];
-      if (row) {
-        Object.values(partsRowsById).forEach(r => r && r.classList.remove("active"));
-        row.classList.add("active");
+      const rows = partsRowsById[partId] || [];
+      if (rows.length) {
+        Object.values(partsRowsById).forEach(rArr => {
+          if (!rArr) return;
+          rArr.forEach(r => r.classList.remove("active"));
+        });
+        rows.forEach(r => r.classList.add("active"));
       }
 
       playClick();
@@ -1933,7 +2048,7 @@
         colorPanelHeaderBottom.contains(e.target) ||
         colorEmptyState.contains(e.target);
 
-      const clickInsideParts = partsListEl.contains(e.target);
+      const clickInsideParts = partsLists.some(list => list.contains(e.target));
       const clickInsideSideToggle = sideToggle.contains(e.target);
       const clickInsideNav = document.querySelector(".top-nav").contains(e.target);
 
@@ -2042,8 +2157,12 @@
       const addToCartTextEl = document.querySelector("[data-i18n='addToCart']");
       if (addToCartTextEl) addToCartTextEl.textContent = t("addToCart");
 
-      const partsTitleEl = document.querySelector("[data-i18n='partsTitle']");
-      if (partsTitleEl) partsTitleEl.textContent = t("partsTitle");
+      document.querySelectorAll("[data-i18n='partsOptionsHeading']").forEach(el => {
+        el.textContent = t("availableOptions");
+      });
+      document.querySelectorAll("[data-i18n='partsColorsHeading']").forEach(el => {
+        el.textContent = t("availableColors");
+      });
 
       // const previewBtnEl = document.getElementById("previewBtn");
       // if (previewBtnEl) previewBtnEl.textContent = t("preview");
@@ -2062,8 +2181,8 @@
           controllerArea.style.setProperty("--selected-mask-url", `url('${part.mask}')`);
         }
 
-        const row = partsRowsById[selectedPartId];
-        if (row) row.classList.add("active");
+        const rows = partsRowsById[selectedPartId] || [];
+        rows.forEach(row => row.classList.add("active"));
         const layer = layers[selectedPartId];
         if (layer) layer.classList.add("selected");
         openColorPanelForPart(selectedPartId);
@@ -2078,8 +2197,34 @@
       updateSummary();
     }
 
+    function refreshAccordionHeights() {
+      accordionItems.forEach(item => {
+        const content = item.querySelector(".accordion-content");
+        if (!content) return;
+        if (item.classList.contains("open")) {
+          content.style.maxHeight = content.scrollHeight + "px";
+        } else {
+          content.style.maxHeight = "0px";
+        }
+      });
+    }
+
+    accordionItems.forEach(item => {
+      const header = item.querySelector(".accordion-header");
+      const content = item.querySelector(".accordion-content");
+      if (!header || !content) return;
+      header.addEventListener("click", () => {
+        const isOpen = item.classList.contains("open");
+        item.classList.toggle("open", !isOpen);
+        refreshAccordionHeights();
+      });
+    });
+
+    window.addEventListener("resize", refreshAccordionHeights);
+
     // Initial language application
     applyLanguage();
+    refreshAccordionHeights();
   </script>
 </body>
 
