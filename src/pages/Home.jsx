@@ -113,16 +113,16 @@ function HomePage() {
     ]);
 
     const THUMB_PARTS = [
-      { id: 'shell', mask: '/masks/leftShell.png' },
-      { id: 'trimpiece', mask: '/masks/centerBody.png' },
-      { id: 'faceButtons', mask: '/masks/faceButtons.png' },
-      { id: 'stickL', mask: '/masks/stickL.png' },
-      { id: 'stickR', mask: '/masks/stickR.png' },
-      { id: 'touchpad', mask: '/masks/touchpad.png' },
-      { id: 'share', mask: '/masks/share.png' },
-      { id: 'options', mask: '/masks/options.png' },
-      { id: 'psButton', mask: '/masks/psButton.png' },
-      { id: 'bumpers', mask: '/masks/bumperL.png' }
+      { id: 'shell', mask: '/assets/masks/leftShell.png' },
+      { id: 'trimpiece', mask: '/assets/masks/centerBody.png' },
+      { id: 'faceButtons', mask: '/assets/masks/faceButtons.png' },
+      { id: 'stickL', mask: '/assets/masks/stickL.png' },
+      { id: 'stickR', mask: '/assets/masks/stickR.png' },
+      { id: 'touchpad', mask: '/assets/masks/touchpad.png' },
+      { id: 'share', mask: '/assets/masks/share.png' },
+      { id: 'options', mask: '/assets/masks/options.png' },
+      { id: 'psButton', mask: '/assets/masks/psButton.png' },
+      { id: 'bumpers', mask: '/assets/masks/bumperL.png' }
     ];
 
     function getPaletteForPart(partId) {
@@ -422,7 +422,7 @@ function HomePage() {
 
       <section className="hero">
         <video className="hero-video" autoPlay muted loop playsInline>
-          <source src="/back.mp4" type="video/mp4" />
+          <source src="/assets/back.mp4" type="video/mp4" />
         </video>
         <div className="hero-overlay"></div>
 

@@ -5,8 +5,8 @@ const configuratorMarkup = `
 
 <canvas id="bgCanvas"></canvas>
  Sounds 
-<audio id="sfxClick" preload="auto" src="sounds/click.mp3"></audio>
-<audio id="sfxClick2" preload="auto" src="sounds/click2.mp3"></audio>
+<audio id="sfxClick" preload="auto" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="></audio>
+<audio id="sfxClick2" preload="auto" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="></audio>
  TOP NAV 
 <div class="top-nav">
 <div class="nav-logo">
@@ -30,10 +30,10 @@ const configuratorMarkup = `
 <div class="controller-bg"></div>
 <div class="controller-flip" id="controllerFlip">
 <div class="controller-face controller-face-front" id="controllerFaceFront">
-<img alt="PS5 Controller Front" src="controller.png"/>
+<img alt="PS5 Controller Front" src="/assets/controller.png"/>
 </div>
 <div class="controller-face controller-face-back" id="controllerFaceBack">
-<img alt="PS5 Controller Back" src="controller_back.png"/>
+<img alt="PS5 Controller Back" src="/assets/controller_back.png"/>
 </div>
 </div>
 </div>
@@ -67,7 +67,7 @@ const configuratorMarkup = `
 <!-- Empty state (shown when no part is selected) -->
 <div class="color-empty-placeholder" id="colorEmptyState">
 <!-- change the image path to whatever big icon you want -->
-<img alt="Select a part" src="icons/shells.png"/>
+<img alt="Select a part" src="/assets/icons/shells.png"/>
 </div>
 </div>
 </div>
@@ -137,6 +137,24 @@ const configuratorScript = `
     }
     const playClick = () => playSfx(sfxClickEl);
     const playClick2 = () => playSfx(sfxClick2El);
+
+    const ZOHO_ACCESS_TOKEN = "${import.meta.env.VITE_ZOHO_ACCESS_TOKEN || ""}";
+    const ZOHO_ORG_ID = "${import.meta.env.VITE_ZOHO_ORG_ID || ""}";
+    const ZOHO_BASE =
+      window.location.hostname === "localhost"
+        ? "/zoho/inventory/v1"
+        : "https://www.zohoapis.com/inventory/v1";
+    const ZOHO_ITEMS_ENDPOINT = ZOHO_BASE + "/items";
+
+    const dynamicColorsByPart = {};
+    const dynamicOptionsByPart = {};
+    const dynamicPricesByPart = {};
+    const selectedPriceByPart = {};
+    let availablePartsSet = new Set();
+
+    function normalizeVariant(str) {
+      return (str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
 
     /* ---------- I18N ---------- */
 
@@ -286,21 +304,21 @@ const configuratorScript = `
     const BASE_HEIGHT = 768;
 
     const FRONT_PARTS = [
-      { id: "shell", icon: "icons/shells.png", mask: "masks/leftShell.png", priority: 4, side: "front" },
-      { id: "trimpiece", icon: "icons/trimpiece.png", mask: "masks/centerBody.png", priority: 1, side: "front" },
-      { id: "stickL", icon: "icons/stickL.png", mask: "masks/stickL.png", priority: 3, side: "front" },
-      { id: "stickR", icon: "icons/stickR.png", mask: "masks/stickR.png", priority: 3, side: "front" },
-      { id: "faceButtons", icon: "icons/faceButtons.png", mask: "masks/faceButtons.png", priority: 4, side: "front" },
-      { id: "touchpad", icon: "icons/touchpad.png", mask: "masks/touchpad.png", priority: 2, side: "front" },
-      { id: "bumpers", icon: "icons/bumpers.png", mask: "masks/bumperL.png", priority: 2, side: "front" },
-      { id: "psButton", icon: "icons/psButton.png", mask: "masks/psButton.png", priority: 1, side: "front" },
-      { id: "share", icon: "icons/share.png", mask: "masks/share.png", priority: 4, side: "front" },
-      { id: "options", icon: "icons/options.png", mask: "masks/options.png", priority: 4, side: "front" },
+      { id: "shell", icon: "/assets/icons/shells.png", mask: "/assets/masks/leftShell.png", priority: 4, side: "front" },
+      { id: "trimpiece", icon: "/assets/icons/trimpiece.png", mask: "/assets/masks/centerBody.png", priority: 1, side: "front" },
+      { id: "stickL", icon: "/assets/icons/stickL.png", mask: "/assets/masks/stickL.png", priority: 3, side: "front" },
+      { id: "stickR", icon: "/assets/icons/stickR.png", mask: "/assets/masks/stickR.png", priority: 3, side: "front" },
+      { id: "faceButtons", icon: "/assets/icons/faceButtons.png", mask: "/assets/masks/faceButtons.png", priority: 4, side: "front" },
+      { id: "touchpad", icon: "/assets/icons/touchpad.png", mask: "/assets/masks/touchpad.png", priority: 2, side: "front" },
+      { id: "bumpers", icon: "/assets/icons/bumpers.png", mask: "/assets/masks/bumperL.png", priority: 2, side: "front" },
+      { id: "psButton", icon: "/assets/icons/psButton.png", mask: "/assets/masks/psButton.png", priority: 1, side: "front" },
+      { id: "share", icon: "/assets/icons/share.png", mask: "/assets/masks/share.png", priority: 4, side: "front" },
+      { id: "options", icon: "/assets/icons/options.png", mask: "/assets/masks/options.png", priority: 4, side: "front" },
     ];
 
     const BACK_PARTS = [
-      { id: "backShellMain", icon: "icons/backShellMain.png", mask: "masks/backShellMain.png", priority: 1, side: "back" },
-      { id: "backTriggers", icon: "icons/backTriggers.png", mask: "masks/backTriggers.png", priority: 2, side: "back" }
+      { id: "backShellMain", icon: "/assets/icons/backShellMain.png", mask: "/assets/masks/backShellMain.png", priority: 1, side: "back" },
+      { id: "backTriggers", icon: "/assets/icons/backTriggers.png", mask: "/assets/masks/backTriggers.png", priority: 2, side: "back" }
     ];
 
     const ALL_PARTS = [...FRONT_PARTS, ...BACK_PARTS];
@@ -320,6 +338,11 @@ const configuratorScript = `
       backHandles: "part_backHandles",
       backTriggers: "part_backTriggers"
     };
+
+    const PART_SLUG_TO_ID = {};
+    ALL_PARTS.forEach(p => {
+      PART_SLUG_TO_ID[normalizeVariant(p.id)] = p.id;
+    });
 
     function getPartLabel(partId) {
       const key = PART_KEYS[partId] || partId;
@@ -384,6 +407,33 @@ const configuratorScript = `
       { hex: "#E3E3E3", key: "color_frostedWhite" }
     ];
 
+    const COLOR_LOOKUP = {};
+    const OPTION_LOOKUP = {};
+
+    function seedColorLookup() {
+      const colorSources = [...SHELL_COLORS, ...ACCESSORY_COLORS];
+      colorSources.forEach(({ hex, key }) => {
+        const slugFromKey = normalizeVariant(key.replace(/^color_/, ""));
+        if (slugFromKey) COLOR_LOOKUP[slugFromKey] = { hex, key };
+        const labelEn = i18n.en[key];
+        const slugFromLabel = normalizeVariant(labelEn);
+        if (slugFromLabel) COLOR_LOOKUP[slugFromLabel] = { hex, key };
+      });
+    }
+
+    function seedOptionLookup() {
+      THUMB_OPTIONS.forEach(({ hex, key }) => {
+        const slugFromKey = normalizeVariant(key.replace(/^option_/, ""));
+        if (slugFromKey) OPTION_LOOKUP[slugFromKey] = { hex, key };
+        const labelEn = i18n.en[key];
+        const slugFromLabel = normalizeVariant(labelEn);
+        if (slugFromLabel) OPTION_LOOKUP[slugFromLabel] = { hex, key };
+      });
+    }
+
+    seedColorLookup();
+    seedOptionLookup();
+
     const TRANSPARENT_HEXES = new Set([
       "#ededed",
       "#d43838",
@@ -407,12 +457,187 @@ const configuratorScript = `
     ]);
 
     function getPaletteForPart(partId) {
-      return SHELL_PART_IDS.has(partId) ? SHELL_COLORS : ACCESSORY_COLORS;
+      // Only use Zoho-provided colors; no fallback palette.
+      const dynamicPalette = dynamicColorsByPart[partId];
+      return Array.isArray(dynamicPalette) ? dynamicPalette : [];
     }
 
     function getOptionsForPart(partId) {
-      return THUMB_PART_IDS.has(partId) ? THUMB_OPTIONS : "";
+      // Only use Zoho-provided gamemode options; no fallback options.
+      const dynamicOptions = dynamicOptionsByPart[partId];
+      return Array.isArray(dynamicOptions) ? dynamicOptions : [];
     }
+
+    function addVariantToMap(targetMap, partId, variant) {
+      if (!targetMap[partId]) targetMap[partId] = [];
+      const variantSlug = normalizeVariant(variant.key || "");
+      const existing = targetMap[partId].find(v => normalizeVariant(v.key || "") === variantSlug);
+      if (existing) {
+        if (variant.price != null) existing.price = variant.price;
+        if (variant.qty != null) existing.qty = variant.qty;
+      } else {
+        targetMap[partId].push(variant);
+      }
+    }
+
+    function parseColorVariant(valueRaw) {
+      const value = (valueRaw || "").trim();
+      const normalized = normalizeVariant(value.replace(/^color_/, ""));
+      // Hex color?
+      const stripped = value.replace("#", "");
+      if (/^[0-9a-f]{6}$/i.test(stripped)) {
+        const hex = value.startsWith("#") ? value : "#" + value;
+        return { hex, key: hex };
+      }
+      if (COLOR_LOOKUP[normalized]) return COLOR_LOOKUP[normalized];
+      return null;
+    }
+
+    function parseOptionVariant(valueRaw) {
+      const normalized = normalizeVariant(valueRaw);
+      if (OPTION_LOOKUP[normalized]) return OPTION_LOOKUP[normalized];
+      return null;
+    }
+
+    function recomputeAvailableParts() {
+      const nextSet = new Set();
+      ALL_PARTS.forEach(part => {
+        const hasColors = (dynamicColorsByPart[part.id] || []).length > 0;
+        const hasOptions = (dynamicOptionsByPart[part.id] || []).length > 0;
+        const hasPrice = dynamicPricesByPart[part.id] != null;
+        if (hasColors || hasOptions || hasPrice) nextSet.add(part.id);
+      });
+      availablePartsSet = nextSet;
+    }
+
+    function addPriceFallback(partId, price) {
+      if (typeof price === "number" && !Number.isNaN(price) && price >= 0) {
+        if (dynamicPricesByPart[partId] == null) dynamicPricesByPart[partId] = price;
+      }
+    }
+
+    function getItemQty(item) {
+      const candidates = [
+        item.available_stock,
+        item.available_quantity,
+        item.availablequantity,
+        item.stock_on_hand,
+        item.quantity_available,
+        item.quantityavailable
+      ];
+      for (const c of candidates) {
+        const n = Number(c);
+        if (!Number.isNaN(n)) return n;
+      }
+      return null;
+    }
+
+    function parseZohoItem(item) {
+      const rawName = (item && (item.name || item.item_name)) || "";
+      const match = /^ps5_([^_]+)_([^_]+)_(.+)$/i.exec(rawName.trim());
+      if (!match) return;
+      const partSlug = normalizeVariant(match[1]);
+      const typeSlug = normalizeVariant(match[2]);
+      const valueRaw = match[3];
+      const partId = PART_SLUG_TO_ID[partSlug];
+      if (!partId) return;
+      const price = typeof item.rate === "number" ? item.rate : parseFloat(item.rate);
+      const qty = getItemQty(item);
+
+      if (typeSlug === "gamemode") {
+        const opt = parseOptionVariant(valueRaw);
+        if (!opt) return;
+        addVariantToMap(dynamicOptionsByPart, partId, { ...opt, price, qty });
+        addPriceFallback(partId, price);
+        return;
+      }
+
+      if (typeSlug === "color") {
+        const col = parseColorVariant(valueRaw);
+        if (!col) return;
+        addVariantToMap(dynamicColorsByPart, partId, { ...col, price, qty });
+        addPriceFallback(partId, price);
+        return;
+      }
+    }
+
+    async function fetchZohoItems() {
+      if (!ZOHO_ACCESS_TOKEN || !ZOHO_ORG_ID) {
+        console.warn("[Zoho] Missing Zoho credentials, skipping inventory fetch.");
+        return [];
+      }
+
+      const perPage = 200;
+      const maxPages = 10; // safety cap to avoid runaway loops
+      const allItems = [];
+
+      for (let page = 1; page <= maxPages; page++) {
+        const url =
+          ZOHO_ITEMS_ENDPOINT +
+          "?page=" + page +
+          "&per_page=" + perPage +
+          "&organization_id=" + encodeURIComponent(ZOHO_ORG_ID);
+        console.log("[Zoho Debug] Fetching items page", page, "from:", url);
+        try {
+          const res = await fetch(url, {
+            headers: {
+              Authorization: "Zoho-oauthtoken " + ZOHO_ACCESS_TOKEN
+            }
+          });
+          if (!res.ok) {
+            let body = "";
+            try { body = await res.text(); } catch { /* ignore */ }
+            console.error("[Zoho Debug] Response body:", body);
+            throw new Error("HTTP " + res.status + (body ? (": " + body) : ""));
+          }
+          const data = await res.json();
+          const items = (data && Array.isArray(data.items)) ? data.items : [];
+          allItems.push(...items);
+          console.log("[Zoho Debug] Page", page, "items:", items.length, "Total so far:", allItems.length);
+          if (items.length < perPage) break;
+        } catch (err) {
+          console.error("[Zoho] Failed to fetch items", err);
+          break;
+        }
+      }
+      return allItems;
+    }
+
+    function logZohoSummary(items) {
+      const sample = items.map(it => ({
+        name: it.name || it.item_name,
+        id: it.item_id || it.itemid || "n/a"
+      }));
+      console.log("[Zoho Debug] Items fetched:", items.length, "Names/ids:", sample);
+    }
+
+    async function bootstrapZohoInventory() {
+      const items = await fetchZohoItems();
+      if (!items.length) return;
+      items.forEach(parseZohoItem);
+      Object.keys(configState).forEach(pid => {
+        const val = configState[pid];
+        if (!val) return;
+        const hasOptionMatch = (dynamicOptionsByPart[pid] || []).some(entry => (entry.hex || "").toLowerCase() === (val || "").toLowerCase());
+        setPartPrice(pid, val, hasOptionMatch);
+      });
+      recomputeAvailableParts();
+      logZohoSummary(items);
+      buildPartsList();
+      if (selectedPartId) {
+        const selPartObj = ALL_PARTS.find(p => p.id === selectedPartId);
+        if (!selPartObj || !isPartActive(selPartObj)) {
+          clearSelection();
+          resetColorPanel();
+          resetOptionsPanel();
+        }
+      }
+      if (selectedPartId) {
+        openColorPanelForPart(selectedPartId);
+      }
+      updateSummary();
+    }
+
     const controllerWrapper = document.getElementById("controllerWrapper");
     const controllerArea = document.getElementById("controllerArea");
     const faceFrontEl = document.getElementById("controllerFaceFront");
@@ -448,6 +673,7 @@ const configuratorScript = `
     let masksReady = false;
     let currentSide = "front";
     let selectedPartId = null;
+    let selectionPaletteMode = null; // "options" or "colors"
     let hoverPartId = null;
     let tooltipVisible = false;
 
@@ -503,9 +729,20 @@ const configuratorScript = `
       return i18n[currentLang].currencyPrefix + v.toFixed(2);
     }
 
+    function getBasePrice(partId) {
+      const chosen = selectedPriceByPart[partId];
+      if (typeof chosen === "number" && !Number.isNaN(chosen)) return chosen;
+      const dynamic = dynamicPricesByPart[partId];
+      if (typeof dynamic === "number" && !Number.isNaN(dynamic)) return dynamic;
+      return PRICES[partId] || 0;
+    }
+
     function computeTotal() {
       let tSum = 0;
-      for (const p of ALL_PARTS) if (configState[p.id]) tSum += PRICES[p.id] || 0;
+      for (const p of ALL_PARTS) {
+        if (!configState[p.id]) continue;
+        tSum += getBasePrice(p.id);
+      }
       return tSum;
     }
 
@@ -515,8 +752,32 @@ const configuratorScript = `
 
     /* ----- Color application ----- */
 
+    function setPartPrice(partId, variantHex, isOption) {
+      const palette = isOption ? dynamicOptionsByPart[partId] : dynamicColorsByPart[partId];
+      const hexLower = (variantHex || "").toLowerCase();
+      const match = palette ? palette.find(entry => (entry.hex || "").toLowerCase() === hexLower) : null;
+      if (match && typeof match.price === "number" && !Number.isNaN(match.price)) {
+        selectedPriceByPart[partId] = match.price;
+      } else if (typeof dynamicPricesByPart[partId] === "number" && !Number.isNaN(dynamicPricesByPart[partId])) {
+        selectedPriceByPart[partId] = dynamicPricesByPart[partId];
+      } else {
+        selectedPriceByPart[partId] = PRICES[partId] || 0;
+      }
+    }
+
+    function formatQtyDisplay(qty) {
+      if (typeof qty !== "number" || Number.isNaN(qty)) return "";
+      if (qty <= 0) return currentLang === "ar" ? "(نفدت الكمية)" : "(Out of Stock)";
+      if (qty < 5) {
+        if (qty === 1) return currentLang === "ar" ? "(المتبقي قطعة واحدة فقط)" : "(1 piece left)";
+        return currentLang === "ar" ? "(المتبقي " + qty + " قطع)" : "(" + qty + " pieces left)";
+      }
+      return "";
+    }
+
     function applyColor(partId, colorHex) {
       configState[partId] = colorHex;
+      setPartPrice(partId, colorHex, false);
       const layer = layers[partId];
       if (!layer) return;
       layer.style.setProperty("--tint", colorHex);
@@ -530,6 +791,7 @@ const configuratorScript = `
 
     function applyOptions(partId, colorHex) {
       configState[partId] = colorHex;
+      setPartPrice(partId, colorHex, true);
       const layer = layers[partId];
       if (!layer) return;
       layer.style.setProperty("--tint", colorHex);
@@ -543,6 +805,7 @@ const configuratorScript = `
 
     function clearSelection() {
       selectedPartId = null;
+      selectionPaletteMode = null;
       controllerArea.classList.remove("has-selection");
       controllerArea.style.removeProperty("--selected-mask-url");
 
@@ -585,16 +848,16 @@ const configuratorScript = `
     function openColorPanelForPart(partId) {
       const label = getPartLabel(partId);
 
-      // show headers + grids, hide empty state
+      // hide everything by default
       colorEmptyState.style.display = "none";
-      colorPanelHeaderTop.style.display = "block";
-      colorPanelHeaderBottom.style.display = "block";
-      colorPanelGrid.style.display = "grid";
-      optionsPanelGrid.style.display = "grid";
+      colorPanelHeaderTop.style.display = "none";
+      colorPanelHeaderBottom.style.display = "none";
+      colorPanelGrid.style.display = "none";
+      optionsPanelGrid.style.display = "none";
 
       colorPanelTitle.textContent = label;
-      colorPanelSub.textContent = t("availableColors");
-      optionsPanelSub.textContent = t("availableOptions");
+      colorPanelSub.textContent = "";
+      optionsPanelSub.textContent = "";
 
       colorPanelGrid.innerHTML = "";
       optionsPanelGrid.innerHTML = "";
@@ -602,59 +865,100 @@ const configuratorScript = `
       const palette = getPaletteForPart(partId);
       const optionspalette = getOptionsForPart(partId);
 
-      // colors
-      palette.forEach(({ hex, key }) => {
-        const cell = document.createElement("div");
-        cell.className = "cd-cell";
+      const hasOptions = optionspalette && optionspalette.length;
+      const hasColors = palette && palette.length;
 
-        const sw = document.createElement("button");
-        sw.className = "cd-swatch";
-        sw.style.backgroundColor = hex;
-        sw.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (!selectedPartId) return;
-          applyColor(selectedPartId, hex);
-          playClick2();
+      // If selectionPaletteMode is set, honor it; otherwise default to colors when available, else options.
+      const showOptions = selectionPaletteMode === "options" ? true : (selectionPaletteMode === "colors" ? false : (!hasColors && hasOptions));
+      const showColors = selectionPaletteMode === "colors" ? true : (selectionPaletteMode === "options" ? false : hasColors);
+
+      if (showColors && hasColors) {
+        colorPanelHeaderTop.style.display = "block";
+        colorPanelHeaderBottom.style.display = "block";
+        colorPanelGrid.style.display = "grid";
+        colorPanelSub.textContent = t("availableColors");
+
+        palette.forEach(({ hex, key, qty, price }) => {
+          const cell = document.createElement("div");
+          cell.className = "cd-cell";
+
+          const sw = document.createElement("button");
+          sw.className = "cd-swatch";
+          sw.style.backgroundColor = hex;
+          const numericQty = typeof qty === "number" ? qty : null;
+          const isOut = numericQty !== null && numericQty <= 0;
+          if (isOut) {
+            sw.setAttribute("disabled", "disabled");
+            sw.classList.add("out-of-stock");
+            sw.style.filter = "grayscale(1)";
+            sw.style.boxShadow = "none";
+          }
+          sw.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (!selectedPartId || isOut) return;
+            applyColor(selectedPartId, hex);
+            playClick2();
+          });
+
+          const lbl = document.createElement("div");
+          lbl.className = "cd-color-name";
+          lbl.style.textAlign = "center";
+          const displayName = key && t(key) ? t(key) : hex;
+          const priceVal = typeof price === "number" ? i18n[currentLang].currencyPrefix + price.toFixed(2) : "";
+          const qtyDisplay = formatQtyDisplay(numericQty);
+          const lines = [displayName];
+          if (priceVal) lines.push(priceVal);
+          if (qtyDisplay) lines.push(qtyDisplay);
+          lbl.innerHTML = lines.join("<br/>");
+
+          cell.appendChild(sw);
+          cell.appendChild(lbl);
+          colorPanelGrid.appendChild(cell);
         });
-
-        const lbl = document.createElement("div");
-        lbl.className = "cd-color-name";
-        lbl.textContent = t(key);
-
-        cell.appendChild(sw);
-        cell.appendChild(lbl);
-        colorPanelGrid.appendChild(cell);
-      });
-
-      // options (stick types) – only for sticks
-      if (optionspalette) {
+      } else if (showOptions && hasOptions) {
         optionsPanelSub.style.display = "block";
         optionsPanelGrid.style.display = "grid";
+        colorPanelHeaderTop.style.display = "block";
+        optionsPanelSub.textContent = t("availableOptions");
 
-        optionspalette.forEach(({ hex, key }) => {
+        optionspalette.forEach(({ hex, key, qty, price }) => {
           const cell2 = document.createElement("div");
           cell2.className = "cd-cell-op";
 
           const sw2 = document.createElement("button");
           sw2.className = "cd-swatch-op";
           sw2.style.backgroundColor = hex;
+          const numericQty = typeof qty === "number" ? qty : null;
+          const isOut = numericQty !== null && numericQty <= 0;
+          if (isOut) {
+            sw2.setAttribute("disabled", "disabled");
+            sw2.classList.add("out-of-stock");
+            sw2.style.filter = "grayscale(1)";
+            sw2.style.boxShadow = "none";
+          }
           sw2.addEventListener("click", (e) => {
             e.stopPropagation();
-            if (!selectedPartId) return;
+            if (!selectedPartId || isOut) return;
             applyOptions(selectedPartId, hex);
           });
 
           const lbl = document.createElement("div");
           lbl.className = "cd-color-name";
-          lbl.textContent = t(key);
+          lbl.style.textAlign = "center";
+          const priceVal = typeof price === "number" ? i18n[currentLang].currencyPrefix + price.toFixed(2) : "";
+          const qtyDisplay = formatQtyDisplay(numericQty);
+          const lines = [t(key)];
+          if (priceVal) lines.push(priceVal);
+          if (qtyDisplay) lines.push(qtyDisplay);
+          lbl.innerHTML = lines.join("<br/>");
 
           cell2.appendChild(sw2);
           cell2.appendChild(lbl);
           optionsPanelGrid.appendChild(cell2);
         });
       } else {
-        optionsPanelSub.style.display = "none";
-        optionsPanelGrid.style.display = "none";
+        // show empty placeholder
+        colorEmptyState.style.display = "flex";
       }
     }
 
@@ -693,18 +997,19 @@ const configuratorScript = `
 
     /* ----- Parts list ----- */
 
-    function createPartRow(part) {
+    function createPartRow(part, listType) {
       const row = document.createElement("button");
       row.type = "button";
       row.className = "parts-item";
       row.dataset.partId = part.id;
       row.dataset.side = part.side;
+      row.dataset.listType = listType || "";
 
       const thumb = document.createElement("div");
       thumb.className = "parts-thumb";
 
       const img = document.createElement("img");
-      img.src = part.icon || "icons/shells.png";
+      img.src = part.icon || "/assets/icons/shells.png";
       img.alt = getPartLabel(part.id);
       thumb.appendChild(img);
 
@@ -722,6 +1027,7 @@ const configuratorScript = `
         clearSelection();
 
         selectedPartId = part.id;
+        selectionPaletteMode = listType || null;
         controllerArea.classList.add("has-selection");
         controllerArea.style.setProperty("--selected-mask-url", "url('" + part.mask + "')");
 
@@ -743,18 +1049,29 @@ const configuratorScript = `
       return row;
     }
 
+    function isPartActive(part) {
+      return availablePartsSet.has(part.id);
+    }
+
     function buildPartsList() {
       partsLists.forEach(list => list.innerHTML = "");
       Object.keys(partsRowsById).forEach(k => delete partsRowsById[k]);
 
-      const optionParts = [...FRONT_PARTS, ...BACK_PARTS].filter(p => getOptionsForPart(p.id));
-      const colorOnlyParts = [...FRONT_PARTS, ...BACK_PARTS].filter(p => !getOptionsForPart(p.id));
+      const optionParts = [...FRONT_PARTS, ...BACK_PARTS].filter(p => {
+        const hasGamemode = (dynamicOptionsByPart[p.id] || []).length > 0;
+        return hasGamemode && isPartActive(p);
+      });
+
+      const colorOnlyParts = [...FRONT_PARTS, ...BACK_PARTS].filter(p => {
+        const hasColors = (dynamicColorsByPart[p.id] || []).length > 0;
+        return hasColors && isPartActive(p);
+      });
 
       if (primaryList) {
-        optionParts.forEach(p => primaryList.appendChild(createPartRow(p)));
+        optionParts.forEach(p => primaryList.appendChild(createPartRow(p, "options")));
       }
       if (secondaryList) {
-        colorOnlyParts.forEach(p => secondaryList.appendChild(createPartRow(p)));
+        colorOnlyParts.forEach(p => secondaryList.appendChild(createPartRow(p, "colors")));
       }
       refreshAccordionHeights();
     }
@@ -762,7 +1079,8 @@ const configuratorScript = `
     /* ----- Hit testing ----- */
 
     function getPartsForSide(side) {
-      return side === "back" ? BACK_PARTS : FRONT_PARTS;
+      const base = side === "back" ? BACK_PARTS : FRONT_PARTS;
+      return base.filter(isPartActive);
     }
 
     function hitTestPart(designX, designY, side) {
@@ -793,10 +1111,13 @@ const configuratorScript = `
       const designY = relY * BASE_HEIGHT;
       const partId = hitTestPart(designX, designY, currentSide);
       if (!partId) return;
+      const partObj = ALL_PARTS.find(p => p.id === partId);
+      if (partObj && !isPartActive(partObj)) return;
 
       clearSelection();
 
       selectedPartId = partId;
+      selectionPaletteMode = null;
       controllerArea.classList.add("has-selection");
 
       const part = ALL_PARTS.find(p => p.id === partId);
@@ -817,6 +1138,10 @@ const configuratorScript = `
       }
 
       playClick();
+      if (!selectionPaletteMode) {
+        const hasOpts = (dynamicOptionsByPart[partId] || []).length > 0;
+        selectionPaletteMode = hasOpts ? "options" : "colors";
+      }
       openColorPanelForPart(partId);
     });
 
@@ -1059,6 +1384,7 @@ const configuratorScript = `
 
     // Initial language application
     applyLanguage();
+    bootstrapZohoInventory();
     refreshAccordionHeights();
   
 

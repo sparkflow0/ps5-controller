@@ -71,7 +71,7 @@
   .nav-logo-mark {
     width: 200px;
     height: 40px;
-    background-image: url("/logo.png");
+    background-image: url("/assets/logo.png");
     background-repeat: no-repeat;
     background-size: contain;
     background-position: right;
@@ -300,7 +300,7 @@
   .hero-controller-inner {
     width: 100%;
     height: 100%;
-    background-image: url("/controller.png");
+    background-image: url("/assets/controller.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -429,7 +429,7 @@
   .thumb-base {
     position: absolute;
     inset: 0;
-    background-image: url("/controller.png");
+    background-image: url("/assets/controller.png");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -722,7 +722,7 @@
     .nav-logo-mark {
       width: 200px;
       height: 40px;
-      background-image: url("logo.png");
+      background-image: url("/assets/logo.png");
       background-repeat: no-repeat;
       background-size: contain;
       background-position: right;
@@ -1558,6 +1558,14 @@
       filter: brightness(1.9) saturate(2.0) contrast(1.1);
     }
 
+    .cd-swatch.out-of-stock:hover,
+    .cd-swatch-op.out-of-stock:hover {
+      transform: none;
+      box-shadow: none;
+      filter: grayscale(1);
+      cursor: not-allowed;
+    }
+
     /* ---------- HOVER TOOLTIP ---------- */
 
     .part-tooltip {
@@ -1909,7 +1917,7 @@ body.home-page-active {
     .nav-logo-mark {
       width: 160px;
       height: 40px;
-      background-image: url("logo.png");
+      background-image: url("/assets/logo.png");
       background-repeat: no-repeat;
       background-size: contain;
       background-position: right;
@@ -2127,7 +2135,7 @@ body.home-page-active {
     .thumb-base {
       position: absolute;
       inset: 0;
-      background-image: url("controller.png");
+      background-image: url("/assets/controller.png");
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
@@ -2406,7 +2414,7 @@ body.home-page-active {
     .nav-logo-mark {
       width: 160px;
       height: 40px;
-      background-image: url("logo.png");
+      background-image: url("/assets/logo.png");
       background-repeat: no-repeat;
       background-size: contain;
       background-position: right;

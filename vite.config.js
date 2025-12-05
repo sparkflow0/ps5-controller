@@ -3,4 +3,13 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      '/zoho': {
+        target: 'http://localhost:5174',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });
