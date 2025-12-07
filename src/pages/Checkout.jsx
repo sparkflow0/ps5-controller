@@ -32,37 +32,53 @@ const checkoutMarkup = `
 <form id="checkoutForm">
 <div class="form-row">
 <div class="form-field">
-<label data-i18n="fullNameLabel" for="fullName">الاسم الكامل *</label>
-<input id="fullName" name="fullName" required=""/>
+<label data-i18n="firstNameLabel" for="firstName">الاسم الأول *</label>
+<input id="firstName" name="firstName" required=""/>
 </div>
+<div class="form-field">
+<label data-i18n="lastNameLabel" for="lastName">اسم العائلة *</label>
+<input id="lastName" name="lastName" required=""/>
+</div>
+</div>
+<div class="form-row">
 <div class="form-field">
 <label data-i18n="phoneLabel" for="phone">رقم الهاتف *</label>
 <input id="phone" name="phone" required="" type="tel"/>
 </div>
-</div>
-<div class="form-row">
 <div class="form-field">
 <label data-i18n="emailLabel" for="email">البريد الإلكتروني *</label>
 <input id="email" name="email" required="" type="email"/>
 </div>
+</div>
+<div class="form-row">
 <div class="form-field">
 <label data-i18n="countryLabel" for="country">الدولة *</label>
 <input id="country" name="country" required=""/>
 </div>
-</div>
-<div class="form-row">
 <div class="form-field">
 <label data-i18n="cityLabel" for="city">المدينة *</label>
 <input id="city" name="city" required=""/>
+</div>
+</div>
+<div class="form-row">
+<div class="form-field">
+<label data-i18n="stateLabel" for="state">المحافظة / الولاية *</label>
+<input id="state" name="state" required=""/>
 </div>
 <div class="form-field">
 <label data-i18n="postalCodeLabel" for="postalCode">الرمز البريدي (اختياري)</label>
 <input id="postalCode" name="postalCode"/>
 </div>
 </div>
+<div class="form-row">
 <div class="form-field">
-<label data-i18n="addressLabel" for="address">العنوان التفصيلي *</label>
-<textarea id="address" name="address" required=""></textarea>
+<label data-i18n="addressLine1Label" for="addressLine1">العنوان التفصيلي (سطر 1) *</label>
+<input id="addressLine1" name="addressLine1" required=""/>
+</div>
+<div class="form-field">
+<label data-i18n="addressLine2Label" for="addressLine2">العنوان (سطر 2) اختياري</label>
+<input id="addressLine2" name="addressLine2"/>
+</div>
 </div>
 <div class="form-field">
 <label data-i18n="shippingMethodLabel" for="shippingMethod">طريقة الشحن</label>
@@ -141,13 +157,16 @@ const checkoutScript = `
         checkoutTitle: "إتمام الشراء",
         totalLabel: "الإجمالي",
         formTitle: "بيانات العميل والدفع",
-        fullNameLabel: "الاسم الكامل *",
+        firstNameLabel: "الاسم الأول *",
+        lastNameLabel: "اسم العائلة *",
         phoneLabel: "رقم الهاتف *",
         emailLabel: "البريد الإلكتروني *",
         countryLabel: "الدولة *",
         cityLabel: "المدينة *",
+        stateLabel: "المحافظة / الولاية *",
         postalCodeLabel: "الرمز البريدي (اختياري)",
-        addressLabel: "العنوان التفصيلي *",
+        addressLine1Label: "العنوان التفصيلي (سطر 1) *",
+        addressLine2Label: "العنوان (سطر 2) اختياري",
         shippingMethodLabel: "طريقة الشحن",
         shippingStandard: "شحن عادي (3–5 أيام)",
         shippingExpress: "شحن سريع (1–2 يوم)",
@@ -173,13 +192,16 @@ const checkoutScript = `
         checkoutTitle: "Checkout",
         totalLabel: "Total",
         formTitle: "Customer & payment details",
-        fullNameLabel: "Full name *",
+        firstNameLabel: "First name *",
+        lastNameLabel: "Last name *",
         phoneLabel: "Phone *",
         emailLabel: "Email *",
         countryLabel: "Country *",
         cityLabel: "City *",
+        stateLabel: "State / Province *",
         postalCodeLabel: "Postal code (optional)",
-        addressLabel: "Full address *",
+        addressLine1Label: "Address line 1 *",
+        addressLine2Label: "Address line 2 (optional)",
         shippingMethodLabel: "Shipping method",
         shippingStandard: "Standard shipping (3–5 days)",
         shippingExpress: "Express shipping (1–2 days)",
@@ -312,7 +334,7 @@ const checkoutScript = `
       summaryTotalEl.textContent = formatMoney(total);
     }
 
-    checkoutForm.addEventListener("submit", (e) => {
+    checkoutForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       if (!cartItems.length) {
@@ -323,10 +345,19 @@ const checkoutScript = `
       const formData = new FormData(checkoutForm);
       const data = Object.fromEntries(formData.entries());
       data.agree = document.getElementById("agree").checked;
+      // Build a combined fullName for compatibility with backend and Zoho.
+      data.fullName = ((data.firstName || "") + " " + (data.lastName || "")).trim();
+      // Keep legacy address for compatibility.
+      data.address = data.addressLine1 || data.address || "";
       data.cart = cartItems;
 
-      console.log("Checkout data (demo):", data);
-      alert(t("formSuccess"));
+      try {
+        localStorage.setItem("ezOrderDraft", JSON.stringify(data));
+        window.location.href = "/payment";
+      } catch (err) {
+        console.error(err);
+        alert("Failed to start payment.");
+      }
     });
 
     // init

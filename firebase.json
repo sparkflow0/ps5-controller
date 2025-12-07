@@ -8,9 +8,20 @@
     ],
     "rewrites": [
       {
+        "source": "/zoho/**",
+        "function": "zohoProxy"
+      },
+      {
+        "source": "/api/**",
+        "function": "orderHandler"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
     ]
+  },
+  "functions": {
+    "source": "functions"
   }
 }

@@ -765,6 +765,9 @@
         0 0 18px rgba(0, 229, 255, 0.7);
       white-space: nowrap;
       transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .add-to-cart-btn:hover {
@@ -1102,7 +1105,10 @@
     }
 
     .controller-bottom-bar .nav-amount-block {
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      text-align: start;
+      color: #fff;
     }
 
     @media (max-width: 900px) {
@@ -1936,7 +1942,7 @@ body.home-page-active {
 
     .nav-amount-block {
       text-align: start;
-      display: none;
+      display: block;
     }
 
     .nav-amount-label {
@@ -2688,4 +2694,24 @@ body.home-page-active {
       .form-row {
         flex-direction: column;
       }
+    }
+
+    /* Overrides to ensure bottom-bar totals are visible */
+    .controller-bottom-bar .nav-amount-block {
+      display: flex !important;
+      flex-direction: column;
+      text-align: start;
+      color: #fff;
+    }
+
+    .add-to-cart-btn {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .add-to-cart-btn .add-amount {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #000;
     }

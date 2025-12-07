@@ -108,7 +108,8 @@ const configuratorMarkup = `
 <div class="nav-amount-value" id="summaryAmount">د.ب 0.00</div>
 </div>
 <button class="add-to-cart-btn" data-i18n="addToCart" id="addToCartBtn">
-        أضِف إلى السلة
+        <span class="add-label">أضِف إلى السلة</span>
+        <span class="add-amount" id="summaryAmountAlt">د.ب 0.00</span>
       </button>
 </div>
 </div>
@@ -140,10 +141,8 @@ const configuratorScript = `
 
     const ZOHO_ACCESS_TOKEN = "${import.meta.env.VITE_ZOHO_ACCESS_TOKEN || ""}";
     const ZOHO_ORG_ID = "${import.meta.env.VITE_ZOHO_ORG_ID || ""}";
-    const ZOHO_BASE =
-      window.location.hostname === "localhost"
-        ? "/zoho/inventory/v1"
-        : "https://www.zohoapis.com/inventory/v1";
+    // Always go through our proxy (rewritten in Firebase Hosting to the cloud function).
+    const ZOHO_BASE = "/zoho/inventory/v1";
     const ZOHO_ITEMS_ENDPOINT = ZOHO_BASE + "/items";
 
     const dynamicColorsByPart = {};
@@ -534,6 +533,15 @@ const configuratorScript = `
 
     function parseZohoItem(item) {
       const rawName = (item && (item.name || item.item_name)) || "";
+      const normalizedName = normalizeVariant(rawName);
+
+      // Base controller item: ps5_original_controller
+      if (normalizedName === "ps5originalcontroller") {
+        const basePrice = typeof item.rate === "number" ? item.rate : parseFloat(item.rate);
+        if (!Number.isNaN(basePrice)) baseControllerPrice = basePrice;
+        return;
+      }
+
       const match = /^ps5_([^_]+)_([^_]+)_(.+)$/i.exec(rawName.trim());
       if (!match) return;
       const partSlug = normalizeVariant(match[1]);
@@ -591,7 +599,10 @@ const configuratorScript = `
             throw new Error("HTTP " + res.status + (body ? (": " + body) : ""));
           }
           const data = await res.json();
-          const items = (data && Array.isArray(data.items)) ? data.items : [];
+          const items = (data && Array.isArray(data.items)) ? data.items.filter(it => {
+            const status = (it.status || it.item_status || "").toLowerCase();
+            return status === "" || status === "active";
+          }) : [];
           allItems.push(...items);
           console.log("[Zoho Debug] Page", page, "items:", items.length, "Total so far:", allItems.length);
           if (items.length < perPage) break;
@@ -674,6 +685,7 @@ const configuratorScript = `
     let currentSide = "front";
     let selectedPartId = null;
     let selectionPaletteMode = null; // "options" or "colors"
+    let baseControllerPrice = 0;
     let hoverPartId = null;
     let tooltipVisible = false;
 
@@ -729,6 +741,10 @@ const configuratorScript = `
       return i18n[currentLang].currencyPrefix + v.toFixed(2);
     }
 
+    function hasCustomizations() {
+      return Object.values(configState).some(Boolean);
+    }
+
     function getBasePrice(partId) {
       const chosen = selectedPriceByPart[partId];
       if (typeof chosen === "number" && !Number.isNaN(chosen)) return chosen;
@@ -738,7 +754,7 @@ const configuratorScript = `
     }
 
     function computeTotal() {
-      let tSum = 0;
+      let tSum = baseControllerPrice || 0;
       for (const p of ALL_PARTS) {
         if (!configState[p.id]) continue;
         tSum += getBasePrice(p.id);
@@ -748,6 +764,14 @@ const configuratorScript = `
 
     function updateSummary() {
       summaryAmountEl.textContent = formatMoney(computeTotal());
+      const summaryAmountAltEl = document.getElementById("summaryAmountAlt");
+      if (summaryAmountAltEl) summaryAmountAltEl.textContent = formatMoney(computeTotal());
+      const navLabelEl = document.querySelector(".nav-amount-label");
+      if (navLabelEl) {
+        navLabelEl.textContent = hasCustomizations()
+          ? "PS5 Controller (Customized)"
+          : "PS5 Original Controller (No Customizations)";
+      }
     }
 
     /* ----- Color application ----- */
@@ -890,7 +914,7 @@ const configuratorScript = `
           if (isOut) {
             sw.setAttribute("disabled", "disabled");
             sw.classList.add("out-of-stock");
-            sw.style.filter = "grayscale(1)";
+            sw.style.filter = "none";
             sw.style.boxShadow = "none";
           }
           sw.addEventListener("click", (e) => {
@@ -933,7 +957,7 @@ const configuratorScript = `
           if (isOut) {
             sw2.setAttribute("disabled", "disabled");
             sw2.classList.add("out-of-stock");
-            sw2.style.filter = "grayscale(1)";
+            sw2.style.filter = "none";
             sw2.style.boxShadow = "none";
           }
           sw2.addEventListener("click", (e) => {
@@ -1269,10 +1293,14 @@ const configuratorScript = `
 
       const cartItems = loadCart();
       const snapshot = buildConfigSnapshot();
+      const hasCustom = hasCustomizations();
+      const cartName = hasCustom
+        ? "PS5 Controller (Customized)"
+        : "PS5 Original Controller (No Customizations)";
 
       const cartItem = {
         id: Date.now(),
-        name: currentLang === "ar" ? "متحكم PS5 مخصّص" : "Custom PS5 Controller",
+        name: cartName,
         unitPrice: total,
         quantity: 1,
         config: snapshot
