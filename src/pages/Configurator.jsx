@@ -1298,12 +1298,50 @@ const configuratorScript = `
         ? "PS5 Controller (Customized)"
         : "PS5 Original Controller (No Customizations)";
 
+      // Build a richer SVG preview for the sales order (controller + colored markers)
+      function buildPreviewSvg(config) {
+        const entries = Object.entries(config || {}).filter(([, val]) => val);
+        const width = 500;
+        const height = 300;
+        const partPos = {
+          stickL: { x: 220, y: 200 },
+          stickR: { x: 320, y: 210 },
+          faceButtons: { x: 400, y: 160 },
+          touchpad: { x: 260, y: 120 },
+          shell: { x: 260, y: 150 },
+          trimpiece: { x: 260, y: 180 },
+          bumpers: { x: 260, y: 90 },
+          psButton: { x: 260, y: 210 },
+          backShellMain: { x: 260, y: 150 },
+          backTriggers: { x: 260, y: 110 }
+        };
+        const dots = entries.map(([part, hex]) => {
+          const pos = partPos[part] || { x: width / 2, y: height / 2 };
+          const fill = typeof hex === "string" ? hex : (hex && hex.hex) || "#444";
+          return (
+            '<g><circle cx="' + pos.x + '" cy="' + pos.y + '" r="18" fill="' + fill + '" opacity="0.85" />' +
+            "</g>"
+          );
+        }).join("");
+        const ctrl = document.querySelector(".controller-face-front img");
+        const ctrlSrc = (ctrl && ctrl.src) || "/assets/controller.png";
+        const svg =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + " " + height + '" style="background:#0b0b0f">' +
+          '<image href="' + ctrlSrc + '" x="10" y="20" width="480" height="260" preserveAspectRatio="xMidYMid meet" opacity="0.9"/>' +
+          dots +
+          "</svg>";
+        return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
+      }
+
+      const preview = hasCustom ? buildPreviewSvg(snapshot) : null;
+
       const cartItem = {
         id: Date.now(),
         name: cartName,
         unitPrice: total,
         quantity: 1,
-        config: snapshot
+        config: snapshot,
+        preview
       };
 
       cartItems.push(cartItem);

@@ -8,6 +8,7 @@ import PaymentPage from './pages/Payment.jsx';
 import ConfirmationPage from './pages/Confirmation.jsx';
 import OrderSummaryPage from './pages/OrderSummary.jsx';
 import TrackOrderPage from './pages/TrackOrder.jsx';
+import POSPage from './pages/POS.jsx';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route path="/payment/confirmation" element={<ConfirmationPage />} />
       <Route path="/order-summary" element={<OrderSummaryPage />} />
       <Route path="/trackorder" element={<TrackOrderPage />} />
+      <Route path="/pos" element={<POSPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

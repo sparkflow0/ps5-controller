@@ -11,55 +11,144 @@ const trackMarkup = `
   </div>
 </div>
 <div class="page-content" style="padding-top:80px; display:flex; justify-content:center;">
-  <div class="card" style="max-width:960px; width:100%; color:#fff; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.08);">
-    <div class="card-title" id="trackTitle">تتبع الطلب</div>
-    <div id="trackStatus" style="margin:8px 0; font-size:0.95rem; opacity:0.9;"></div>
+  <div class="track-shell">
+    <div class="track-header">
+      <div class="track-title" id="trackTitle">تتبع الطلب</div>
+      <div class="track-status" id="trackStatus"></div>
+    </div>
     <div id="stepsList" class="steps-list"></div>
+    <div id="orderDetails" class="order-details"></div>
+    <div id="orderItems" class="order-items"></div>
   </div>
 </div>
 
 <style>
-  .steps-list {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .track-shell {
+    width: 100%;
+    max-width: 1100px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    padding: 18px 22px 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    color: #fff;
+  }
+  .track-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 12px;
-    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .track-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+  }
+  .track-status {
+    font-size: 0.95rem;
+    opacity: 0.9;
+  }
+  .order-details {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    font-size: 0.95rem;
+  }
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .detail-label {
+    opacity: 0.7;
+    font-size: 0.85rem;
+  }
+  .detail-value {
+    font-weight: 700;
+  }
+  .order-items {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+  }
+  .order-items h3 {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    font-weight: 800;
+  }
+  .item-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.95rem;
+  }
+  .item-row:last-child { border-bottom: none; }
+  .item-label { opacity: 0.85; }
+  .item-qty,
+  .item-price { text-align: right; }
+  .steps-list {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 24px;
     position: relative;
   }
   .step-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 14px;
+    background: none;
+    border: none;
+    padding: 10px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
     position: relative;
+    min-height: 260px;
+    flex: 1 1 220px;
   }
-  .step-line {
-    position: absolute;
-    top: 50%;
-    left: calc(100% - 6px);
-    width: 12px;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(124,252,0,0.8), rgba(124,252,0,0.2));
-  }
-  .step-card:last-child .step-line { display: none; }
+  .step-line { display: none; }
   .step-icon-wrap {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.05);
+    width: 130px;
+    height: 130px;
+    border-radius: 0;
+    background: none;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: none;
+    position: relative;
+  }
+  .step-icon-wrap::before {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid rgba(124,252,0,0.0);
+    pointer-events: none;
+  }
+  .step-icon-wrap.has-line::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 8px);
+    width: 70px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(124,252,0,0.7), rgba(124,252,0,0.15));
+    transform: translateY(-50%);
   }
   .step-icon {
-    width: 64px;
-    height: 64px;
+    width: 120px;
+    height: 120px;
     object-fit: contain;
     filter: none;
     transition: filter 0.2s ease, opacity 0.2s ease;
@@ -68,20 +157,35 @@ const trackMarkup = `
     filter: grayscale(1) brightness(0.7);
     opacity: 0.7;
   }
+  .step-card.step-current .step-icon {
+    filter: grayscale(1) brightness(0.8);
+    opacity: 0.9;
+  }
+  .step-card.step-current .step-icon-wrap::before {
+    border-color: rgba(124,252,0,0.7);
+    animation: pulseRing 1.6s ease-in-out infinite;
+  }
   .step-title {
-    font-weight: 700;
+    font-weight: 800;
     text-align: center;
+    font-size: 1.1rem;
   }
   .step-status {
-    font-size: 0.9rem;
+    font-size: 1rem;
     opacity: 0.85;
     text-align: center;
   }
   @media (max-width: 900px) {
-    .steps-list { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .steps-list { justify-content: center; }
   }
   @media (max-width: 640px) {
-    .steps-list { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+    .steps-list { gap: 18px; }
+    .step-icon-wrap.has-line::after { width: 50px; }
+  }
+  @keyframes pulseRing {
+    0% { transform: scale(0.95); opacity: 0.6; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.6; }
   }
 </style>
 `;
@@ -89,20 +193,26 @@ const trackMarkup = `
 const trackScript = `
   const statusEl = document.getElementById("trackStatus");
   const stepsListEl = document.getElementById("stepsList");
+  const orderDetailsEl = document.getElementById("orderDetails");
+  const orderItemsEl = document.getElementById("orderItems");
 
   function setStatus(msg) {
     statusEl.textContent = msg;
   }
 
-  function addStep(label, value, done, icon, hasLine) {
+  function addStep(label, value, done, icon, hasLine, current) {
     const card = document.createElement("div");
-    card.className = "step-card" + (done ? " step-done" : " pending");
+    card.className = "step-card" + (done ? " step-done" : " pending") + (current ? " step-current" : "");
     const iconWrap = document.createElement("div");
-    iconWrap.className = "step-icon-wrap";
+    iconWrap.className = "step-icon-wrap" + (hasLine ? " has-line" : "");
     const img = document.createElement("img");
     img.className = "step-icon";
     img.src = icon;
     img.alt = label;
+    img.onerror = () => {
+      img.style.display = "none";
+      console.warn("Icon failed to load:", icon);
+    };
     iconWrap.appendChild(img);
     const title = document.createElement("div");
     title.className = "step-title";
@@ -140,6 +250,8 @@ const trackScript = `
     }
     setStatus("Loading order " + orderId + " …");
     stepsListEl.innerHTML = "";
+    orderDetailsEl.innerHTML = "";
+    orderItemsEl.innerHTML = "";
 
     try {
       const so = await fetchJson("/zoho/inventory/v1/salesorders/" + encodeURIComponent(orderId), "salesorder");
@@ -147,11 +259,70 @@ const trackScript = `
       const soId = salesorder.salesorder_id ? String(salesorder.salesorder_id) : String(orderId);
       const soNumber = salesorder.salesorder_number || "";
       const soStatus = salesorder.status || "Unknown";
+      const soDate = salesorder.date || salesorder.created_time || "";
+      const soTotal = typeof salesorder.total === "number" ? salesorder.total.toFixed(2) : "";
+      const currency = salesorder.currency_code || "BHD";
+      // render order details
+      const details = [
+        { label: "Order ID", value: soNumber || soId },
+        { label: "Status", value: soStatus },
+        { label: "Date", value: soDate },
+        { label: "Total", value: soTotal ? currency + " " + soTotal : "" }
+      ];
+      orderDetailsEl.innerHTML = "";
+      details.forEach(d => {
+        const item = document.createElement("div");
+        item.className = "detail-item";
+        const l = document.createElement("div");
+        l.className = "detail-label";
+        l.textContent = d.label;
+        const v = document.createElement("div");
+        v.className = "detail-value";
+        v.textContent = d.value || "—";
+        item.appendChild(l);
+        item.appendChild(v);
+        orderDetailsEl.appendChild(item);
+      });
+
+      // render line items
+      const items = Array.isArray(salesorder.line_items) ? salesorder.line_items : [];
+      const itemsWrap = document.createElement("div");
+      const title = document.createElement("h3");
+      title.textContent = "Sales Order Details";
+      itemsWrap.appendChild(title);
+      if (!items.length) {
+        const empty = document.createElement("div");
+        empty.textContent = "No items found.";
+        empty.style.opacity = "0.8";
+        itemsWrap.appendChild(empty);
+      } else {
+        items.forEach(li => {
+          const row = document.createElement("div");
+          row.className = "item-row";
+          const name = document.createElement("div");
+          name.className = "item-label";
+          name.textContent = li.name || li.item_name || "Item";
+          const qty = document.createElement("div");
+          qty.className = "item-qty";
+          qty.textContent = "Qty: " + (li.quantity || 0);
+          const price = document.createElement("div");
+          price.className = "item-price";
+          const rate = typeof li.rate === "number" ? li.rate.toFixed(2) : "";
+          price.textContent = rate ? (li.currency_code || currency || "BHD") + " " + rate : "";
+          row.appendChild(name);
+          row.appendChild(qty);
+          row.appendChild(price);
+          itemsWrap.appendChild(row);
+        });
+      }
+      orderItemsEl.appendChild(itemsWrap);
+      const assetBase = window.location.origin;
+      const version = "v1";
       const stepIcons = {
-        order: "/assets/track/order.png",
-        process: "/assets/track/process.png",
-        ontheway: "/assets/track/ontheway.png",
-        delivered: "/assets/track/delivered.png"
+        order: assetBase + "/assets/track/order.png?" + version,
+        process: assetBase + "/assets/track/process.png?" + version,
+        ontheway: assetBase + "/assets/track/ontheway.png?" + version,
+        delivered: assetBase + "/assets/track/delivered.png?" + version
       };
       const orderDone = true;
 
@@ -167,7 +338,7 @@ const trackScript = `
       } catch (e) {
         // ignore
       }
-      const pkgSummary = packages.length ? packages.length + " total" : "Not created yet";
+      const pkgSummary = packages.length ? "" : "";
       const processingDone = packages.length > 0;
 
       // Shipments (scoped to this sales order)
@@ -196,12 +367,30 @@ const trackScript = `
       const deliveredCount = deliveredFromShipments.length || deliveredFromPackages.length;
       const deliveredDone = deliveredCount > 0;
 
-      // Render steps horizontally with icons and connectors
+      // Decide current step (last done, unless delivered is done)
+      const stepsData = [
+        { label: "Order Received", value: "", done: orderDone, icon: stepIcons.order },
+        { label: "Order Processing", value: "", done: processingDone, icon: stepIcons.process },
+        { label: "On the way", value: "", done: onTheWayDone, icon: stepIcons.ontheway },
+        { label: "Delivered", value: "", done: deliveredDone, icon: stepIcons.delivered }
+      ];
+
+      let currentIndex = -1;
+      if (!deliveredDone) {
+        for (let i = stepsData.length - 1; i >= 0; i--) {
+          if (stepsData[i].done) {
+            currentIndex = i;
+            break;
+          }
+        }
+      }
+
       stepsListEl.innerHTML = "";
-      addStep("Order Received", soStatus, orderDone, stepIcons.order, true);
-      addStep("Order Processing", pkgSummary, processingDone, stepIcons.process, true);
-      addStep("On the way", shipments.length ? shipments.length + " total" : "Not created yet", onTheWayDone, stepIcons.ontheway, true);
-      addStep("Delivered", deliveredCount ? deliveredCount + " delivered" : "Not delivered yet", deliveredDone, stepIcons.delivered, false);
+      stepsData.forEach((step, idx) => {
+        const isCurrent = idx === currentIndex;
+        const hasLine = idx !== stepsData.length - 1;
+        addStep(step.label, step.value, step.done, step.icon, hasLine, isCurrent);
+      });
 
       setStatus("Order loaded.");
     } catch (err) {
