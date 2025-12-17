@@ -18,20 +18,29 @@ const configuratorMarkup = `
 <div class="nav-logo-mark"></div>
 </a>
 </div>
-<div class="nav-summary">
-<div class="lang-toggle" id="langToggle">
-<button class="lang-btn active" data-lang="ar">ع</button>
-<button class="lang-btn" data-lang="en">EN</button>
+<button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
+<span></span>
+<span></span>
+<span></span>
+</button>
+<div class="nav-right">
+<a class="nav-link" href="/#premadeSection" data-i18n="navPremade">تصاميم جاهزة</a>
+<a class="nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
+<a class="nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
+<button class="nav-link nav-lang" id="langToggle" type="button">EN</button>
 </div>
 </div>
-</div>
+<div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+<aside class="mobile-nav-drawer" id="mobileNavDrawer" aria-hidden="true">
+<a class="mobile-nav-link" href="/#premadeSection" data-i18n="navPremade">تصاميم جاهزة</a>
+<a class="mobile-nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
+<a class="mobile-nav-link mobile-nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
+<button class="mobile-nav-link mobile-nav-lang" id="mobileLangToggle" type="button">EN</button>
+</aside>
 <div class="page-content">
 <div class="main-layout">
 <!-- CONTROLLER COLUMN (LEFT) -->
 <div class="controller-column">
-<a class="mobile-logo-link" href="index.html" aria-label="Home">
-<span class="mobile-logo-mark" aria-hidden="true"></span>
-</a>
 <div class="controller-wrapper" id="controllerWrapper">
 <div class="controller-area" id="controllerArea">
 <div class="controller-bg"></div>
@@ -80,9 +89,9 @@ const configuratorMarkup = `
 </div>
 <!-- PARTS COLUMN (RIGHT) -->
 <div class="parts-column">
-<div class="mobile-selected-part" id="mobileSelectedPart" aria-hidden="true">
+<button class="mobile-selected-part" id="mobileSelectedPart" type="button" aria-label="Selected part">
 <img alt="" src="/assets/icons/shells.png"/>
-</div>
+</button>
 <div class="parts-panel">
 <div class="mobile-options-drawer" id="mobileOptionsDrawer" aria-live="polite">
 <div class="mobile-options-tabs">
@@ -231,6 +240,9 @@ const configuratorScript = `
         logo: "EZ GAMING",
         totalLabel: "الإجمالي",
         addToCart: "أضِف إلى السلة",
+        navPremade: "تصاميم جاهزة",
+        navContact: "تواصل معنا",
+        navBuildCta: "صمّم ذراعك الآن",
         front: "الأمام",
         back: "الخلف",
         selectPart: "اختر جزءًا",
@@ -299,6 +311,9 @@ const configuratorScript = `
         logo: "EZ GAMING",
         totalLabel: "Total",
         addToCart: "ADD TO CART",
+        navPremade: "Premade controllers",
+        navContact: "Contact",
+        navBuildCta: "Build your own",
         front: "Front",
         back: "Back",
         selectPart: "Select a part",
@@ -755,8 +770,11 @@ const configuratorScript = `
     const accordionItems = Array.from(document.querySelectorAll(".accordion-item"));
     const partTooltip = document.getElementById("partTooltip");
 
-    const langToggle = document.getElementById("langToggle");
-    const langButtons = langToggle ? langToggle.querySelectorAll(".lang-btn") : [];
+    const navLangToggle = document.getElementById("langToggle");
+    const mobileLangToggle = document.getElementById("mobileLangToggle");
+    const navMenuBtn = document.querySelector(".nav-menu-btn");
+    const mobileNavOverlay = document.getElementById("mobileNavOverlay");
+    const mobileNavDrawer = document.getElementById("mobileNavDrawer");
     const langSwitchBtn = document.getElementById("langSwitchBtn");
     const configuratorControls = document.getElementById("configuratorControls");
     const panelButtons = configuratorControls ? configuratorControls.querySelectorAll("[data-panel]") : [];
@@ -870,6 +888,7 @@ const configuratorScript = `
       mobileSelectedPartImg.src = icon;
       mobileSelectedPartImg.alt = getPartLabel(selectedPartId);
       mobileSelectedPart.style.display = "flex";
+      mobileSelectedPart.setAttribute("aria-label", getPartLabel(selectedPartId));
     }
 
     if (mobileOptionsDrawer) {
@@ -879,6 +898,14 @@ const configuratorScript = `
         if (!btn || btn.disabled) return;
         const tab = btn.dataset.tab;
         if (tab) setMobileDrawerTab(tab);
+      });
+    }
+
+    if (mobileSelectedPart) {
+      mobileSelectedPart.addEventListener("click", () => {
+        if (!isMobileLayout() || !selectedPartId) return;
+        setMobileDrawerVisible(true);
+        openColorPanelForPart(selectedPartId);
       });
     }
 
@@ -932,15 +959,43 @@ const configuratorScript = `
       }
     }
 
-    if (langToggle) {
-      langToggle.addEventListener("click", (e) => {
-        const btn = e.target.closest(".lang-btn");
-        if (!btn) return;
-        const lang = btn.dataset.lang;
-        if (!lang || lang === currentLang) return;
-        currentLang = lang;
-        langButtons.forEach(b => b.classList.toggle("active", b.dataset.lang === currentLang));
-        applyLanguage();
+    function updateNavLangLabel() {
+      const label = currentLang === "ar" ? "EN" : "AR";
+      if (navLangToggle) navLangToggle.textContent = label;
+      if (mobileLangToggle) mobileLangToggle.textContent = label;
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === "ar" ? "en" : "ar";
+      applyLanguage();
+    }
+
+    if (navLangToggle) {
+      navLangToggle.addEventListener("click", toggleLanguage);
+    }
+
+    if (mobileLangToggle) {
+      mobileLangToggle.addEventListener("click", toggleLanguage);
+    }
+
+    function setMobileNavOpen(isOpen) {
+      if (!mobileNavOverlay || !mobileNavDrawer) return;
+      mobileNavOverlay.classList.toggle("open", isOpen);
+      mobileNavDrawer.classList.toggle("open", isOpen);
+      document.body.classList.toggle("mobile-nav-open", isOpen);
+      if (navMenuBtn) {
+        navMenuBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      }
+    }
+
+    if (navMenuBtn && mobileNavOverlay && mobileNavDrawer) {
+      navMenuBtn.addEventListener("click", () => {
+        const isOpen = mobileNavDrawer.classList.contains("open");
+        setMobileNavOpen(!isOpen);
+      });
+      mobileNavOverlay.addEventListener("click", () => setMobileNavOpen(false));
+      mobileNavDrawer.querySelectorAll("a, button").forEach((el) => {
+        el.addEventListener("click", () => setMobileNavOpen(false));
       });
     }
 
@@ -1666,6 +1721,16 @@ const configuratorScript = `
       const loadingTextEl = document.querySelector("[data-i18n='loadingConfigurator']");
       if (loadingTextEl) loadingTextEl.textContent = t("loadingConfigurator");
 
+      document.querySelectorAll("[data-i18n='navPremade']").forEach(el => {
+        el.textContent = t("navPremade");
+      });
+      document.querySelectorAll("[data-i18n='navContact']").forEach(el => {
+        el.textContent = t("navContact");
+      });
+      document.querySelectorAll("[data-i18n='navBuildCta']").forEach(el => {
+        el.textContent = t("navBuildCta");
+      });
+
       if (langSwitchBtn) {
         const labelEl = langSwitchBtn.querySelector("[data-i18n='chooseLanguage']");
         const targetLang = currentLang === "ar" ? "en" : "ar";
@@ -1673,9 +1738,6 @@ const configuratorScript = `
         else langSwitchBtn.textContent = targetLang.toUpperCase();
         langSwitchBtn.dataset.lang = currentLang === "ar" ? "en" : "ar";
         langSwitchBtn.setAttribute("aria-label", t("chooseLanguage"));
-      }
-      if (langButtons.length) {
-        langButtons.forEach(b => b.classList.toggle("active", b.dataset.lang === currentLang));
       }
       document.querySelectorAll("[data-i18n='partsOptionsHeading']").forEach(el => {
         el.textContent = t("availableOptions");
@@ -1691,6 +1753,7 @@ const configuratorScript = `
         if (btn.dataset.side === "front") btn.textContent = t("front");
         else btn.textContent = t("back");
       });
+      updateNavLangLabel();
       updateFlipControl();
 
       buildPartsList();

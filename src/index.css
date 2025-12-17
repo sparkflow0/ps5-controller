@@ -51,7 +51,7 @@
     height: 60px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 0 20px;
     z-index: 30;
     background: radial-gradient(circle at top,
@@ -68,6 +68,11 @@
     gap: 10px;
   }
 
+  .top-nav > .nav-logo,
+  .top-nav > .nav-left {
+    margin-inline-end: auto;
+  }
+
   .nav-logo-mark {
     width: 200px;
     height: 40px;
@@ -77,19 +82,6 @@
     background-position: right;
   }
 
-  .mobile-logo-link {
-    display: none;
-    text-decoration: none;
-  }
-
-  .mobile-logo-mark {
-    width: 160px;
-    height: 32px;
-    background-image: url("/assets/logo.png");
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-  }
 
   .nav-logo-text {
     font-weight: 700;
@@ -104,6 +96,7 @@
     gap: 16px;
     font-size: 0.85rem;
     opacity: 0.9;
+    margin-inline-start: auto;
   }
 
   .nav-menu-btn {
@@ -115,7 +108,13 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     gap: 5px;
+    margin-inline-start: auto;
+  }
+
+  .nav-summary {
+    order: 2;
   }
 
   .nav-menu-btn span {
@@ -2969,9 +2968,6 @@ body.home-page-active {
 }
 
 @media (max-width: 900px) {
-  .top-nav {
-    display: none;
-  }
 
   .configurator-controls {
     display: flex;
@@ -2988,12 +2984,13 @@ body.home-page-active {
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     direction: ltr;
     flex-direction: row;
+    flex-wrap: nowrap;
   }
 
   .configurator-controls .control-btn,
   .configurator-controls .add-to-cart-btn {
-    width: var(--mobile-action-size, 56px);
-    height: var(--mobile-action-size, 56px);
+    width: min(var(--mobile-action-size, 56px), 18vw);
+    height: min(var(--mobile-action-size, 56px), 18vw);
     min-width: 0;
     padding: 0;
     border-radius: 50%;
@@ -3008,6 +3005,7 @@ body.home-page-active {
     background: transparent;
     border: 2px solid lawngreen;
     color: #e6f7d4;
+    flex: 0 1 auto;
   }
 
   .configurator-controls .control-btn:active,
@@ -3143,7 +3141,7 @@ body.home-page-active {
   }
 
   body.configurator-page-active .page-content {
-    padding-top: 8px;
+    padding-top: 70px;
     padding-bottom: 0;
     height: calc(100vh - var(--mobile-controls-height, 80px));
     min-height: 0;
@@ -3152,18 +3150,12 @@ body.home-page-active {
 
   body.configurator-page-active .controller-column {
     position: sticky;
-    top: 0;
+    top: 60px;
     z-index: 50;
     padding-bottom: 8px;
     background: linear-gradient(180deg, rgba(6, 8, 14, 0.98), rgba(6, 8, 14, 0.7) 60%, rgba(6, 8, 14, 0));
   }
 
-  body.configurator-page-active .mobile-logo-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 4px auto 8px;
-  }
 
   body.configurator-page-active .controller-buttons-stack {
     margin-top: 10px;
@@ -3181,7 +3173,7 @@ body.home-page-active {
       "controller"
       "parts"
       "colors";
-    gap: 10px;
+    gap: 24px;
   }
 
   body.configurator-page-active .nav-amount-label {
@@ -3190,8 +3182,12 @@ body.home-page-active {
 
   body.configurator-page-active .parts-column {
     grid-area: parts;
-    margin-top: -12px;
+    margin-top: 8px;
     position: relative;
+  }
+
+  body.configurator-page-active .controller-wrapper {
+    margin-top: -8px;
   }
 
   body.configurator-page-active .colors-column {
@@ -3255,7 +3251,11 @@ body.home-page-active {
     box-shadow: 0 10px 22px rgba(0, 255, 128, 0.35);
     transform: none;
     z-index: 80;
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: pointer;
+    padding: 0;
+    appearance: none;
+    -webkit-appearance: none;
   }
 
   body.configurator-page-active .mobile-selected-part img {
@@ -3364,13 +3364,19 @@ body.home-page-active {
 
 @media (max-width: 600px) {
   .configurator-controls {
-    gap: clamp(6px, 2vw, 8px);
+    gap: clamp(4px, 1.6vw, 7px);
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
   }
 
   body.configurator-page-active {
     --mobile-action-size: clamp(66px, 26vw, 82px);
     --mobile-controls-height: 110px;
+  }
+
+  .configurator-controls .control-btn,
+  .configurator-controls .add-to-cart-btn {
+    width: min(var(--mobile-action-size, 56px), 17vw);
+    height: min(var(--mobile-action-size, 56px), 17vw);
   }
 
   .configurator-controls .control-icon svg,

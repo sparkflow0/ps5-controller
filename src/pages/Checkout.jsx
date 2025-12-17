@@ -12,16 +12,30 @@ const checkoutMarkup = `
 <div class="nav-page-title" data-i18n="checkoutTitle">إتمام الشراء</div>
 </a>
 </div>
-<div class="nav-summary">
-<div class="lang-toggle" id="langToggle">
-<button class="lang-btn" data-lang="ar">ع</button>
-<button class="lang-btn" data-lang="en">EN</button>
+<button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
+<span></span>
+<span></span>
+<span></span>
+</button>
+<div class="nav-right">
+<a class="nav-link" href="/#premadeSection" data-i18n="navPremade">تصاميم جاهزة</a>
+<a class="nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
+<a class="nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
+<button class="nav-link nav-lang" id="langToggle" type="button">EN</button>
 </div>
+<div class="nav-summary">
 <div class="nav-amount-block">
 <div class="nav-amount-label" data-i18n="totalLabel">الإجمالي</div>
 <div class="nav-amount-value" id="navTotal">د.ب 0.00</div>
 </div>
 </div>
+<div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+<aside class="mobile-nav-drawer" id="mobileNavDrawer" aria-hidden="true">
+<a class="mobile-nav-link" href="/#premadeSection" data-i18n="navPremade">تصاميم جاهزة</a>
+<a class="mobile-nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
+<a class="mobile-nav-link mobile-nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
+<button class="mobile-nav-link mobile-nav-lang" id="mobileLangToggle" type="button">EN</button>
+</aside>
 </div>
  PAGE CONTENT 
 <div class="page-content">
@@ -156,6 +170,9 @@ const checkoutScript = `
       ar: {
         checkoutTitle: "إتمام الشراء",
         totalLabel: "الإجمالي",
+        navPremade: "تصاميم جاهزة",
+        navContact: "تواصل معنا",
+        navBuildCta: "صمّم ذراعك الآن",
         formTitle: "بيانات العميل والدفع",
         firstNameLabel: "الاسم الأول *",
         lastNameLabel: "اسم العائلة *",
@@ -191,6 +208,9 @@ const checkoutScript = `
       en: {
         checkoutTitle: "Checkout",
         totalLabel: "Total",
+        navPremade: "Premade controllers",
+        navContact: "Contact",
+        navBuildCta: "Build your own",
         formTitle: "Customer & payment details",
         firstNameLabel: "First name *",
         lastNameLabel: "Last name *",
@@ -226,6 +246,11 @@ const checkoutScript = `
     };
 
     let currentLang = localStorage.getItem("ez_lang") || "ar";
+    const navLangToggle = document.getElementById("langToggle");
+    const mobileLangToggle = document.getElementById("mobileLangToggle");
+    const navMenuBtn = document.querySelector(".nav-menu-btn");
+    const mobileNavOverlay = document.getElementById("mobileNavOverlay");
+    const mobileNavDrawer = document.getElementById("mobileNavDrawer");
 
     function t(key) {
       return (i18n[currentLang] && i18n[currentLang][key]) || key;
@@ -240,10 +265,6 @@ const checkoutScript = `
       document.documentElement.lang = currentLang;
       document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
 
-      document.querySelectorAll(".lang-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.lang === currentLang);
-      });
-
       document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.getAttribute("data-i18n");
         if (i18n[currentLang][key]) el.textContent = i18n[currentLang][key];
@@ -256,17 +277,49 @@ const checkoutScript = `
       });
 
       renderSummary();
+      updateNavLangLabel();
     }
 
-    document.getElementById("langToggle").addEventListener("click", (e) => {
-      const btn = e.target.closest(".lang-btn");
-      if (!btn) return;
-      const lang = btn.dataset.lang;
-      if (!lang || lang === currentLang) return;
-      currentLang = lang;
+    function updateNavLangLabel() {
+      const label = currentLang === "ar" ? "EN" : "AR";
+      if (navLangToggle) navLangToggle.textContent = label;
+      if (mobileLangToggle) mobileLangToggle.textContent = label;
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === "ar" ? "en" : "ar";
       localStorage.setItem("ez_lang", currentLang);
       applyLanguage();
-    });
+    }
+
+    if (navLangToggle) {
+      navLangToggle.addEventListener("click", toggleLanguage);
+    }
+
+    if (mobileLangToggle) {
+      mobileLangToggle.addEventListener("click", toggleLanguage);
+    }
+
+    function setMobileNavOpen(isOpen) {
+      if (!mobileNavOverlay || !mobileNavDrawer) return;
+      mobileNavOverlay.classList.toggle("open", isOpen);
+      mobileNavDrawer.classList.toggle("open", isOpen);
+      document.body.classList.toggle("mobile-nav-open", isOpen);
+      if (navMenuBtn) {
+        navMenuBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      }
+    }
+
+    if (navMenuBtn && mobileNavOverlay && mobileNavDrawer) {
+      navMenuBtn.addEventListener("click", () => {
+        const isOpen = mobileNavDrawer.classList.contains("open");
+        setMobileNavOpen(!isOpen);
+      });
+      mobileNavOverlay.addEventListener("click", () => setMobileNavOpen(false));
+      mobileNavDrawer.querySelectorAll("a, button").forEach((el) => {
+        el.addEventListener("click", () => setMobileNavOpen(false));
+      });
+    }
 
     const navTotalEl = document.getElementById("navTotal");
     const summaryItemsListEl = document.getElementById("summaryItemsList");
