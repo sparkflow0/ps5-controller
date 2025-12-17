@@ -22,6 +22,7 @@ const checkoutMarkup = `
 <a class="nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
 <a class="nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
 <button class="nav-link nav-lang" id="langToggle" type="button">EN</button>
+<button class="nav-link nav-theme" id="themeToggle" type="button">فاتح</button>
 </div>
 <div class="nav-summary">
 <div class="nav-amount-block">
@@ -35,6 +36,7 @@ const checkoutMarkup = `
 <a class="mobile-nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
 <a class="mobile-nav-link mobile-nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
 <button class="mobile-nav-link mobile-nav-lang" id="mobileLangToggle" type="button">EN</button>
+<button class="mobile-nav-link mobile-nav-theme" id="mobileThemeToggle" type="button">فاتح</button>
 </aside>
 </div>
  PAGE CONTENT 
@@ -166,88 +168,13 @@ const checkoutScript = `
 
     const CART_KEY = "ezCart";
 
-    const i18n = {
-      ar: {
-        checkoutTitle: "إتمام الشراء",
-        totalLabel: "الإجمالي",
-        navPremade: "تصاميم جاهزة",
-        navContact: "تواصل معنا",
-        navBuildCta: "صمّم ذراعك الآن",
-        formTitle: "بيانات العميل والدفع",
-        firstNameLabel: "الاسم الأول *",
-        lastNameLabel: "اسم العائلة *",
-        phoneLabel: "رقم الهاتف *",
-        emailLabel: "البريد الإلكتروني *",
-        countryLabel: "الدولة *",
-        cityLabel: "المدينة *",
-        stateLabel: "المحافظة / الولاية *",
-        postalCodeLabel: "الرمز البريدي (اختياري)",
-        addressLine1Label: "العنوان التفصيلي (سطر 1) *",
-        addressLine2Label: "العنوان (سطر 2) اختياري",
-        shippingMethodLabel: "طريقة الشحن",
-        shippingStandard: "شحن عادي (3–5 أيام)",
-        shippingExpress: "شحن سريع (1–2 يوم)",
-        shippingPickup: "استلام من المتجر",
-        paymentMethodsTitle: "طريقة الدفع (للتجربة فقط – بدون تنفيذ الدفع الفعلي)",
-        paymentCard: "بطاقة ائتمانية / مدى",
-        paymentOnline: "بوابة دفع إلكترونية",
-        paymentCod: "الدفع عند الاستلام (إن توفر)",
-        termsText: "أقر بأن جميع بيانات التخصيص صحيحة، وأوافق على الشروط والأحكام وسياسة الاستبدال.",
-        placeOrderBtn: "تأكيد الطلب (بدون دفع)",
-        summaryTitle: "ملخص الطلب",
-        summaryEmpty: "لا توجد عناصر في السلة. يرجى العودة إلى صفحة التخصيص.",
-        itemsCountLabel: "عدد القطع",
-        subtotalLabel: "الإجمالي الفرعي",
-        shippingLabel: "الشحن",
-        shippingSummaryNote: "سيتم حسابه حسب العنوان وطريقة الشحن",
-        totalDueLabel: "الإجمالي المستحق (بدون رسوم الدفع)",
-        currencyPrefix: "د.ب ",
-        alertNoItems: "لا توجد عناصر في السلة لإتمام الطلب.",
-        formSuccess: "تم حفظ تفاصيل الطلب (تجريبياً). يمكنك الآن ربط هذه الصفحة ببوابة الدفع الحقيقية لاحقًا."
-      },
-      en: {
-        checkoutTitle: "Checkout",
-        totalLabel: "Total",
-        navPremade: "Premade controllers",
-        navContact: "Contact",
-        navBuildCta: "Build your own",
-        formTitle: "Customer & payment details",
-        firstNameLabel: "First name *",
-        lastNameLabel: "Last name *",
-        phoneLabel: "Phone *",
-        emailLabel: "Email *",
-        countryLabel: "Country *",
-        cityLabel: "City *",
-        stateLabel: "State / Province *",
-        postalCodeLabel: "Postal code (optional)",
-        addressLine1Label: "Address line 1 *",
-        addressLine2Label: "Address line 2 (optional)",
-        shippingMethodLabel: "Shipping method",
-        shippingStandard: "Standard shipping (3–5 days)",
-        shippingExpress: "Express shipping (1–2 days)",
-        shippingPickup: "Store pickup",
-        paymentMethodsTitle: "Payment method (demo only – no real charge)",
-        paymentCard: "Credit / debit card",
-        paymentOnline: "Online payment gateway",
-        paymentCod: "Cash on delivery (if available)",
-        termsText: "I confirm all customization details are correct and agree to the terms & conditions.",
-        placeOrderBtn: "Confirm order (no payment)",
-        summaryTitle: "Order summary",
-        summaryEmpty: "Your cart is empty. Please go back to the configurator.",
-        itemsCountLabel: "Items",
-        subtotalLabel: "Subtotal",
-        shippingLabel: "Shipping",
-        shippingSummaryNote: "Will be calculated based on address and method",
-        totalDueLabel: "Total due (excluding gateway fees)",
-        currencyPrefix: "BHD ",
-        alertNoItems: "There are no items in the cart to place an order.",
-        formSuccess: "Order details saved (demo). You can now connect this page to a real payment gateway later."
-      }
-    };
+    const i18n = window.__EZ_I18N__ || {};
 
     let currentLang = localStorage.getItem("ez_lang") || "ar";
     const navLangToggle = document.getElementById("langToggle");
     const mobileLangToggle = document.getElementById("mobileLangToggle");
+    const themeToggle = document.getElementById("themeToggle");
+    const mobileThemeToggle = document.getElementById("mobileThemeToggle");
     const navMenuBtn = document.querySelector(".nav-menu-btn");
     const mobileNavOverlay = document.getElementById("mobileNavOverlay");
     const mobileNavDrawer = document.getElementById("mobileNavDrawer");
@@ -278,12 +205,38 @@ const checkoutScript = `
 
       renderSummary();
       updateNavLangLabel();
+      updateThemeLabel();
     }
 
     function updateNavLangLabel() {
       const label = currentLang === "ar" ? "EN" : "AR";
       if (navLangToggle) navLangToggle.textContent = label;
       if (mobileLangToggle) mobileLangToggle.textContent = label;
+    }
+
+    let currentTheme = localStorage.getItem("ez_theme") || "dark";
+
+    function applyTheme() {
+      document.body.classList.toggle("theme-light", currentTheme === "light");
+    }
+
+    function themeLabel() {
+      const lightLabel = t("themeLight");
+      const darkLabel = t("themeDark");
+      return currentTheme === "dark" ? lightLabel : darkLabel;
+    }
+
+    function updateThemeLabel() {
+      const label = themeLabel();
+      if (themeToggle) themeToggle.textContent = label;
+      if (mobileThemeToggle) mobileThemeToggle.textContent = label;
+    }
+
+    function toggleTheme() {
+      currentTheme = currentTheme === "dark" ? "light" : "dark";
+      localStorage.setItem("ez_theme", currentTheme);
+      applyTheme();
+      updateThemeLabel();
     }
 
     function toggleLanguage() {
@@ -298,6 +251,14 @@ const checkoutScript = `
 
     if (mobileLangToggle) {
       mobileLangToggle.addEventListener("click", toggleLanguage);
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener("click", toggleTheme);
+    }
+
+    if (mobileThemeToggle) {
+      mobileThemeToggle.addEventListener("click", toggleTheme);
     }
 
     function setMobileNavOpen(isOpen) {
@@ -320,6 +281,9 @@ const checkoutScript = `
         el.addEventListener("click", () => setMobileNavOpen(false));
       });
     }
+
+    applyTheme();
+    updateThemeLabel();
 
     const navTotalEl = document.getElementById("navTotal");
     const summaryItemsListEl = document.getElementById("summaryItemsList");
@@ -368,7 +332,7 @@ const checkoutScript = `
 
         const nameEl = document.createElement("div");
         nameEl.className = "summary-item-name";
-        const name = item.name || (currentLang === "ar" ? "متحكم PS5 مخصّص" : "Custom PS5 Controller");
+        const name = item.name || t("productName");
         nameEl.textContent = name + " × " + item.quantity;
 
         const priceEl = document.createElement("div");
@@ -409,7 +373,7 @@ const checkoutScript = `
         window.location.href = "/payment";
       } catch (err) {
         console.error(err);
-        alert("Failed to start payment.");
+        alert(t("paymentStartFailed"));
       }
     });
 

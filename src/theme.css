@@ -1,0 +1,52 @@
+:root {
+  --page-bg: radial-gradient(circle at top, #111322 0, #05060a 45%, #000 100%);
+  --color-text: #fff;
+  --color-text-muted: rgba(255, 255, 255, 0.78);
+  --accent1: #7cfc00;
+  --accent2: #448107;
+  --accent3: #ff4081;
+  --accent-glow: #00e676;
+  --card-bg: rgba(8, 8, 12, 0.96);
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --nav-link-color: var(--accent1);
+  --nav-link-hover-border: rgba(255, 255, 255, 0.55);
+  --nav-pill-bg: rgba(0, 0, 0, 0.4);
+  --nav-pill-border: rgba(255, 255, 255, 0.12);
+  --nav-bg: radial-gradient(circle at top, rgba(6, 10, 20, 0.98), rgba(1, 2, 6, 0.96));
+  --nav-border: rgba(255, 255, 255, 0.08);
+  --nav-shadow: 0 10px 26px rgba(0, 0, 0, 0.9);
+  --button-primary-bg: linear-gradient(135deg, var(--accent1), var(--accent2));
+  --button-primary-text: #000;
+  --button-primary-shadow: 0 12px 24px rgba(0, 0, 0, 1), 0 0 18px rgba(0, 229, 255, 0.7);
+  --button-secondary-bg: radial-gradient(circle at top, rgba(255, 255, 255, 0.09), rgba(6, 6, 10, 0.96));
+  --button-secondary-border: rgba(255, 255, 255, 0.4);
+  --button-secondary-text: var(--accent1);
+  --input-text-color: var(--accent1);
+  --input-bg: rgba(0, 0, 0, 0.8);
+  --input-border: rgba(255, 255, 255, 0.25);
+  --logo-url: url("/assets/logo.png");
+}
+
+body.theme-light {
+  --page-bg: radial-gradient(circle at top, #f7f9fc 0, #eef2f8 45%, #e1e7f2 100%);
+  --color-text: #0f172a;
+  --color-text-muted: rgba(15, 23, 42, 0.7);
+  --card-bg: rgba(255, 255, 255, 0.94);
+  --border-subtle: rgba(15, 23, 42, 0.12);
+  --nav-link-color: #0f172a;
+  --nav-link-hover-border: rgba(15, 23, 42, 0.45);
+  --nav-pill-bg: rgba(15, 23, 42, 0.08);
+  --nav-pill-border: rgba(15, 23, 42, 0.2);
+  --nav-bg: rgba(248, 250, 255, 0.96);
+  --nav-border: rgba(15, 23, 42, 0.12);
+  --nav-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
+  --button-primary-bg: linear-gradient(135deg, #0f172a, #334155);
+  --button-primary-text: #f8fafc;
+  --button-primary-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
+  --button-secondary-bg: rgba(15, 23, 42, 0.08);
+  --button-secondary-border: rgba(15, 23, 42, 0.2);
+  --button-secondary-text: #0f172a;
+  --input-text-color: #0f172a;
+  --input-bg: rgba(255, 255, 255, 0.9);
+  --input-border: rgba(15, 23, 42, 0.2);
+}

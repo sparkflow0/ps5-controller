@@ -6,7 +6,7 @@ const posMarkup = `
   <div class="nav-logo">
     <a class="nav-left" href="index.html">
       <div class="nav-logo-mark"></div>
-      <div class="nav-page-title">POS</div>
+      <div class="nav-page-title" data-i18n="posTitle">نقطة البيع</div>
     </a>
   </div>
   <button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
@@ -19,6 +19,7 @@ const posMarkup = `
     <a class="nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
     <a class="nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
     <button class="nav-link nav-lang" id="langToggle" type="button">EN</button>
+    <button class="nav-link nav-theme" id="themeToggle" type="button">فاتح</button>
   </div>
 </div>
 <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
@@ -27,10 +28,11 @@ const posMarkup = `
   <a class="mobile-nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
   <a class="mobile-nav-link mobile-nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
   <button class="mobile-nav-link mobile-nav-lang" id="mobileLangToggle" type="button">EN</button>
+  <button class="mobile-nav-link mobile-nav-theme" id="mobileThemeToggle" type="button">فاتح</button>
 </aside>
 <div class="page-content" style="padding-top:80px; display:flex; justify-content:center;">
-  <div class="card" style="width:100%; max-width:1100px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08); color:#fff;">
-    <div class="card-title">Point of Sale</div>
+  <div class="card" style="width:100%; max-width:1100px; background:var(--card-bg); border:1px solid var(--border-subtle); color:var(--color-text);">
+    <div class="card-title" data-i18n="posCardTitle">نقطة البيع</div>
     <div id="posStatus" style="margin-bottom:10px; opacity:0.85; font-size:0.95rem;"></div>
     <div class="pos-grid" id="posGrid"></div>
   </div>
@@ -67,8 +69,8 @@ const posMarkup = `
     padding: 8px 10px;
     border: none;
     border-radius: 6px;
-    background: linear-gradient(135deg, #7CFC00, #2ecc71);
-    color: #000;
+    background: var(--button-primary-bg);
+    color: var(--button-primary-text);
     font-weight: 700;
     cursor: pointer;
   }
@@ -82,35 +84,23 @@ const posMarkup = `
 
 const posScript = `
   let navLang = localStorage.getItem("ez_lang") || "ar";
+  const i18n = window.__EZ_I18N__ || {};
   const navLangToggle = document.getElementById("langToggle");
   const mobileLangToggle = document.getElementById("mobileLangToggle");
+  const themeToggle = document.getElementById("themeToggle");
+  const mobileThemeToggle = document.getElementById("mobileThemeToggle");
   const navMenuBtn = document.querySelector(".nav-menu-btn");
   const mobileNavOverlay = document.getElementById("mobileNavOverlay");
   const mobileNavDrawer = document.getElementById("mobileNavDrawer");
 
-  const navText = {
-    ar: {
-      navPremade: "تصاميم جاهزة",
-      navContact: "تواصل معنا",
-      navBuildCta: "صمّم ذراعك الآن"
-    },
-    en: {
-      navPremade: "Premade controllers",
-      navContact: "Contact",
-      navBuildCta: "Build your own"
-    }
-  };
+  function t(key) {
+    return (i18n[navLang] && i18n[navLang][key]) || key;
+  }
 
-  function updateNavLabels() {
-    const labels = navText[navLang] || navText.ar;
-    document.querySelectorAll("[data-i18n='navPremade']").forEach(el => {
-      el.textContent = labels.navPremade;
-    });
-    document.querySelectorAll("[data-i18n='navContact']").forEach(el => {
-      el.textContent = labels.navContact;
-    });
-    document.querySelectorAll("[data-i18n='navBuildCta']").forEach(el => {
-      el.textContent = labels.navBuildCta;
+  function applyTranslations() {
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      el.textContent = t(key);
     });
   }
 
@@ -118,7 +108,8 @@ const posScript = `
     const label = navLang === "ar" ? "EN" : "AR";
     if (navLangToggle) navLangToggle.textContent = label;
     if (mobileLangToggle) mobileLangToggle.textContent = label;
-    updateNavLabels();
+    applyTranslations();
+    updateThemeLabel();
   }
 
   function toggleNavLang() {
@@ -130,8 +121,39 @@ const posScript = `
   }
 
   updateNavLangLabel();
+  applyTranslations();
   if (navLangToggle) navLangToggle.addEventListener("click", toggleNavLang);
   if (mobileLangToggle) mobileLangToggle.addEventListener("click", toggleNavLang);
+
+  let currentTheme = localStorage.getItem("ez_theme") || "dark";
+
+  function applyTheme() {
+    document.body.classList.toggle("theme-light", currentTheme === "light");
+  }
+
+  function themeLabel() {
+    const lightLabel = t("themeLight");
+    const darkLabel = t("themeDark");
+    return currentTheme === "dark" ? lightLabel : darkLabel;
+  }
+
+  function updateThemeLabel() {
+    const label = themeLabel();
+    if (themeToggle) themeToggle.textContent = label;
+    if (mobileThemeToggle) mobileThemeToggle.textContent = label;
+  }
+
+  function toggleTheme() {
+    currentTheme = currentTheme === "dark" ? "light" : "dark";
+    localStorage.setItem("ez_theme", currentTheme);
+    applyTheme();
+    updateThemeLabel();
+  }
+
+  if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
+  if (mobileThemeToggle) mobileThemeToggle.addEventListener("click", toggleTheme);
+  applyTheme();
+  updateThemeLabel();
 
   function setMobileNavOpen(isOpen) {
     if (!mobileNavOverlay || !mobileNavDrawer) return;
@@ -182,11 +204,11 @@ const posScript = `
       preview: item.image_url || ""
     });
     saveCart(cart);
-    setStatus("Added to cart: " + (item.name || "Item"));
+    setStatus(t("posStatusAddedPrefix") + (item.name || t("posItemFallback")));
   }
 
   async function loadItems() {
-    setStatus("Loading items...");
+    setStatus(t("posStatusLoading"));
     gridEl.innerHTML = "";
     try {
       const res = await fetch("/zoho/inventory/v1/items?organization_id=892379608&per_page=200");
@@ -198,17 +220,17 @@ const posScript = `
         return active && !name.startsWith("ps5_");
       });
       if (!items.length) {
-        setStatus("No items found.");
+        setStatus(t("posStatusNoItems"));
         return;
       }
-      setStatus(items.length + " items loaded.");
+      setStatus(items.length + t("posStatusLoadedSuffix"));
       items.forEach(it => {
         const card = document.createElement("div");
         card.className = "pos-item";
 
         const name = document.createElement("div");
         name.className = "pos-name";
-        name.textContent = it.name || "Item";
+        name.textContent = it.name || t("posItemFallback");
 
         const price = document.createElement("div");
         price.className = "pos-price";
@@ -218,11 +240,11 @@ const posScript = `
         const stock = document.createElement("div");
         stock.className = "pos-stock";
         const avail = it.available_stock != null ? it.available_stock : it.stock_on_hand;
-        stock.textContent = "Stock: " + (avail != null ? avail : "—");
+        stock.textContent = t("posStockLabel") + " " + (avail != null ? avail : "—");
 
         const btn = document.createElement("button");
         btn.className = "pos-btn";
-        btn.textContent = "Add to cart";
+        btn.textContent = t("posAddToCart");
         btn.disabled = avail != null && avail <= 0;
         btn.addEventListener("click", () => addToCart(it));
 
@@ -234,7 +256,7 @@ const posScript = `
       });
     } catch (err) {
       console.error(err);
-      setStatus("Failed to load items: " + err.message);
+      setStatus(t("posStatusFailedPrefix") + err.message);
     }
   }
 

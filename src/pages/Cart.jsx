@@ -22,6 +22,7 @@ const cartMarkup = `
 <a class="nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
 <a class="nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
 <button class="nav-link nav-lang" id="langToggle" type="button">EN</button>
+<button class="nav-link nav-theme" id="themeToggle" type="button">فاتح</button>
 </div>
 <div class="nav-summary">
 <div class="nav-amount-block">
@@ -37,6 +38,7 @@ const cartMarkup = `
 <a class="mobile-nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
 <a class="mobile-nav-link mobile-nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
 <button class="mobile-nav-link mobile-nav-lang" id="mobileLangToggle" type="button">EN</button>
+<button class="mobile-nav-link mobile-nav-theme" id="mobileThemeToggle" type="button">فاتح</button>
 </aside>
  PAGE CONTENT 
 <div class="page-content">
@@ -83,84 +85,13 @@ const cartScript = `
     const CART_KEY = "ezCart";
 
     // ---------- I18N ----------
-    const i18n = {
-      ar: {
-        cartTitle: "سلة المشتريات",
-        summaryTitle: "الملخص",
-        cartEmpty: "السلة فارغة حاليًا. يمكنك تخصيص متحكم جديد من صفحة التخصيص.",
-        navPremade: "تصاميم جاهزة",
-        navContact: "تواصل معنا",
-        navBuildCta: "صمّم ذراعك الآن",
-        itemsCountLabel: "عدد القطع",
-        subtotalLabel: "الإجمالي الفرعي",
-        shippingLabel: "الشحن",
-        shippingNote: "سيتم تحديده لاحقًا",
-        totalLabel: "الإجمالي",
-        totalLabelBold: "الإجمالي",
-        checkoutCta: "إتمام الشراء",
-        itemRemove: "إزالة",
-        itemDetailsHeading: "تفاصيل التخصيص:",
-        itemLineTotalLabel: "المجموع لهذا العنصر",
-        alertEmptyForCheckout: "السلة فارغة، يرجى إضافة متحكم واحد على الأقل.",
-        currencyPrefix: "د.ب ",
-        productName: "متحكم PS5 مخصّص",
-        parts: {
-          shell: "هيكل المقدّمة",
-          trimpiece: "القطعة الوسطى",
-          psButton: "زر PS",
-          share: "زر المشاركة",
-          options: "زر الخيارات",
-          faceButtons: "أزرار الأوجه",
-          stickL: "عصا التحكم اليسرى",
-          stickR: "عصا التحكم اليمنى",
-          touchpad: "لوحة اللمس",
-          bumpers: "الأزرار العلوية",
-          backShellMain: "هيكل الخلف",
-          backHandles: "مقابض الخلف",
-          backTriggers: "أزرار الزناد الخلفية"
-        }
-      },
-      en: {
-        cartTitle: "Shopping Cart",
-        summaryTitle: "Summary",
-        cartEmpty: "Your cart is currently empty. You can create a new custom controller from the configurator page.",
-        navPremade: "Premade controllers",
-        navContact: "Contact",
-        navBuildCta: "Build your own",
-        itemsCountLabel: "Items",
-        subtotalLabel: "Subtotal",
-        shippingLabel: "Shipping",
-        shippingNote: "To be calculated later",
-        totalLabel: "Total",
-        totalLabelBold: "Total",
-        checkoutCta: "Checkout",
-        itemRemove: "Remove",
-        itemDetailsHeading: "Customization details:",
-        itemLineTotalLabel: "Line total",
-        alertEmptyForCheckout: "Your cart is empty. Please add at least one controller.",
-        currencyPrefix: "BHD ",
-        productName: "Custom PS5 Controller",
-        parts: {
-          shell: "Front shell",
-          trimpiece: "Center trim",
-          psButton: "PS button",
-          share: "Share button",
-          options: "Options button",
-          faceButtons: "Face buttons",
-          stickL: "Left stick",
-          stickR: "Right stick",
-          touchpad: "Touchpad",
-          bumpers: "Bumpers",
-          backShellMain: "Back shell",
-          backHandles: "Back handles",
-          backTriggers: "Back triggers"
-        }
-      }
-    };
+    const i18n = window.__EZ_I18N__ || {};
 
     let currentLang = localStorage.getItem("ez_lang") || "ar";
     const navLangToggle = document.getElementById("langToggle");
     const mobileLangToggle = document.getElementById("mobileLangToggle");
+    const themeToggle = document.getElementById("themeToggle");
+    const mobileThemeToggle = document.getElementById("mobileThemeToggle");
     const navMenuBtn = document.querySelector(".nav-menu-btn");
     const mobileNavOverlay = document.getElementById("mobileNavOverlay");
     const mobileNavDrawer = document.getElementById("mobileNavDrawer");
@@ -185,12 +116,38 @@ const cartScript = `
 
       renderCart();
       updateNavLangLabel();
+      updateThemeLabel();
     }
 
     function updateNavLangLabel() {
       const label = currentLang === "ar" ? "EN" : "AR";
       if (navLangToggle) navLangToggle.textContent = label;
       if (mobileLangToggle) mobileLangToggle.textContent = label;
+    }
+
+    let currentTheme = localStorage.getItem("ez_theme") || "dark";
+
+    function applyTheme() {
+      document.body.classList.toggle("theme-light", currentTheme === "light");
+    }
+
+    function themeLabel() {
+      const lightLabel = t("themeLight");
+      const darkLabel = t("themeDark");
+      return currentTheme === "dark" ? lightLabel : darkLabel;
+    }
+
+    function updateThemeLabel() {
+      const label = themeLabel();
+      if (themeToggle) themeToggle.textContent = label;
+      if (mobileThemeToggle) mobileThemeToggle.textContent = label;
+    }
+
+    function toggleTheme() {
+      currentTheme = currentTheme === "dark" ? "light" : "dark";
+      localStorage.setItem("ez_theme", currentTheme);
+      applyTheme();
+      updateThemeLabel();
     }
 
     function toggleLanguage() {
@@ -205,6 +162,14 @@ const cartScript = `
 
     if (mobileLangToggle) {
       mobileLangToggle.addEventListener("click", toggleLanguage);
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener("click", toggleTheme);
+    }
+
+    if (mobileThemeToggle) {
+      mobileThemeToggle.addEventListener("click", toggleTheme);
     }
 
     function setMobileNavOpen(isOpen) {
@@ -227,6 +192,9 @@ const cartScript = `
         el.addEventListener("click", () => setMobileNavOpen(false));
       });
     }
+
+    applyTheme();
+    updateThemeLabel();
 
     function formatMoney(value) {
       const prefix = i18n[currentLang].currencyPrefix || "";

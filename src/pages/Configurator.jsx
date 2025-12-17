@@ -28,6 +28,7 @@ const configuratorMarkup = `
 <a class="nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
 <a class="nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
 <button class="nav-link nav-lang" id="langToggle" type="button">EN</button>
+<button class="nav-link nav-theme" id="themeToggle" type="button">فاتح</button>
 </div>
 </div>
 <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
@@ -36,6 +37,7 @@ const configuratorMarkup = `
 <a class="mobile-nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
 <a class="mobile-nav-link mobile-nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
 <button class="mobile-nav-link mobile-nav-lang" id="mobileLangToggle" type="button">EN</button>
+<button class="mobile-nav-link mobile-nav-theme" id="mobileThemeToggle" type="button">فاتح</button>
 </aside>
 <div class="page-content">
 <div class="main-layout">
@@ -234,150 +236,7 @@ const configuratorScript = `
     }
 
     /* ---------- I18N ---------- */
-
-    const i18n = {
-      ar: {
-        logo: "EZ GAMING",
-        totalLabel: "الإجمالي",
-        addToCart: "أضِف إلى السلة",
-        navPremade: "تصاميم جاهزة",
-        navContact: "تواصل معنا",
-        navBuildCta: "صمّم ذراعك الآن",
-        front: "الأمام",
-        back: "الخلف",
-        selectPart: "اختر جزءًا",
-        availableColors: "الألوان المتاحة",
-        availableOptions: "خيارات القطعة",
-        partsTitle: "الأجزاء",
-        sectionFront: "الوجه الأمامي",
-        sectionBack: "الوجه الخلفي",
-        side_front: "أمام",
-        side_back: "خلف",
-        preview: "معاينة التغيرات",
-        loadingConfigurator: "جاري تحميل الإعدادات...",
-        chooseLanguage: "اختيار اللغة",
-        currencyPrefix: "د.ب ",
-        pricePrefix: "+ ",
-        alertNone: "لم يتم اختيار أي تخصيص بعد.",
-        alertAdded: "تمت إضافة التخصيص إلى السلة.",
-        /* Parts */
-        part_shell: "هيكل المقدّمة",
-        part_trimpiece: "القطعة الوسطى",
-        part_psButton: "زر PS",
-        part_share: "زر المشاركة",
-        part_options: "زر الخيارات",
-        part_faceButtons: "أزرار الأوجه",
-        part_stickL: "عصا التحكّم اليسرى",
-        part_stickR: "عصا التحكّم اليمنى",
-        part_touchpad: "لوحة اللمس",
-        part_bumpers: "الأزرار العلوية",
-        part_backShellMain: "هيكل الخلف",
-        part_backHandles: "مقابض الخلف",
-        part_backTriggers: "أزرار الزناد الخلفية",
-        /* Colors */
-        color_orange: "برتقالي",
-        color_yellow: "أصفر",
-        color_lightBlue: "أزرق فاتح",
-        color_steelGray: "رمادي معدني",
-        color_blue: "أزرق",
-        color_midnightBlue: "أزرق داكن",
-        color_magenta: "أرجواني محمر",
-        color_softWhite: "أبيض ناعم",
-        color_hotPink_shell: "وردي فاقع",
-        color_matteBlack: "أسود مطفي",
-        color_black: "أسود",
-        color_lightGray: "رمادي فاتح",
-        color_red: "أحمر",
-        color_darkBluePurple: "أزرق بنفسجي داكن",
-        color_mintGreen: "أخضر نعناعي",
-        color_royalPurple: "بنفسجي ملكي",
-        color_hotPink: "وردي فاقع",
-        color_skyBlue: "أزرق سماوي",
-        color_pinkViolet: "وردي بنفسجي",
-        color_indigoPurple: "نيلي بنفسجي",
-        color_clear: "شفاف",
-        color_transRed: "أحمر شفاف",
-        color_transBlue: "أزرق شفاف",
-        color_transGreen: "أخضر شفاف",
-        color_transPurple: "بنفسجي شفاف",
-        color_gunmetal: "رمادي معدني داكن",
-        color_transBrown: "بني شفاف",
-        color_frostedWhite: "أبيض ضبابي",
-        option_standard: "Standard",
-        option_halleffect: "Hall Effect",
-        option_tmr: "TMR"
-      },
-      en: {
-        logo: "EZ GAMING",
-        totalLabel: "Total",
-        addToCart: "ADD TO CART",
-        navPremade: "Premade controllers",
-        navContact: "Contact",
-        navBuildCta: "Build your own",
-        front: "Front",
-        back: "Back",
-        selectPart: "Select a part",
-        availableColors: "Available colors",
-        partsTitle: "Parts",
-        sectionFront: "Front",
-        sectionBack: "Back",
-        side_front: "Front",
-        side_back: "Back",
-        preview: "Preview",
-        loadingConfigurator: "Loading configurator...",
-        chooseLanguage: "Language",
-        currencyPrefix: "BHD ",
-        pricePrefix: "+ ",
-        alertNone: "No custom options selected yet.",
-        alertAdded: "Configuration added to cart.",
-        /* Parts */
-        part_shell: "Shell",
-        part_trimpiece: "Trim Piece",
-        part_psButton: "PS Button",
-        part_share: "Share Button",
-        part_options: "Options Button",
-        part_faceButtons: "Face Buttons",
-        part_stickL: "Left Stick",
-        part_stickR: "Right Stick",
-        part_touchpad: "Touchpad",
-        part_bumpers: "Bumpers",
-        part_backShellMain: "Back Shell",
-        part_backHandles: "Back Handles",
-        part_backTriggers: "Back Triggers",
-        /* Colors */
-        color_orange: "Orange",
-        color_yellow: "Yellow",
-        color_lightBlue: "Light Blue",
-        color_steelGray: "Steel Gray",
-        color_blue: "Blue",
-        color_midnightBlue: "Midnight Blue",
-        color_magenta: "Magenta",
-        color_softWhite: "Soft White",
-        color_hotPink_shell: "Hot Pink",
-        color_matteBlack: "Matte Black",
-        color_black: "Black",
-        color_lightGray: "Light Gray",
-        color_red: "Red",
-        color_darkBluePurple: "Dark Blue-Purple",
-        color_mintGreen: "Mint Green",
-        color_royalPurple: "Royal Purple",
-        color_hotPink: "Hot Pink",
-        color_skyBlue: "Sky Blue",
-        color_pinkViolet: "Pink-Violet",
-        color_indigoPurple: "Indigo Purple",
-        color_clear: "Clear Transparent",
-        color_transRed: "Transparent Red",
-        color_transBlue: "Transparent Blue",
-        color_transGreen: "Transparent Green",
-        color_transPurple: "Transparent Purple",
-        color_gunmetal: "Gunmetal Gray",
-        color_transBrown: "Transparent Brown",
-        color_frostedWhite: "Frosted White",
-        option_standard: "Standard",
-        option_halleffect: "Hall Effect",
-        option_tmr: "TMR"
-      }
-    };
+    const i18n = window.__EZ_I18N__ || {};
 
     let currentLang = "ar";
 
@@ -658,28 +517,26 @@ const configuratorScript = `
     }
 
     async function fetchZohoItems() {
-      if (!ZOHO_ACCESS_TOKEN || !ZOHO_ORG_ID) {
-        console.warn("[Zoho] Missing Zoho credentials, skipping inventory fetch.");
-        return [];
-      }
 
       const perPage = 200;
       const maxPages = 10; // safety cap to avoid runaway loops
       const allItems = [];
 
       for (let page = 1; page <= maxPages; page++) {
-        const url =
-          ZOHO_ITEMS_ENDPOINT +
-          "?page=" + page +
-          "&per_page=" + perPage +
-          "&organization_id=" + encodeURIComponent(ZOHO_ORG_ID);
+        const params = new URLSearchParams();
+        params.set("page", String(page));
+        params.set("per_page", String(perPage));
+        if (ZOHO_ORG_ID) {
+          params.set("organization_id", ZOHO_ORG_ID);
+        }
+        const url = ZOHO_ITEMS_ENDPOINT + "?" + params.toString();
         console.log("[Zoho Debug] Fetching items page", page, "from:", url);
         try {
-          const res = await fetch(url, {
-            headers: {
-              Authorization: "Zoho-oauthtoken " + ZOHO_ACCESS_TOKEN
-            }
-          });
+          const headers = {};
+          if (ZOHO_ACCESS_TOKEN) {
+            headers.Authorization = "Zoho-oauthtoken " + ZOHO_ACCESS_TOKEN;
+          }
+          const res = await fetch(url, Object.keys(headers).length ? { headers } : undefined);
           if (!res.ok) {
             let body = "";
             try { body = await res.text(); } catch { /* ignore */ }
@@ -772,6 +629,8 @@ const configuratorScript = `
 
     const navLangToggle = document.getElementById("langToggle");
     const mobileLangToggle = document.getElementById("mobileLangToggle");
+    const themeToggle = document.getElementById("themeToggle");
+    const mobileThemeToggle = document.getElementById("mobileThemeToggle");
     const navMenuBtn = document.querySelector(".nav-menu-btn");
     const mobileNavOverlay = document.getElementById("mobileNavOverlay");
     const mobileNavDrawer = document.getElementById("mobileNavDrawer");
@@ -970,12 +829,45 @@ const configuratorScript = `
       applyLanguage();
     }
 
+    let currentTheme = localStorage.getItem("ez_theme") || "dark";
+
+    function applyTheme() {
+      document.body.classList.toggle("theme-light", currentTheme === "light");
+    }
+
+    function themeLabel() {
+      const lightLabel = t("themeLight");
+      const darkLabel = t("themeDark");
+      return currentTheme === "dark" ? lightLabel : darkLabel;
+    }
+
+    function updateThemeLabel() {
+      const label = themeLabel();
+      if (themeToggle) themeToggle.textContent = label;
+      if (mobileThemeToggle) mobileThemeToggle.textContent = label;
+    }
+
+    function toggleTheme() {
+      currentTheme = currentTheme === "dark" ? "light" : "dark";
+      localStorage.setItem("ez_theme", currentTheme);
+      applyTheme();
+      updateThemeLabel();
+    }
+
     if (navLangToggle) {
       navLangToggle.addEventListener("click", toggleLanguage);
     }
 
     if (mobileLangToggle) {
       mobileLangToggle.addEventListener("click", toggleLanguage);
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener("click", toggleTheme);
+    }
+
+    if (mobileThemeToggle) {
+      mobileThemeToggle.addEventListener("click", toggleTheme);
     }
 
     function setMobileNavOpen(isOpen) {
@@ -998,6 +890,9 @@ const configuratorScript = `
         el.addEventListener("click", () => setMobileNavOpen(false));
       });
     }
+
+    applyTheme();
+    updateThemeLabel();
 
     /* ----- Layers & masks ----- */
 
@@ -1754,6 +1649,7 @@ const configuratorScript = `
         else btn.textContent = t("back");
       });
       updateNavLangLabel();
+      updateThemeLabel();
       updateFlipControl();
 
       buildPartsList();

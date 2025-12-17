@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { i18n } from '../i18n.js';
 
 function HomePage() {
   const navigate = useNavigate();
@@ -160,102 +161,7 @@ function HomePage() {
       return lang === 'ar' ? num + ' د.ب' : 'BHD ' + num;
     }
 
-    const translations = {
-      ar: {
-        navPremade: 'تصاميم جاهزة',
-        navContact: 'تواصل معنا',
-        navBuildCta: 'صمّم ذراعك الآن',
-        heroBadge: 'متجر إلكتروني لتخصيص أذرع التحكم',
-        heroTitle: 'اصنع <span class="highlight">ذراع بلايستيشن 5</span> الخاص فيك',
-        heroSub: 'اختر ألوان الهيكل والأزرار والمقابض، وابدأ بذراع فارغ أو انطلق من تصاميم EZ GAMING الجاهزة.',
-        heroCreateBtn: 'ابدأ التصميم',
-        heroPremadeBtn: 'استعرض التصاميم الجاهزة',
-        heroNote: 'الأسعار تبدأ من <strong>4.00 دينار بحريني</strong> – بدون اشتراك، تخصيص كامل حسب ذوقك.',
-        heroLiveTag: 'معاينة فورية',
-        premadeTitle: 'تصاميم جاهزة من EZ GAMING',
-        premadeSub: 'مجموعة من ٢٠ ذراع تحكم جاهزة تم توليدها من نفس نظام الألوان المستخدم في صفحة التخصيص، مع معاينة حقيقية لكل جزء.',
-        contactTitle: 'تواصل معنا',
-        contactCardTitle: 'أرسل لنا رسالة',
-        contactCardText: 'عندك طلبات خاصة، كميات كبيرة، أو شراكات دعائية؟ اكتب لنا التفاصيل وسنرجع لك بأسرع وقت.',
-        contactLabelName: 'الاسم',
-        contactLabelEmail: 'البريد الإلكتروني',
-        contactLabelMessage: 'رسالتك',
-        contactSubmit: 'إرسال الرسالة',
-        contactMeta: `
-          <p><strong>متجر مخصص للاعبين اللي يهتمون بكل تفصيلة في أجهزتهم.</strong></p>
-          <p>
-          EZ GAMING متخصص في تخصيص أذرع بلايستيشن 5 بجودة عالية – مناسب للستريمرز،
-          فرق الرياضات الإلكترونية، واللاعبين اللي يحبون طقم مميز يعكس هويتهم.
-          </p>
-          <p>نقدر نوفّر لك:</p>
-          <ul>
-            <li>طلبات شركات وفرق بكميات كبيرة</li>
-            <li>تصاميم وألوان حصرية تحمل هوية علامتك</li>
-            <li>تعاونات دعائية وجوائز للمسابقات</li>
-          </ul>
-          <p>اكتب لنا فكرتك، وفريقنا بيرجع لك بخيارات وأسعار خلال يوم عمل إلى يومين.</p>
-        `,
-        footerText: 'جميع الحقوق محفوظة ©',
-        buildTotalLabel: 'الإجمالي:',
-        preview: 'معاينة',
-        partNames: {
-          shell: 'الهيكل الأمامي',
-          trimpiece: 'الجزء الأوسط',
-          faceButtons: 'أزرار الأوجه',
-          stickL: 'العصا اليسرى',
-          stickR: 'العصا اليمنى',
-          backShellMain: 'الجزء الخلفي'
-        },
-        formSuccess: 'شكرًا لتواصلك معنا! استلمنا رسالتك وسنرد عليك قريبًا.'
-      },
-      en: {
-        navPremade: 'Premade controllers',
-        navContact: 'Contact',
-        navBuildCta: 'Build your own',
-        heroBadge: 'Next-gen custom shop',
-        heroTitle: 'Craft your own <span class="highlight">custom PS5 controller</span>',
-        heroSub: 'Choose shell, buttons and triggers. Start from a clean build or pick one of our EZ GAMING presets.',
-        heroCreateBtn: 'Create your own controller',
-        heroPremadeBtn: 'Browse premade builds',
-        heroNote: 'Prices start from <strong>BHD 4.00</strong>. No subscription – just fully custom gear.',
-        heroLiveTag: 'Live preview',
-        premadeTitle: 'Premade EZ GAMING builds',
-        premadeSub: 'A curated set of 20 controllers generated from the same color system used in the configurator, with true previews for each part.',
-        contactTitle: 'Contact us',
-        contactCardTitle: 'Send us a message',
-        contactCardText: "Questions about bulk orders, finishes, or sponsorships? Share the details and we'll get back to you.",
-        contactLabelName: 'Name',
-        contactLabelEmail: 'Email',
-        contactLabelMessage: 'Message',
-        contactSubmit: 'Send message',
-        contactMeta: `
-          <p><strong>A custom shop for players who care about every detail.</strong></p>
-          <p>
-          EZ GAMING focuses on high-end PS5 controller customization – perfect for streamers,
-          esports teams, and players who want hardware that matches their identity.
-          </p>
-          <p>We can help you with:</p>
-          <ul>
-            <li>Bulk and corporate orders</li>
-            <li>Exclusive colorways for your brand</li>
-            <li>Marketing collaborations and giveaway campaigns</li>
-          </ul>
-          <p>Tell us what you have in mind and we'll reply with options and pricing within 1–2 business days.</p>
-        `,
-        footerText: 'All rights reserved ©',
-        buildTotalLabel: 'Total:',
-        preview: 'Preview',
-        partNames: {
-          shell: 'Shell',
-          trimpiece: 'Center',
-          faceButtons: 'Face buttons',
-          stickL: 'Left stick',
-          stickR: 'Right stick',
-          backShellMain: 'Back'
-        },
-        formSuccess: 'Thank you! Your message has been received. We’ll get back to you shortly.'
-      }
-    };
+    const translations = i18n;
 
     let currentLang = localStorage.getItem('ez_lang') || 'ar';
 
@@ -266,6 +172,33 @@ function HomePage() {
 
     function t(key) {
       return translations[currentLang][key] || key;
+    }
+
+    const themeToggle = document.getElementById('themeToggle');
+    const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+    let currentTheme = localStorage.getItem('ez_theme') || 'dark';
+
+    function applyTheme() {
+      document.body.classList.toggle('theme-light', currentTheme === 'light');
+    }
+
+    function themeLabel() {
+      const lightLabel = t('themeLight');
+      const darkLabel = t('themeDark');
+      return currentTheme === 'dark' ? lightLabel : darkLabel;
+    }
+
+    function updateThemeLabel() {
+      const label = themeLabel();
+      if (themeToggle) themeToggle.textContent = label;
+      if (mobileThemeToggle) mobileThemeToggle.textContent = label;
+    }
+
+    function toggleTheme() {
+      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('ez_theme', currentTheme);
+      applyTheme();
+      updateThemeLabel();
     }
 
     function applyTranslations() {
@@ -282,9 +215,10 @@ function HomePage() {
       });
 
       const langToggle = document.getElementById('langToggle');
-      if (langToggle) langToggle.textContent = currentLang === 'ar' ? 'EN' : 'عربي';
+      if (langToggle) langToggle.textContent = currentLang === 'ar' ? 'EN' : 'AR';
       const mobileLangToggle = document.getElementById('mobileLangToggle');
-      if (mobileLangToggle) mobileLangToggle.textContent = currentLang === 'ar' ? 'EN' : 'عربي';
+      if (mobileLangToggle) mobileLangToggle.textContent = currentLang === 'ar' ? 'EN' : 'AR';
+      updateThemeLabel();
     }
 
     let currentBuilds = [];
@@ -393,10 +327,14 @@ function HomePage() {
     const mobileLangToggle = document.getElementById('mobileLangToggle');
     langToggle?.addEventListener('click', handleLangToggle);
     mobileLangToggle?.addEventListener('click', handleLangToggle);
+    themeToggle?.addEventListener('click', toggleTheme);
+    mobileThemeToggle?.addEventListener('click', toggleTheme);
     contactForm?.addEventListener('submit', handleContactSubmit);
 
     applyLangAttributes();
     applyTranslations();
+    applyTheme();
+    updateThemeLabel();
     rebuildPremadeGrid();
 
     return () => {
@@ -405,6 +343,8 @@ function HomePage() {
       document.documentElement.style.overflowY = '';
       langToggle?.removeEventListener('click', handleLangToggle);
       mobileLangToggle?.removeEventListener('click', handleLangToggle);
+      themeToggle?.removeEventListener('click', toggleTheme);
+      mobileThemeToggle?.removeEventListener('click', toggleTheme);
       contactForm?.removeEventListener('submit', handleContactSubmit);
     };
   }, [navigate]);
@@ -442,6 +382,7 @@ function HomePage() {
           <button className="nav-link" type="button" data-i18n="navContact" onClick={() => scrollToSection('contactSection')}></button>
           <button className="nav-cta" type="button" data-i18n="navBuildCta" onClick={goToConfigurator}></button>
           <button className="nav-link nav-lang" id="langToggle" type="button">EN</button>
+          <button className="nav-link nav-theme" id="themeToggle" type="button">فاتح</button>
         </div>
       </header>
       <div className={`mobile-nav-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={closeMobileMenu}></div>
@@ -450,6 +391,7 @@ function HomePage() {
         <button className="mobile-nav-link" type="button" data-i18n="navContact" onClick={() => { scrollToSection('contactSection'); closeMobileMenu(); }}></button>
         <button className="mobile-nav-link mobile-nav-cta" type="button" data-i18n="navBuildCta" onClick={() => { goToConfigurator(); closeMobileMenu(); }}></button>
         <button className="mobile-nav-link mobile-nav-lang" id="mobileLangToggle" type="button">EN</button>
+        <button className="mobile-nav-link mobile-nav-theme" id="mobileThemeToggle" type="button">فاتح</button>
       </aside>
 
       <section className="hero">

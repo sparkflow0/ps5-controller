@@ -6,7 +6,7 @@ const paymentMarkup = `
   <div class="nav-logo">
     <a class="nav-left" href="index.html">
       <div class="nav-logo-mark"></div>
-      <div class="nav-page-title">الدفع (تجريبي)</div>
+      <div class="nav-page-title" data-i18n="paymentTitle">الدفع (تجريبي)</div>
     </a>
   </div>
   <button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
@@ -19,6 +19,7 @@ const paymentMarkup = `
     <a class="nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
     <a class="nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
     <button class="nav-link nav-lang" id="langToggle" type="button">EN</button>
+    <button class="nav-link nav-theme" id="themeToggle" type="button">فاتح</button>
   </div>
 </div>
 <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
@@ -27,12 +28,13 @@ const paymentMarkup = `
   <a class="mobile-nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
   <a class="mobile-nav-link mobile-nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
   <button class="mobile-nav-link mobile-nav-lang" id="mobileLangToggle" type="button">EN</button>
+  <button class="mobile-nav-link mobile-nav-theme" id="mobileThemeToggle" type="button">فاتح</button>
 </aside>
 <div class="page-content" style="padding-top:80px; display:flex; justify-content:center;">
   <div class="card" style="max-width:540px; width:100%; text-align:center;">
-    <div class="card-title">الدفع (تجريبي)</div>
+    <div class="card-title" data-i18n="paymentTitle">الدفع (تجريبي)</div>
     <div id="paymentDetails" style="margin:10px 0; font-size:0.95rem; opacity:0.9;"></div>
-    <button class="place-order-btn" id="payNowBtn" type="button">Pay Now</button>
+    <button class="place-order-btn" id="payNowBtn" type="button" data-i18n="paymentPayNow">ادفع الآن</button>
     <div id="paymentStatus" style="margin-top:12px; font-size:0.9rem; opacity:0.85;"></div>
   </div>
 </div>
@@ -40,35 +42,22 @@ const paymentMarkup = `
 
 const paymentScript = `
   let navLang = localStorage.getItem("ez_lang") || "ar";
+  const i18n = window.__EZ_I18N__ || {};
   const navLangToggle = document.getElementById("langToggle");
   const mobileLangToggle = document.getElementById("mobileLangToggle");
+  const themeToggle = document.getElementById("themeToggle");
+  const mobileThemeToggle = document.getElementById("mobileThemeToggle");
   const navMenuBtn = document.querySelector(".nav-menu-btn");
   const mobileNavOverlay = document.getElementById("mobileNavOverlay");
   const mobileNavDrawer = document.getElementById("mobileNavDrawer");
+  function t(key) {
+    return (i18n[navLang] && i18n[navLang][key]) || key;
+  }
 
-  const navText = {
-    ar: {
-      navPremade: "تصاميم جاهزة",
-      navContact: "تواصل معنا",
-      navBuildCta: "صمّم ذراعك الآن"
-    },
-    en: {
-      navPremade: "Premade controllers",
-      navContact: "Contact",
-      navBuildCta: "Build your own"
-    }
-  };
-
-  function updateNavLabels() {
-    const labels = navText[navLang] || navText.ar;
-    document.querySelectorAll("[data-i18n='navPremade']").forEach(el => {
-      el.textContent = labels.navPremade;
-    });
-    document.querySelectorAll("[data-i18n='navContact']").forEach(el => {
-      el.textContent = labels.navContact;
-    });
-    document.querySelectorAll("[data-i18n='navBuildCta']").forEach(el => {
-      el.textContent = labels.navBuildCta;
+  function applyTranslations() {
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      el.textContent = t(key);
     });
   }
 
@@ -76,7 +65,33 @@ const paymentScript = `
     const label = navLang === "ar" ? "EN" : "AR";
     if (navLangToggle) navLangToggle.textContent = label;
     if (mobileLangToggle) mobileLangToggle.textContent = label;
-    updateNavLabels();
+    applyTranslations();
+    updateThemeLabel();
+  }
+
+  let currentTheme = localStorage.getItem("ez_theme") || "dark";
+
+  function applyTheme() {
+    document.body.classList.toggle("theme-light", currentTheme === "light");
+  }
+
+  function themeLabel() {
+    const lightLabel = t("themeLight");
+    const darkLabel = t("themeDark");
+    return currentTheme === "dark" ? lightLabel : darkLabel;
+  }
+
+  function updateThemeLabel() {
+    const label = themeLabel();
+    if (themeToggle) themeToggle.textContent = label;
+    if (mobileThemeToggle) mobileThemeToggle.textContent = label;
+  }
+
+  function toggleTheme() {
+    currentTheme = currentTheme === "dark" ? "light" : "dark";
+    localStorage.setItem("ez_theme", currentTheme);
+    applyTheme();
+    updateThemeLabel();
   }
 
   function toggleNavLang() {
@@ -88,8 +103,13 @@ const paymentScript = `
   }
 
   updateNavLangLabel();
+  applyTheme();
+  updateThemeLabel();
+  applyTranslations();
   if (navLangToggle) navLangToggle.addEventListener("click", toggleNavLang);
   if (mobileLangToggle) mobileLangToggle.addEventListener("click", toggleNavLang);
+  if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
+  if (mobileThemeToggle) mobileThemeToggle.addEventListener("click", toggleTheme);
 
   function setMobileNavOpen(isOpen) {
     if (!mobileNavOverlay || !mobileNavDrawer) return;
@@ -118,20 +138,20 @@ const paymentScript = `
   const btn = document.getElementById("payNowBtn");
 
   if (!orderDraftRaw) {
-    statusEl.textContent = "No order draft found. Redirecting to cart...";
+    statusEl.textContent = t("paymentNoDraft");
     setTimeout(() => window.location.href = "/cart", 1200);
   } else {
     const draft = JSON.parse(orderDraftRaw);
     const cart = draft.cart || [];
     const total = cart.reduce((s, it) => s + (it.unitPrice * it.quantity), 0);
-    paymentDetailsEl.textContent = "Amount due: " + (draft.currencyPrefix || "BHD ") + total.toFixed(2);
+    paymentDetailsEl.textContent = t("paymentAmountDue") + " " + (draft.currencyPrefix || "BHD ") + total.toFixed(2);
 
     btn.addEventListener("click", async () => {
       btn.disabled = true;
-      statusEl.textContent = "Processing payment (demo)...";
+      statusEl.textContent = t("paymentProcessing");
       const succeed = (json) => {
         localStorage.setItem("ezOrderResult", JSON.stringify(json || { status: "paid_demo" }));
-        statusEl.textContent = "Payment confirmed. Redirecting...";
+        statusEl.textContent = t("paymentConfirmed");
         setTimeout(() => window.location.href = "/payment/confirmation", 500);
       };
       try {

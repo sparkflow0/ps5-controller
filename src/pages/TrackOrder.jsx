@@ -6,7 +6,7 @@ const trackMarkup = `
   <div class="nav-logo">
     <a class="nav-left" href="index.html">
       <div class="nav-logo-mark"></div>
-      <div class="nav-page-title">تتبع الطلب</div>
+      <div class="nav-page-title" data-i18n="trackTitle">تتبع الطلب</div>
     </a>
   </div>
   <button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
@@ -19,6 +19,7 @@ const trackMarkup = `
     <a class="nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
     <a class="nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
     <button class="nav-link nav-lang" id="langToggle" type="button">EN</button>
+    <button class="nav-link nav-theme" id="themeToggle" type="button">فاتح</button>
   </div>
 </div>
 <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
@@ -27,11 +28,12 @@ const trackMarkup = `
   <a class="mobile-nav-link" href="/#contactSection" data-i18n="navContact">تواصل معنا</a>
   <a class="mobile-nav-link mobile-nav-cta" href="/configurator" data-i18n="navBuildCta">صمّم ذراعك الآن</a>
   <button class="mobile-nav-link mobile-nav-lang" id="mobileLangToggle" type="button">EN</button>
+  <button class="mobile-nav-link mobile-nav-theme" id="mobileThemeToggle" type="button">فاتح</button>
 </aside>
 <div class="page-content" style="padding-top:80px; display:flex; justify-content:center;">
   <div class="track-shell">
     <div class="track-header">
-      <div class="track-title" id="trackTitle">تتبع الطلب</div>
+      <div class="track-title" id="trackTitle" data-i18n="trackTitle">تتبع الطلب</div>
       <div class="track-status" id="trackStatus"></div>
     </div>
     <div id="stepsList" class="steps-list"></div>
@@ -210,35 +212,23 @@ const trackMarkup = `
 
 const trackScript = `
   let navLang = localStorage.getItem("ez_lang") || "ar";
+  const i18n = window.__EZ_I18N__ || {};
   const navLangToggle = document.getElementById("langToggle");
   const mobileLangToggle = document.getElementById("mobileLangToggle");
+  const themeToggle = document.getElementById("themeToggle");
+  const mobileThemeToggle = document.getElementById("mobileThemeToggle");
   const navMenuBtn = document.querySelector(".nav-menu-btn");
   const mobileNavOverlay = document.getElementById("mobileNavOverlay");
   const mobileNavDrawer = document.getElementById("mobileNavDrawer");
 
-  const navText = {
-    ar: {
-      navPremade: "تصاميم جاهزة",
-      navContact: "تواصل معنا",
-      navBuildCta: "صمّم ذراعك الآن"
-    },
-    en: {
-      navPremade: "Premade controllers",
-      navContact: "Contact",
-      navBuildCta: "Build your own"
-    }
-  };
+  function t(key) {
+    return (i18n[navLang] && i18n[navLang][key]) || key;
+  }
 
-  function updateNavLabels() {
-    const labels = navText[navLang] || navText.ar;
-    document.querySelectorAll("[data-i18n='navPremade']").forEach(el => {
-      el.textContent = labels.navPremade;
-    });
-    document.querySelectorAll("[data-i18n='navContact']").forEach(el => {
-      el.textContent = labels.navContact;
-    });
-    document.querySelectorAll("[data-i18n='navBuildCta']").forEach(el => {
-      el.textContent = labels.navBuildCta;
+  function applyTranslations() {
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      el.textContent = t(key);
     });
   }
 
@@ -246,7 +236,8 @@ const trackScript = `
     const label = navLang === "ar" ? "EN" : "AR";
     if (navLangToggle) navLangToggle.textContent = label;
     if (mobileLangToggle) mobileLangToggle.textContent = label;
-    updateNavLabels();
+    applyTranslations();
+    updateThemeLabel();
   }
 
   function toggleNavLang() {
@@ -260,6 +251,36 @@ const trackScript = `
   updateNavLangLabel();
   if (navLangToggle) navLangToggle.addEventListener("click", toggleNavLang);
   if (mobileLangToggle) mobileLangToggle.addEventListener("click", toggleNavLang);
+
+  let currentTheme = localStorage.getItem("ez_theme") || "dark";
+
+  function applyTheme() {
+    document.body.classList.toggle("theme-light", currentTheme === "light");
+  }
+
+  function themeLabel() {
+    const lightLabel = t("themeLight");
+    const darkLabel = t("themeDark");
+    return currentTheme === "dark" ? lightLabel : darkLabel;
+  }
+
+  function updateThemeLabel() {
+    const label = themeLabel();
+    if (themeToggle) themeToggle.textContent = label;
+    if (mobileThemeToggle) mobileThemeToggle.textContent = label;
+  }
+
+  function toggleTheme() {
+    currentTheme = currentTheme === "dark" ? "light" : "dark";
+    localStorage.setItem("ez_theme", currentTheme);
+    applyTheme();
+    updateThemeLabel();
+  }
+
+  if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
+  if (mobileThemeToggle) mobileThemeToggle.addEventListener("click", toggleTheme);
+  applyTheme();
+  updateThemeLabel();
 
   function setMobileNavOpen(isOpen) {
     if (!mobileNavOverlay || !mobileNavDrawer) return;
@@ -336,10 +357,10 @@ const trackScript = `
   async function load() {
     const orderId = getOrderId();
     if (!orderId) {
-      setStatus("No order id provided in the link.");
+      setStatus(t("trackNoOrderId"));
       return;
     }
-    setStatus("Loading order " + orderId + " …");
+    setStatus(t("trackLoadingPrefix") + orderId + " …");
     stepsListEl.innerHTML = "";
     orderDetailsEl.innerHTML = "";
     orderItemsEl.innerHTML = "";
@@ -355,10 +376,10 @@ const trackScript = `
       const currency = salesorder.currency_code || "BHD";
       // render order details
       const details = [
-        { label: "Order ID", value: soNumber || soId },
-        { label: "Status", value: soStatus },
-        { label: "Date", value: soDate },
-        { label: "Total", value: soTotal ? currency + " " + soTotal : "" }
+        { label: t("trackOrderIdLabel"), value: soNumber || soId },
+        { label: t("trackStatusLabel"), value: soStatus },
+        { label: t("trackDateLabel"), value: soDate },
+        { label: t("trackTotalLabel"), value: soTotal ? currency + " " + soTotal : "" }
       ];
       orderDetailsEl.innerHTML = "";
       details.forEach(d => {
@@ -379,11 +400,11 @@ const trackScript = `
       const items = Array.isArray(salesorder.line_items) ? salesorder.line_items : [];
       const itemsWrap = document.createElement("div");
       const title = document.createElement("h3");
-      title.textContent = "Sales Order Details";
+      title.textContent = t("trackSalesOrderTitle");
       itemsWrap.appendChild(title);
       if (!items.length) {
         const empty = document.createElement("div");
-        empty.textContent = "No items found.";
+        empty.textContent = t("trackNoItems");
         empty.style.opacity = "0.8";
         itemsWrap.appendChild(empty);
       } else {
@@ -395,7 +416,7 @@ const trackScript = `
           name.textContent = li.name || li.item_name || "Item";
           const qty = document.createElement("div");
           qty.className = "item-qty";
-          qty.textContent = "Qty: " + (li.quantity || 0);
+          qty.textContent = t("trackQtyLabel") + " " + (li.quantity || 0);
           const price = document.createElement("div");
           price.className = "item-price";
           const rate = typeof li.rate === "number" ? li.rate.toFixed(2) : "";
@@ -460,10 +481,10 @@ const trackScript = `
 
       // Decide current step (last done, unless delivered is done)
       const stepsData = [
-        { label: "Order Received", value: "", done: orderDone, icon: stepIcons.order },
-        { label: "Order Processing", value: "", done: processingDone, icon: stepIcons.process },
-        { label: "On the way", value: "", done: onTheWayDone, icon: stepIcons.ontheway },
-        { label: "Delivered", value: "", done: deliveredDone, icon: stepIcons.delivered }
+        { label: t("trackOrderReceived"), value: "", done: orderDone, icon: stepIcons.order },
+        { label: t("trackOrderProcessing"), value: "", done: processingDone, icon: stepIcons.process },
+        { label: t("trackOnTheWay"), value: "", done: onTheWayDone, icon: stepIcons.ontheway },
+        { label: t("trackDelivered"), value: "", done: deliveredDone, icon: stepIcons.delivered }
       ];
 
       let currentIndex = -1;
@@ -483,10 +504,10 @@ const trackScript = `
         addStep(step.label, step.value, step.done, step.icon, hasLine, isCurrent);
       });
 
-      setStatus("Order loaded.");
+      setStatus(t("trackLoaded"));
     } catch (err) {
       console.error(err);
-      setStatus("Failed to load order: " + err.message);
+      setStatus(t("trackFailedPrefix") + err.message);
     }
   }
 
