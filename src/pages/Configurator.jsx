@@ -122,9 +122,9 @@ const configuratorMarkup = `
 <button class="control-btn control-colors" data-panel="colors" type="button" aria-label="الألوان المتاحة">
 <span class="control-icon" aria-hidden="true">
 <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
-<circle cx="6.5" cy="8" r="3.2" fill="currentColor"/>
-<circle cx="16.5" cy="7.5" r="3" fill="currentColor" opacity="0.75"/>
-<circle cx="13" cy="16.5" r="4" fill="currentColor" opacity="0.55"/>
+<circle cx="7" cy="9" r="3.2" fill="#ff5c7a"/>
+<circle cx="16.5" cy="8.5" r="3" fill="#42a5ff"/>
+<circle cx="13" cy="16" r="4" fill="#f6d743"/>
 </svg>
 </span>
 <span class="control-label" data-i18n="partsColorsHeading">الألوان المتاحة</span>
@@ -142,15 +142,10 @@ const configuratorMarkup = `
 <span class="control-label" data-i18n="partsOptionsHeading">خيارات القطعة</span>
 </button>
 <button class="control-btn control-flip" id="flipControlBtn" data-action="flip" type="button" aria-label="الأمام">
-<span class="control-icon" aria-hidden="true">
-<svg viewBox="0 0 24 24" role="img" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M4 8h10"/>
-<path d="M10 4l4 4-4 4"/>
-<path d="M20 16H10"/>
-<path d="M14 12l-4 4 4 4"/>
-</svg>
+<span class="flip-preview" aria-hidden="true">
+<img class="flip-preview-front" alt="" src="/assets/controller.png"/>
+<img class="flip-preview-back" alt="" src="/assets/controller_back.png"/>
 </span>
-<span class="control-label" data-i18n="front">الأمام</span>
 </button>
 <button class="control-btn control-lang" id="langSwitchBtn" type="button" aria-label="اختيار اللغة">
 <span class="control-icon" aria-hidden="true">
@@ -166,7 +161,7 @@ const configuratorMarkup = `
 <rect x="3" y="6" width="18" height="4" fill="#f4f4f4"/>
 </svg>
 </span>
-<span class="control-label" data-i18n="chooseLanguage">اختيار اللغة</span>
+<span class="control-label" data-i18n="chooseLanguage">EN</span>
 </button>
 </div>
 <!-- FIXED BOTTOM BAR: total + add to cart -->
@@ -766,7 +761,6 @@ const configuratorScript = `
     const configuratorControls = document.getElementById("configuratorControls");
     const panelButtons = configuratorControls ? configuratorControls.querySelectorAll("[data-panel]") : [];
     const flipControlBtn = document.getElementById("flipControlBtn");
-    const flipControlLabel = flipControlBtn ? flipControlBtn.querySelector(".control-label") : null;
     const zohoLoadingOverlay = document.getElementById("zohoLoadingOverlay");
     const mobileOptionsDrawer = document.getElementById("mobileOptionsDrawer");
     const mobileOptionsGrid = document.getElementById("mobileOptionsGrid");
@@ -1663,15 +1657,20 @@ const configuratorScript = `
       if (totalLabelEl) totalLabelEl.textContent = t("totalLabel");
 
       const addToCartTextEl = document.querySelector("[data-i18n='addToCart']");
-      if (addToCartTextEl) addToCartTextEl.textContent = t("addToCart");
+      if (addToCartTextEl) {
+        const labelEl = addToCartTextEl.querySelector(".add-label");
+        if (labelEl) labelEl.textContent = t("addToCart");
+        else addToCartTextEl.textContent = t("addToCart");
+      }
 
       const loadingTextEl = document.querySelector("[data-i18n='loadingConfigurator']");
       if (loadingTextEl) loadingTextEl.textContent = t("loadingConfigurator");
 
       if (langSwitchBtn) {
         const labelEl = langSwitchBtn.querySelector("[data-i18n='chooseLanguage']");
-        if (labelEl) labelEl.textContent = t("chooseLanguage");
-        else langSwitchBtn.textContent = t("chooseLanguage");
+        const targetLang = currentLang === "ar" ? "en" : "ar";
+        if (labelEl) labelEl.textContent = targetLang.toUpperCase();
+        else langSwitchBtn.textContent = targetLang.toUpperCase();
         langSwitchBtn.dataset.lang = currentLang === "ar" ? "en" : "ar";
         langSwitchBtn.setAttribute("aria-label", t("chooseLanguage"));
       }
@@ -1722,8 +1721,8 @@ const configuratorScript = `
     function updateFlipControl() {
       if (!flipControlBtn) return;
       const label = currentSide === "front" ? t("front") : t("back");
-      if (flipControlLabel) flipControlLabel.textContent = label;
       flipControlBtn.setAttribute("aria-label", label);
+      flipControlBtn.classList.toggle("is-back", currentSide === "back");
     }
 
     function refreshAccordionHeights() {
