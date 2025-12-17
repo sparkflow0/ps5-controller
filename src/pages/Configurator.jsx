@@ -4,10 +4,14 @@ const configuratorMarkup = `
 
 
 <canvas id="bgCanvas"></canvas>
- Sounds 
+<div class="zoho-loading-overlay" id="zohoLoadingOverlay" aria-live="polite" aria-hidden="false">
+<div class="zoho-loading-card">
+<div class="zoho-loading-spinner" aria-hidden="true"></div>
+<div class="zoho-loading-text" data-i18n="loadingConfigurator">Loading configurator...</div>
+</div>
+</div>
 <audio id="sfxClick" preload="auto" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="></audio>
 <audio id="sfxClick2" preload="auto" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="></audio>
- TOP NAV 
 <div class="top-nav">
 <div class="nav-logo">
 <a class="nav-left" href="index.html" style="display:block;">
@@ -74,6 +78,13 @@ const configuratorMarkup = `
 <!-- PARTS COLUMN (RIGHT) -->
 <div class="parts-column">
 <div class="parts-panel">
+<div class="mobile-options-drawer" id="mobileOptionsDrawer" aria-live="polite">
+<div class="mobile-options-tabs">
+<button class="mobile-options-tab" data-tab="options" data-i18n="partsOptionsHeading" type="button">خيارات القطعة</button>
+<button class="mobile-options-tab" data-tab="colors" data-i18n="partsColorsHeading" type="button">الألوان المتاحة</button>
+</div>
+<div class="mobile-options-grid" id="mobileOptionsGrid"></div>
+</div>
 <div class="parts-accordion">
 <div class="accordion-item open">
 <button class="accordion-header" type="button">
@@ -100,6 +111,41 @@ const configuratorMarkup = `
 </div>
 </div>
 </div>
+</div>
+<div class="configurator-controls" id="configuratorControls" aria-label="Configurator controls">
+<button class="control-btn" data-panel="colors" type="button">
+<span class="control-icon" aria-hidden="true">
+<svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+<circle cx="6.5" cy="8" r="3.2" fill="currentColor"/>
+<circle cx="16.5" cy="7.5" r="3" fill="currentColor" opacity="0.75"/>
+<circle cx="13" cy="16.5" r="4" fill="currentColor" opacity="0.55"/>
+</svg>
+</span>
+<span class="control-label" data-i18n="partsColorsHeading">الألوان المتاحة</span>
+</button>
+<button class="control-btn active" data-panel="options" type="button">
+<span class="control-icon" aria-hidden="true">
+<svg viewBox="0 0 24 24" role="img" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+<path d="M4 7h10"/>
+<path d="M4 12h16"/>
+<path d="M4 17h8"/>
+<circle cx="17" cy="7" r="2.2" fill="currentColor"/>
+<circle cx="9" cy="17" r="2.2" fill="currentColor"/>
+</svg>
+</span>
+<span class="control-label" data-i18n="partsOptionsHeading">خيارات القطعة</span>
+</button>
+<button class="control-btn" id="langSwitchBtn" type="button">
+<span class="control-icon" aria-hidden="true">
+<svg viewBox="0 0 24 24" role="img" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+<circle cx="12" cy="12" r="9"/>
+<path d="M3 12h18"/>
+<path d="M12 3a12 12 0 0 1 0 18"/>
+<path d="M12 3a12 12 0 0 0 0 18"/>
+</svg>
+</span>
+<span class="control-label" data-i18n="chooseLanguage">اختيار اللغة</span>
+</button>
 </div>
 <!-- FIXED BOTTOM BAR: total + add to cart -->
 <div class="controller-bottom-bar">
@@ -173,6 +219,8 @@ const configuratorScript = `
         side_front: "أمام",
         side_back: "خلف",
         preview: "معاينة التغيرات",
+        loadingConfigurator: "جاري تحميل الإعدادات...",
+        chooseLanguage: "اختيار اللغة",
         currencyPrefix: "د.ب ",
         pricePrefix: "+ ",
         alertNone: "لم يتم اختيار أي تخصيص بعد.",
@@ -238,6 +286,8 @@ const configuratorScript = `
         side_front: "Front",
         side_back: "Back",
         preview: "Preview",
+        loadingConfigurator: "Loading configurator...",
+        chooseLanguage: "Language",
         currencyPrefix: "BHD ",
         pricePrefix: "+ ",
         alertNone: "No custom options selected yet.",
@@ -623,30 +673,35 @@ const configuratorScript = `
     }
 
     async function bootstrapZohoInventory() {
-      const items = await fetchZohoItems();
-      if (!items.length) return;
-      items.forEach(parseZohoItem);
-      Object.keys(configState).forEach(pid => {
-        const val = configState[pid];
-        if (!val) return;
-        const hasOptionMatch = (dynamicOptionsByPart[pid] || []).some(entry => (entry.hex || "").toLowerCase() === (val || "").toLowerCase());
-        setPartPrice(pid, val, hasOptionMatch);
-      });
-      recomputeAvailableParts();
-      logZohoSummary(items);
-      buildPartsList();
-      if (selectedPartId) {
-        const selPartObj = ALL_PARTS.find(p => p.id === selectedPartId);
-        if (!selPartObj || !isPartActive(selPartObj)) {
-          clearSelection();
-          resetColorPanel();
-          resetOptionsPanel();
+      setZohoLoading(true);
+      try {
+        const items = await fetchZohoItems();
+        if (!items.length) return;
+        items.forEach(parseZohoItem);
+        Object.keys(configState).forEach(pid => {
+          const val = configState[pid];
+          if (!val) return;
+          const hasOptionMatch = (dynamicOptionsByPart[pid] || []).some(entry => (entry.hex || "").toLowerCase() === (val || "").toLowerCase());
+          setPartPrice(pid, val, hasOptionMatch);
+        });
+        recomputeAvailableParts();
+        logZohoSummary(items);
+        buildPartsList();
+        if (selectedPartId) {
+          const selPartObj = ALL_PARTS.find(p => p.id === selectedPartId);
+          if (!selPartObj || !isPartActive(selPartObj)) {
+            clearSelection();
+            resetColorPanel();
+            resetOptionsPanel();
+          }
         }
+        if (selectedPartId) {
+          openColorPanelForPart(selectedPartId);
+        }
+        updateSummary();
+      } finally {
+        setZohoLoading(false);
       }
-      if (selectedPartId) {
-        openColorPanelForPart(selectedPartId);
-      }
-      updateSummary();
     }
 
     const controllerWrapper = document.getElementById("controllerWrapper");
@@ -677,7 +732,18 @@ const configuratorScript = `
     const partTooltip = document.getElementById("partTooltip");
 
     const langToggle = document.getElementById("langToggle");
-    const langButtons = langToggle.querySelectorAll(".lang-btn");
+    const langButtons = langToggle ? langToggle.querySelectorAll(".lang-btn") : [];
+    const langSwitchBtn = document.getElementById("langSwitchBtn");
+    const configuratorControls = document.getElementById("configuratorControls");
+    const panelButtons = configuratorControls ? configuratorControls.querySelectorAll("[data-panel]") : [];
+    const zohoLoadingOverlay = document.getElementById("zohoLoadingOverlay");
+    const mobileOptionsDrawer = document.getElementById("mobileOptionsDrawer");
+    const mobileOptionsGrid = document.getElementById("mobileOptionsGrid");
+    const mobileOptionsTabs = mobileOptionsDrawer ? mobileOptionsDrawer.querySelectorAll(".mobile-options-tab") : [];
+    const mobileQuery = window.matchMedia("(max-width: 900px)");
+    let currentPanel = "options";
+    let mobileDrawerOptions = [];
+    let mobileDrawerColors = [];
 
     const layers = {};
     const maskDataById = {};
@@ -692,6 +758,115 @@ const configuratorScript = `
     const partsRowsById = {};
     const configState = {};
     ALL_PARTS.forEach(p => { configState[p.id] = null; });
+
+    function setZohoLoading(isLoading) {
+      if (!zohoLoadingOverlay) return;
+      zohoLoadingOverlay.classList.toggle("is-hidden", !isLoading);
+      zohoLoadingOverlay.setAttribute("aria-hidden", isLoading ? "false" : "true");
+    }
+
+    function setPanel(panel) {
+      currentPanel = panel;
+      selectionPaletteMode = panel;
+      document.body.classList.toggle("config-panel-options", panel === "options");
+      document.body.classList.toggle("config-panel-colors", panel === "colors");
+      panelButtons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.panel === panel);
+        btn.setAttribute("aria-pressed", btn.dataset.panel === panel ? "true" : "false");
+      });
+      if (accordionItems.length >= 2) {
+        accordionItems.forEach((item, idx) => {
+          const isOptions = panel === "options";
+          item.classList.toggle("open", isOptions ? idx === 0 : idx === 1);
+        });
+        refreshAccordionHeights();
+      }
+      if (selectedPartId) {
+        openColorPanelForPart(selectedPartId);
+      }
+    }
+
+    function isMobileLayout() {
+      return mobileQuery && mobileQuery.matches;
+    }
+
+    function disableMobilePanels() {
+      document.body.classList.remove("config-panel-options", "config-panel-colors");
+      selectionPaletteMode = null;
+      panelButtons.forEach(btn => {
+        btn.classList.remove("active");
+        btn.setAttribute("aria-pressed", "false");
+      });
+      if (mobileOptionsDrawer) {
+        mobileOptionsDrawer.style.display = "none";
+      }
+    }
+
+    function setMobileDrawerTab(tab) {
+      selectionPaletteMode = tab;
+      updateMobileOptionsDrawer();
+    }
+
+    if (mobileOptionsDrawer) {
+      mobileOptionsDrawer.addEventListener("click", (e) => {
+        if (!isMobileLayout()) return;
+        const btn = e.target.closest(".mobile-options-tab");
+        if (!btn || btn.disabled) return;
+        const tab = btn.dataset.tab;
+        if (tab) setMobileDrawerTab(tab);
+      });
+    }
+
+    if (configuratorControls) {
+      configuratorControls.addEventListener("click", (e) => {
+        if (!isMobileLayout()) return;
+        const btn = e.target.closest(".control-btn");
+        if (!btn) return;
+        if (btn.id === "langSwitchBtn") {
+          currentLang = currentLang === "ar" ? "en" : "ar";
+          applyLanguage();
+          return;
+        }
+        const panel = btn.dataset.panel;
+        if (panel) setPanel(panel);
+      });
+
+      if (isMobileLayout()) {
+        setPanel(currentPanel);
+      } else {
+        disableMobilePanels();
+      }
+
+      if (mobileQuery && mobileQuery.addEventListener) {
+        mobileQuery.addEventListener("change", (e) => {
+          if (e.matches) {
+            setPanel(currentPanel);
+          } else {
+            disableMobilePanels();
+          }
+        });
+      } else if (mobileQuery && mobileQuery.addListener) {
+        mobileQuery.addListener((e) => {
+          if (e.matches) {
+            setPanel(currentPanel);
+          } else {
+            disableMobilePanels();
+          }
+        });
+      }
+    }
+
+    if (langToggle) {
+      langToggle.addEventListener("click", (e) => {
+        const btn = e.target.closest(".lang-btn");
+        if (!btn) return;
+        const lang = btn.dataset.lang;
+        if (!lang || lang === currentLang) return;
+        currentLang = lang;
+        langButtons.forEach(b => b.classList.toggle("active", b.dataset.lang === currentLang));
+        applyLanguage();
+      });
+    }
 
     /* ----- Layers & masks ----- */
 
@@ -860,11 +1035,95 @@ const configuratorScript = `
 
       // show empty placeholder
       colorEmptyState.style.display = "flex";
+      mobileDrawerOptions = [];
+      mobileDrawerColors = [];
+      updateMobileOptionsDrawer();
     }
 
     function resetOptionsPanel() {
       optionsPanelSub.textContent = "";
       optionsPanelGrid.innerHTML = "";
+    }
+
+    function buildPaletteCells(target, entries, isOption) {
+      target.innerHTML = "";
+      entries.forEach(({ hex, key, qty, price }) => {
+        const cell = document.createElement("div");
+        cell.className = isOption ? "cd-cell-op" : "cd-cell";
+
+        const sw = document.createElement("button");
+        sw.className = isOption ? "cd-swatch-op" : "cd-swatch";
+        sw.style.backgroundColor = hex;
+        const numericQty = typeof qty === "number" ? qty : null;
+        const isOut = numericQty !== null && numericQty <= 0;
+        if (isOut) {
+          sw.setAttribute("disabled", "disabled");
+          sw.classList.add("out-of-stock");
+          sw.style.filter = "none";
+          sw.style.boxShadow = "none";
+        }
+        sw.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (!selectedPartId || isOut) return;
+          if (isOption) {
+            applyOptions(selectedPartId, hex);
+          } else {
+            applyColor(selectedPartId, hex);
+            playClick2();
+          }
+        });
+
+        const lbl = document.createElement("div");
+        lbl.className = "cd-color-name";
+        lbl.style.textAlign = "center";
+        const labelText = isOption ? t(key) : (key && t(key) ? t(key) : hex);
+        const priceVal = typeof price === "number" ? i18n[currentLang].currencyPrefix + price.toFixed(2) : "";
+        const qtyDisplay = formatQtyDisplay(numericQty);
+        const lines = [labelText];
+        if (priceVal) lines.push(priceVal);
+        if (qtyDisplay) lines.push(qtyDisplay);
+        lbl.innerHTML = lines.join("<br/>");
+
+        cell.appendChild(sw);
+        cell.appendChild(lbl);
+        target.appendChild(cell);
+      });
+    }
+
+    function updateMobileOptionsDrawer() {
+      if (!mobileOptionsDrawer || !mobileOptionsGrid || !mobileOptionsTabs) return;
+      if (!isMobileLayout() || !selectedPartId) {
+        mobileOptionsDrawer.style.display = "none";
+        return;
+      }
+
+      const hasOptions = mobileDrawerOptions && mobileDrawerOptions.length;
+      const hasColors = mobileDrawerColors && mobileDrawerColors.length;
+      if (!hasOptions && !hasColors) {
+        mobileOptionsDrawer.style.display = "none";
+        return;
+      }
+
+      mobileOptionsDrawer.style.display = "flex";
+
+      let activeTab = selectionPaletteMode;
+      if (activeTab !== "options" && activeTab !== "colors") {
+        activeTab = hasColors ? "colors" : "options";
+      }
+      if (activeTab === "colors" && !hasColors) activeTab = "options";
+      if (activeTab === "options" && !hasOptions) activeTab = "colors";
+      selectionPaletteMode = activeTab;
+
+      mobileOptionsTabs.forEach(btn => {
+        const tab = btn.dataset.tab;
+        const isOptionsTab = tab === "options";
+        const enabled = isOptionsTab ? hasOptions : hasColors;
+        btn.disabled = !enabled;
+        btn.classList.toggle("active", tab === activeTab);
+      });
+
+      const entries = activeTab === "colors" ? mobileDrawerColors : mobileDrawerOptions;
+      buildPaletteCells(mobileOptionsGrid, entries, activeTab === "options");
     }
 
     /* ----- Palette panel ----- */
@@ -901,88 +1160,25 @@ const configuratorScript = `
         colorPanelHeaderBottom.style.display = "block";
         colorPanelGrid.style.display = "grid";
         colorPanelSub.textContent = t("availableColors");
-
-        palette.forEach(({ hex, key, qty, price }) => {
-          const cell = document.createElement("div");
-          cell.className = "cd-cell";
-
-          const sw = document.createElement("button");
-          sw.className = "cd-swatch";
-          sw.style.backgroundColor = hex;
-          const numericQty = typeof qty === "number" ? qty : null;
-          const isOut = numericQty !== null && numericQty <= 0;
-          if (isOut) {
-            sw.setAttribute("disabled", "disabled");
-            sw.classList.add("out-of-stock");
-            sw.style.filter = "none";
-            sw.style.boxShadow = "none";
-          }
-          sw.addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (!selectedPartId || isOut) return;
-            applyColor(selectedPartId, hex);
-            playClick2();
-          });
-
-          const lbl = document.createElement("div");
-          lbl.className = "cd-color-name";
-          lbl.style.textAlign = "center";
-          const displayName = key && t(key) ? t(key) : hex;
-          const priceVal = typeof price === "number" ? i18n[currentLang].currencyPrefix + price.toFixed(2) : "";
-          const qtyDisplay = formatQtyDisplay(numericQty);
-          const lines = [displayName];
-          if (priceVal) lines.push(priceVal);
-          if (qtyDisplay) lines.push(qtyDisplay);
-          lbl.innerHTML = lines.join("<br/>");
-
-          cell.appendChild(sw);
-          cell.appendChild(lbl);
-          colorPanelGrid.appendChild(cell);
-        });
+        buildPaletteCells(colorPanelGrid, palette, false);
+        mobileDrawerOptions = optionspalette || [];
+        mobileDrawerColors = palette || [];
+        updateMobileOptionsDrawer();
       } else if (showOptions && hasOptions) {
         optionsPanelSub.style.display = "block";
         optionsPanelGrid.style.display = "grid";
         colorPanelHeaderTop.style.display = "block";
         optionsPanelSub.textContent = t("availableOptions");
-
-        optionspalette.forEach(({ hex, key, qty, price }) => {
-          const cell2 = document.createElement("div");
-          cell2.className = "cd-cell-op";
-
-          const sw2 = document.createElement("button");
-          sw2.className = "cd-swatch-op";
-          sw2.style.backgroundColor = hex;
-          const numericQty = typeof qty === "number" ? qty : null;
-          const isOut = numericQty !== null && numericQty <= 0;
-          if (isOut) {
-            sw2.setAttribute("disabled", "disabled");
-            sw2.classList.add("out-of-stock");
-            sw2.style.filter = "none";
-            sw2.style.boxShadow = "none";
-          }
-          sw2.addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (!selectedPartId || isOut) return;
-            applyOptions(selectedPartId, hex);
-          });
-
-          const lbl = document.createElement("div");
-          lbl.className = "cd-color-name";
-          lbl.style.textAlign = "center";
-          const priceVal = typeof price === "number" ? i18n[currentLang].currencyPrefix + price.toFixed(2) : "";
-          const qtyDisplay = formatQtyDisplay(numericQty);
-          const lines = [t(key)];
-          if (priceVal) lines.push(priceVal);
-          if (qtyDisplay) lines.push(qtyDisplay);
-          lbl.innerHTML = lines.join("<br/>");
-
-          cell2.appendChild(sw2);
-          cell2.appendChild(lbl);
-          optionsPanelGrid.appendChild(cell2);
-        });
+        buildPaletteCells(optionsPanelGrid, optionspalette, true);
+        mobileDrawerOptions = optionspalette || [];
+        mobileDrawerColors = palette || [];
+        updateMobileOptionsDrawer();
       } else {
         // show empty placeholder
         colorEmptyState.style.display = "flex";
+        mobileDrawerOptions = [];
+        mobileDrawerColors = [];
+        updateMobileOptionsDrawer();
       }
     }
 
@@ -1350,18 +1546,6 @@ const configuratorScript = `
       window.location.href = "/cart";
     });
 
-    /* ----- Language toggle ----- */
-
-    langToggle.addEventListener("click", (e) => {
-      const btn = e.target.closest(".lang-btn");
-      if (!btn) return;
-      const lang = btn.dataset.lang;
-      if (!lang || lang === currentLang) return;
-      currentLang = lang;
-      langButtons.forEach(b => b.classList.toggle("active", b.dataset.lang === currentLang));
-      applyLanguage();
-    });
-
     /* ----- Apply language to UI ----- */
 
     function applyLanguage() {
@@ -1383,6 +1567,17 @@ const configuratorScript = `
       const addToCartTextEl = document.querySelector("[data-i18n='addToCart']");
       if (addToCartTextEl) addToCartTextEl.textContent = t("addToCart");
 
+      const loadingTextEl = document.querySelector("[data-i18n='loadingConfigurator']");
+      if (loadingTextEl) loadingTextEl.textContent = t("loadingConfigurator");
+
+      if (langSwitchBtn) {
+        const labelEl = langSwitchBtn.querySelector("[data-i18n='chooseLanguage']");
+        if (labelEl) labelEl.textContent = t("chooseLanguage");
+        else langSwitchBtn.textContent = t("chooseLanguage");
+      }
+      if (langButtons.length) {
+        langButtons.forEach(b => b.classList.toggle("active", b.dataset.lang === currentLang));
+      }
       document.querySelectorAll("[data-i18n='partsOptionsHeading']").forEach(el => {
         el.textContent = t("availableOptions");
       });
