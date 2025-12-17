@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function HomePage() {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -282,6 +283,8 @@ function HomePage() {
 
       const langToggle = document.getElementById('langToggle');
       if (langToggle) langToggle.textContent = currentLang === 'ar' ? 'EN' : 'عربي';
+      const mobileLangToggle = document.getElementById('mobileLangToggle');
+      if (mobileLangToggle) mobileLangToggle.textContent = currentLang === 'ar' ? 'EN' : 'عربي';
     }
 
     let currentBuilds = [];
@@ -387,7 +390,9 @@ function HomePage() {
       contactForm?.reset();
     };
 
+    const mobileLangToggle = document.getElementById('mobileLangToggle');
     langToggle?.addEventListener('click', handleLangToggle);
+    mobileLangToggle?.addEventListener('click', handleLangToggle);
     contactForm?.addEventListener('submit', handleContactSubmit);
 
     applyLangAttributes();
@@ -399,9 +404,17 @@ function HomePage() {
       document.body.style.overflowY = '';
       document.documentElement.style.overflowY = '';
       langToggle?.removeEventListener('click', handleLangToggle);
+      mobileLangToggle?.removeEventListener('click', handleLangToggle);
       contactForm?.removeEventListener('submit', handleContactSubmit);
     };
   }, [navigate]);
+
+  useEffect(() => {
+    document.body.classList.toggle('mobile-nav-open', isMobileMenuOpen);
+    return () => document.body.classList.remove('mobile-nav-open');
+  }, [isMobileMenuOpen]);
+
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <div className="home-page">
@@ -412,6 +425,18 @@ function HomePage() {
             <span className="sr-only">EZ GAMING</span>
           </button>
         </div>
+        <button
+          className="nav-menu-btn"
+          type="button"
+          aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={isMobileMenuOpen ? 'true' : 'false'}
+          aria-controls="mobileNavDrawer"
+          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
         <div className="nav-right">
           <button className="nav-link" type="button" data-i18n="navPremade" onClick={() => scrollToSection('premadeSection')}></button>
           <button className="nav-link" type="button" data-i18n="navContact" onClick={() => scrollToSection('contactSection')}></button>
@@ -419,6 +444,13 @@ function HomePage() {
           <button className="nav-link nav-lang" id="langToggle" type="button">EN</button>
         </div>
       </header>
+      <div className={`mobile-nav-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={closeMobileMenu}></div>
+      <aside className={`mobile-nav-drawer ${isMobileMenuOpen ? 'open' : ''}`} id="mobileNavDrawer" aria-hidden={!isMobileMenuOpen}>
+        <button className="mobile-nav-link" type="button" data-i18n="navPremade" onClick={() => { scrollToSection('premadeSection'); closeMobileMenu(); }}></button>
+        <button className="mobile-nav-link" type="button" data-i18n="navContact" onClick={() => { scrollToSection('contactSection'); closeMobileMenu(); }}></button>
+        <button className="mobile-nav-link mobile-nav-cta" type="button" data-i18n="navBuildCta" onClick={() => { goToConfigurator(); closeMobileMenu(); }}></button>
+        <button className="mobile-nav-link mobile-nav-lang" id="mobileLangToggle" type="button">EN</button>
+      </aside>
 
       <section className="hero">
         <video className="hero-video" autoPlay muted loop playsInline>

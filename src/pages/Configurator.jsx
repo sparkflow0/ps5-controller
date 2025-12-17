@@ -29,6 +29,9 @@ const configuratorMarkup = `
 <div class="main-layout">
 <!-- CONTROLLER COLUMN (LEFT) -->
 <div class="controller-column">
+<a class="mobile-logo-link" href="index.html" aria-label="Home">
+<span class="mobile-logo-mark" aria-hidden="true"></span>
+</a>
 <div class="controller-wrapper" id="controllerWrapper">
 <div class="controller-area" id="controllerArea">
 <div class="controller-bg"></div>
@@ -77,6 +80,9 @@ const configuratorMarkup = `
 </div>
 <!-- PARTS COLUMN (RIGHT) -->
 <div class="parts-column">
+<div class="mobile-selected-part" id="mobileSelectedPart" aria-hidden="true">
+<img alt="" src="/assets/icons/shells.png"/>
+</div>
 <div class="parts-panel">
 <div class="mobile-options-drawer" id="mobileOptionsDrawer" aria-live="polite">
 <div class="mobile-options-tabs">
@@ -113,7 +119,7 @@ const configuratorMarkup = `
 </div>
 </div>
 <div class="configurator-controls" id="configuratorControls" aria-label="Configurator controls">
-<button class="control-btn" data-panel="colors" type="button">
+<button class="control-btn control-colors" data-panel="colors" type="button" aria-label="الألوان المتاحة">
 <span class="control-icon" aria-hidden="true">
 <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
 <circle cx="6.5" cy="8" r="3.2" fill="currentColor"/>
@@ -123,7 +129,7 @@ const configuratorMarkup = `
 </span>
 <span class="control-label" data-i18n="partsColorsHeading">الألوان المتاحة</span>
 </button>
-<button class="control-btn active" data-panel="options" type="button">
+<button class="control-btn control-options active" data-panel="options" type="button" aria-label="خيارات القطعة">
 <span class="control-icon" aria-hidden="true">
 <svg viewBox="0 0 24 24" role="img" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
 <path d="M4 7h10"/>
@@ -135,13 +141,29 @@ const configuratorMarkup = `
 </span>
 <span class="control-label" data-i18n="partsOptionsHeading">خيارات القطعة</span>
 </button>
-<button class="control-btn" id="langSwitchBtn" type="button">
+<button class="control-btn control-flip" id="flipControlBtn" data-action="flip" type="button" aria-label="الأمام">
 <span class="control-icon" aria-hidden="true">
-<svg viewBox="0 0 24 24" role="img" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-<circle cx="12" cy="12" r="9"/>
-<path d="M3 12h18"/>
-<path d="M12 3a12 12 0 0 1 0 18"/>
-<path d="M12 3a12 12 0 0 0 0 18"/>
+<svg viewBox="0 0 24 24" role="img" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 8h10"/>
+<path d="M10 4l4 4-4 4"/>
+<path d="M20 16H10"/>
+<path d="M14 12l-4 4 4 4"/>
+</svg>
+</span>
+<span class="control-label" data-i18n="front">الأمام</span>
+</button>
+<button class="control-btn control-lang" id="langSwitchBtn" type="button" aria-label="اختيار اللغة">
+<span class="control-icon" aria-hidden="true">
+<svg class="flag-icon flag-en" viewBox="0 0 24 16" role="img" aria-hidden="true">
+<rect width="24" height="16" fill="#0a3d8f"/>
+<rect x="10" width="4" height="16" fill="#ffffff"/>
+<rect y="6" width="24" height="4" fill="#ffffff"/>
+<rect x="11" width="2" height="16" fill="#d91c1c"/>
+<rect y="7" width="24" height="2" fill="#d91c1c"/>
+</svg>
+<svg class="flag-icon flag-ar" viewBox="0 0 24 16" role="img" aria-hidden="true">
+<rect width="24" height="16" fill="#0b7a3b"/>
+<rect x="3" y="6" width="18" height="4" fill="#f4f4f4"/>
 </svg>
 </span>
 <span class="control-label" data-i18n="chooseLanguage">اختيار اللغة</span>
@@ -154,12 +176,18 @@ const configuratorMarkup = `
 <div class="nav-amount-value" id="summaryAmount">د.ب 0.00</div>
 </div>
 <button class="add-to-cart-btn" data-i18n="addToCart" id="addToCartBtn">
+        <span class="cart-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <circle cx="9" cy="20" r="1.8"></circle>
+            <circle cx="18" cy="20" r="1.8"></circle>
+            <path d="M3 4h2l2.2 10.5a2 2 0 0 0 2 1.5h8.5a2 2 0 0 0 2-1.5l1.6-7.5H6.2"></path>
+          </svg>
+        </span>
         <span class="add-label">أضِف إلى السلة</span>
         <span class="add-amount" id="summaryAmountAlt">د.ب 0.00</span>
       </button>
 </div>
 </div>
- Hover tooltip 
 <div class="part-tooltip" id="partTooltip"></div>
 
 
@@ -715,6 +743,7 @@ const configuratorScript = `
 
     const summaryAmountEl = document.getElementById("summaryAmount");
     const addToCartBtn = document.getElementById("addToCartBtn");
+    const addToCartHome = addToCartBtn ? { parent: addToCartBtn.parentElement, next: addToCartBtn.nextSibling } : null;
 
     const colorPanelTitle = document.getElementById("colorPanelTitle");
     const colorPanelSub = document.getElementById("colorPanelSub");
@@ -736,14 +765,19 @@ const configuratorScript = `
     const langSwitchBtn = document.getElementById("langSwitchBtn");
     const configuratorControls = document.getElementById("configuratorControls");
     const panelButtons = configuratorControls ? configuratorControls.querySelectorAll("[data-panel]") : [];
+    const flipControlBtn = document.getElementById("flipControlBtn");
+    const flipControlLabel = flipControlBtn ? flipControlBtn.querySelector(".control-label") : null;
     const zohoLoadingOverlay = document.getElementById("zohoLoadingOverlay");
     const mobileOptionsDrawer = document.getElementById("mobileOptionsDrawer");
     const mobileOptionsGrid = document.getElementById("mobileOptionsGrid");
     const mobileOptionsTabs = mobileOptionsDrawer ? mobileOptionsDrawer.querySelectorAll(".mobile-options-tab") : [];
+    const mobileSelectedPart = document.getElementById("mobileSelectedPart");
+    const mobileSelectedPartImg = mobileSelectedPart ? mobileSelectedPart.querySelector("img") : null;
     const mobileQuery = window.matchMedia("(max-width: 900px)");
     let currentPanel = "options";
     let mobileDrawerOptions = [];
     let mobileDrawerColors = [];
+    let showMobileDrawer = false;
 
     const layers = {};
     const maskDataById = {};
@@ -784,6 +818,9 @@ const configuratorScript = `
       if (selectedPartId) {
         openColorPanelForPart(selectedPartId);
       }
+      if (isMobileLayout()) {
+        setMobileDrawerVisible(false);
+      }
     }
 
     function isMobileLayout() {
@@ -797,14 +834,48 @@ const configuratorScript = `
         btn.classList.remove("active");
         btn.setAttribute("aria-pressed", "false");
       });
-      if (mobileOptionsDrawer) {
-        mobileOptionsDrawer.style.display = "none";
+      setMobileDrawerVisible(false);
+    }
+
+    function setMobileActionBar(isMobile) {
+      if (!configuratorControls || !addToCartBtn || !addToCartHome) return;
+      if (isMobile) {
+        if (!configuratorControls.contains(addToCartBtn)) {
+          configuratorControls.appendChild(addToCartBtn);
+        }
+      } else {
+        if (addToCartBtn.parentElement !== addToCartHome.parent) {
+          if (addToCartHome.next && addToCartHome.next.parentNode === addToCartHome.parent) {
+            addToCartHome.parent.insertBefore(addToCartBtn, addToCartHome.next);
+          } else {
+            addToCartHome.parent.appendChild(addToCartBtn);
+          }
+        }
       }
     }
 
     function setMobileDrawerTab(tab) {
       selectionPaletteMode = tab;
       updateMobileOptionsDrawer();
+    }
+
+    function setMobileDrawerVisible(visible) {
+      showMobileDrawer = visible;
+      document.body.classList.toggle("mobile-options-open", visible);
+      updateMobileOptionsDrawer();
+    }
+
+    function updateMobileSelectedPartBadge() {
+      if (!mobileSelectedPart || !mobileSelectedPartImg) return;
+      if (!isMobileLayout() || !showMobileDrawer || !selectedPartId) {
+        mobileSelectedPart.style.display = "none";
+        return;
+      }
+      const part = ALL_PARTS.find(p => p.id === selectedPartId);
+      const icon = part && part.icon ? part.icon : "/assets/icons/shells.png";
+      mobileSelectedPartImg.src = icon;
+      mobileSelectedPartImg.alt = getPartLabel(selectedPartId);
+      mobileSelectedPart.style.display = "flex";
     }
 
     if (mobileOptionsDrawer) {
@@ -827,30 +898,41 @@ const configuratorScript = `
           applyLanguage();
           return;
         }
+        if (btn.dataset.action === "flip") {
+          setSide(currentSide === "front" ? "back" : "front");
+          playClick();
+          return;
+        }
         const panel = btn.dataset.panel;
         if (panel) setPanel(panel);
       });
 
       if (isMobileLayout()) {
         setPanel(currentPanel);
+        setMobileActionBar(true);
       } else {
         disableMobilePanels();
+        setMobileActionBar(false);
       }
 
       if (mobileQuery && mobileQuery.addEventListener) {
         mobileQuery.addEventListener("change", (e) => {
           if (e.matches) {
             setPanel(currentPanel);
+            setMobileActionBar(true);
           } else {
             disableMobilePanels();
+            setMobileActionBar(false);
           }
         });
       } else if (mobileQuery && mobileQuery.addListener) {
         mobileQuery.addListener((e) => {
           if (e.matches) {
             setPanel(currentPanel);
+            setMobileActionBar(true);
           } else {
             disableMobilePanels();
+            setMobileActionBar(false);
           }
         });
       }
@@ -1007,6 +1089,9 @@ const configuratorScript = `
       selectionPaletteMode = null;
       controllerArea.classList.remove("has-selection");
       controllerArea.style.removeProperty("--selected-mask-url");
+      if (isMobileLayout()) {
+        setMobileDrawerVisible(false);
+      }
 
       Object.values(layers).forEach(layer => {
         if (!layer) return;
@@ -1038,6 +1123,9 @@ const configuratorScript = `
       mobileDrawerOptions = [];
       mobileDrawerColors = [];
       updateMobileOptionsDrawer();
+      if (isMobileLayout()) {
+        setMobileDrawerVisible(false);
+      }
     }
 
     function resetOptionsPanel() {
@@ -1092,8 +1180,9 @@ const configuratorScript = `
 
     function updateMobileOptionsDrawer() {
       if (!mobileOptionsDrawer || !mobileOptionsGrid || !mobileOptionsTabs) return;
-      if (!isMobileLayout() || !selectedPartId) {
+      if (!showMobileDrawer || !isMobileLayout() || !selectedPartId) {
         mobileOptionsDrawer.style.display = "none";
+        updateMobileSelectedPartBadge();
         return;
       }
 
@@ -1101,6 +1190,7 @@ const configuratorScript = `
       const hasColors = mobileDrawerColors && mobileDrawerColors.length;
       if (!hasOptions && !hasColors) {
         mobileOptionsDrawer.style.display = "none";
+        updateMobileSelectedPartBadge();
         return;
       }
 
@@ -1124,6 +1214,7 @@ const configuratorScript = `
 
       const entries = activeTab === "colors" ? mobileDrawerColors : mobileDrawerOptions;
       buildPaletteCells(mobileOptionsGrid, entries, activeTab === "options");
+      updateMobileSelectedPartBadge();
     }
 
     /* ----- Palette panel ----- */
@@ -1194,6 +1285,7 @@ const configuratorScript = `
       sideButtons.forEach(btn => {
         btn.classList.toggle("active", btn.dataset.side === currentSide);
       });
+      updateFlipControl();
 
       clearSelection();
       resetColorPanel();
@@ -1262,6 +1354,9 @@ const configuratorScript = `
 
         playClick();
         openColorPanelForPart(part.id);
+        if (isMobileLayout()) {
+          setMobileDrawerVisible(true);
+        }
       });
 
       if (!partsRowsById[part.id]) partsRowsById[part.id] = [];
@@ -1363,6 +1458,9 @@ const configuratorScript = `
         selectionPaletteMode = hasOpts ? "options" : "colors";
       }
       openColorPanelForPart(partId);
+      if (isMobileLayout()) {
+        setMobileDrawerVisible(true);
+      }
     });
 
     /* ----- Hover tooltip (desktop only) ----- */
@@ -1574,6 +1672,8 @@ const configuratorScript = `
         const labelEl = langSwitchBtn.querySelector("[data-i18n='chooseLanguage']");
         if (labelEl) labelEl.textContent = t("chooseLanguage");
         else langSwitchBtn.textContent = t("chooseLanguage");
+        langSwitchBtn.dataset.lang = currentLang === "ar" ? "en" : "ar";
+        langSwitchBtn.setAttribute("aria-label", t("chooseLanguage"));
       }
       if (langButtons.length) {
         langButtons.forEach(b => b.classList.toggle("active", b.dataset.lang === currentLang));
@@ -1592,6 +1692,7 @@ const configuratorScript = `
         if (btn.dataset.side === "front") btn.textContent = t("front");
         else btn.textContent = t("back");
       });
+      updateFlipControl();
 
       buildPartsList();
 
@@ -1616,6 +1717,13 @@ const configuratorScript = `
       }
 
       updateSummary();
+    }
+
+    function updateFlipControl() {
+      if (!flipControlBtn) return;
+      const label = currentSide === "front" ? t("front") : t("back");
+      if (flipControlLabel) flipControlLabel.textContent = label;
+      flipControlBtn.setAttribute("aria-label", label);
     }
 
     function refreshAccordionHeights() {
