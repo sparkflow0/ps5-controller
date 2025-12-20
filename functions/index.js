@@ -1,4 +1,5 @@
-const functions = require("firebase-functions");
+const functions = require("firebase-functions/v1");
+const dotenv = require("dotenv");
 const PDFDocument = require("pdfkit");
 const SVGtoPDF = require("svg-to-pdfkit");
 const fs = require("fs");
@@ -7,30 +8,18 @@ const { FormData: UndiciFormData, Blob: UndiciBlob } = require("undici");
 const FormDataCtor = typeof FormData !== "undefined" ? FormData : UndiciFormData;
 const BlobCtor = typeof Blob !== "undefined" ? Blob : UndiciBlob;
 
+dotenv.config({ path: path.join(__dirname, ".env") });
+
 const ZOHO_TOKEN_URL = "https://accounts.zoho.com/oauth/v2/token";
 const ZOHO_BASE = "https://www.zohoapis.com";
 const FUNCTION_REGION = "us-central1";
 const PROJECT_ID = process.env.GCLOUD_PROJECT || "ps5-controller";
 const PREVIEW_BASE_URL = `https://${FUNCTION_REGION}-${PROJECT_ID}.cloudfunctions.net/preview`;
 
-let zohoConfig = {};
-try {
-  zohoConfig = functions.config ? (functions.config().zoho || {}) : {};
-} catch {
-  zohoConfig = {};
-}
-
-const {
-  client_id: ZOHO_CLIENT_ID,
-  client_secret: ZOHO_CLIENT_SECRET,
-  refresh_token: ZOHO_REFRESH_TOKEN,
-  org_id: ZOHO_ORG_ID,
-} = {
-  client_id: process.env.ZOHO_CLIENT_ID || zohoConfig.client_id,
-  client_secret: process.env.ZOHO_CLIENT_SECRET || zohoConfig.client_secret,
-  refresh_token: process.env.ZOHO_REFRESH_TOKEN || zohoConfig.refresh_token,
-  org_id: process.env.ZOHO_ORG_ID || zohoConfig.org_id,
-};
+const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID || "";
+const ZOHO_CLIENT_SECRET = process.env.ZOHO_CLIENT_SECRET || "";
+const ZOHO_REFRESH_TOKEN = process.env.ZOHO_REFRESH_TOKEN || "";
+const ZOHO_ORG_ID = process.env.ZOHO_ORG_ID || "";
 
 let cachedAccessToken = null;
 let cachedExpiry = 0;
@@ -125,7 +114,7 @@ function buildControllerSvg(config) {
 
 function ensureConfig() {
   if (!ZOHO_CLIENT_ID || !ZOHO_CLIENT_SECRET || !ZOHO_REFRESH_TOKEN || !ZOHO_ORG_ID) {
-    throw new Error("Missing Zoho config. Set functions config: zoho.client_id, zoho.client_secret, zoho.refresh_token, zoho.org_id");
+    throw new Error("Missing Zoho config. Set ZOHO_CLIENT_ID, ZOHO_CLIENT_SECRET, ZOHO_REFRESH_TOKEN, ZOHO_ORG_ID in functions/.env");
   }
 }
 

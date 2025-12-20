@@ -57,14 +57,22 @@ const configuratorMarkup = `
 </div>
 <!-- buttons under the controller -->
 <div class="controller-buttons-stack">
-<div class="side-toggle-container">
-<div class="side-toggle" id="sideToggle">
-<button class="side-btn active" data-i18n="front" data-side="front" type="button">الأمام</button>
-<button class="side-btn" data-i18n="back" data-side="back" type="button">الخلف</button>
+<button class="flip-toggle" id="controllerFlipBtn" type="button" aria-label="الأمام">
+<span class="flip-toggle-preview" aria-hidden="true">
+<img class="flip-toggle-front" alt="" src="/assets/controller.png"/>
+<img class="flip-toggle-back" alt="" src="/assets/controller_back.png"/>
+</span>
+</button>
 </div>
-</div>
-</div>
-</div>
+    <div class="mobile-panel-switch" id="mobilePanelSwitch" aria-label="تبديل لوحة الأجزاء والألوان">
+      <button class="panel-switch-btn active" data-panel="options" type="button" aria-pressed="true">
+        <span data-i18n="partsOptionsHeading">الخيارات</span>
+      </button>
+      <button class="panel-switch-btn" data-panel="colors" type="button" aria-pressed="false">
+        <span data-i18n="partsColorsHeading">الألوان</span>
+      </button>
+    </div>
+  </div>
 </div>
 <!-- COLORS COLUMN (MIDDLE) -->
 <div class="colors-column" id="colors-column">
@@ -72,13 +80,13 @@ const configuratorMarkup = `
 <!-- Top header: part name + options title -->
 <div class="color-panel-header" id="colorPanelHeaderTop">
 <div class="color-panel-title" id="colorPanelTitle">اختر جزءًا</div>
-<div class="color-panel-sub" id="optionsPanelSub">خيارات القطعة</div>
+<div class="color-panel-sub" id="optionsPanelSub">الخيارات</div>
 </div>
 <!-- Options grid (stick type ...) -->
 <div class="color-panel-grid" id="optionsPanelGrid"></div>
 <!-- Bottom header: colors title -->
 <div class="color-panel-header" id="colorPanelHeaderBottom">
-<div class="color-panel-sub" id="colorPanelSub">الألوان المتاحة</div>
+<div class="color-panel-sub" id="colorPanelSub">الألوان</div>
 </div>
 <!-- Colors grid -->
 <div class="color-panel-grid2" id="colorPanelGrid"></div>
@@ -97,15 +105,15 @@ const configuratorMarkup = `
 <div class="parts-panel">
 <div class="mobile-options-drawer" id="mobileOptionsDrawer" aria-live="polite">
 <div class="mobile-options-tabs">
-<button class="mobile-options-tab" data-tab="options" data-i18n="partsOptionsHeading" type="button">خيارات القطعة</button>
-<button class="mobile-options-tab" data-tab="colors" data-i18n="partsColorsHeading" type="button">الألوان المتاحة</button>
+<button class="mobile-options-tab" data-tab="options" data-i18n="partsOptionsHeading" type="button">الخيارات</button>
+<button class="mobile-options-tab" data-tab="colors" data-i18n="partsColorsHeading" type="button">الألوان</button>
 </div>
 <div class="mobile-options-grid" id="mobileOptionsGrid"></div>
 </div>
 <div class="parts-accordion">
 <div class="accordion-item open">
 <button class="accordion-header" type="button">
-<div class="parts-title" data-i18n="partsOptionsHeading">خيارات القطعة</div>
+<div class="parts-title" data-i18n="partsOptionsHeading">الخيارات</div>
 <span aria-hidden="true" class="accordion-icon"></span>
 </button>
 <div class="accordion-content">
@@ -116,7 +124,7 @@ const configuratorMarkup = `
 </div>
 <div class="accordion-item">
 <button class="accordion-header" type="button">
-<div class="parts-title" data-i18n="partsColorsHeading">الألوان المتاحة</div>
+<div class="parts-title" data-i18n="partsColorsHeading">الألوان</div>
 <span aria-hidden="true" class="accordion-icon"></span>
 </button>
 <div class="accordion-content">
@@ -130,7 +138,7 @@ const configuratorMarkup = `
 </div>
 </div>
 <div class="configurator-controls" id="configuratorControls" aria-label="Configurator controls">
-<button class="control-btn control-colors" data-panel="colors" type="button" aria-label="الألوان المتاحة">
+<button class="control-btn control-colors" data-panel="colors" type="button" aria-label="الألوان">
 <span class="control-icon" aria-hidden="true">
 <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
 <circle cx="7" cy="9" r="3.2" fill="#ff5c7a"/>
@@ -138,9 +146,9 @@ const configuratorMarkup = `
 <circle cx="13" cy="16" r="4" fill="#f6d743"/>
 </svg>
 </span>
-<span class="control-label" data-i18n="partsColorsHeading">الألوان المتاحة</span>
+<span class="control-label" data-i18n="partsColorsHeading">الألوان</span>
 </button>
-<button class="control-btn control-options active" data-panel="options" type="button" aria-label="خيارات القطعة">
+<button class="control-btn control-options active" data-panel="options" type="button" aria-label="الخيارات">
 <span class="control-icon" aria-hidden="true">
 <svg viewBox="0 0 24 24" role="img" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
 <path d="M4 7h10"/>
@@ -150,7 +158,7 @@ const configuratorMarkup = `
 <circle cx="9" cy="17" r="2.2" fill="currentColor"/>
 </svg>
 </span>
-<span class="control-label" data-i18n="partsOptionsHeading">خيارات القطعة</span>
+<span class="control-label" data-i18n="partsOptionsHeading">الخيارات</span>
 </button>
 <button class="control-btn control-flip" id="flipControlBtn" data-action="flip" type="button" aria-label="الأمام">
 <span class="flip-preview" aria-hidden="true">
@@ -604,8 +612,7 @@ const configuratorScript = `
     const faceFrontEl = document.getElementById("controllerFaceFront");
     const faceBackEl = document.getElementById("controllerFaceBack");
 
-    const sideToggle = document.getElementById("sideToggle");
-    const sideButtons = sideToggle.querySelectorAll(".side-btn");
+    const controllerFlipBtn = document.getElementById("controllerFlipBtn");
     //const previewBtn = document.getElementById("previewBtn");
 
     const summaryAmountEl = document.getElementById("summaryAmount");
@@ -637,6 +644,7 @@ const configuratorScript = `
     const langSwitchBtn = document.getElementById("langSwitchBtn");
     const configuratorControls = document.getElementById("configuratorControls");
     const panelButtons = configuratorControls ? configuratorControls.querySelectorAll("[data-panel]") : [];
+    const panelSwitchButtons = document.querySelectorAll(".panel-switch-btn");
     const flipControlBtn = document.getElementById("flipControlBtn");
     const zohoLoadingOverlay = document.getElementById("zohoLoadingOverlay");
     const mobileOptionsDrawer = document.getElementById("mobileOptionsDrawer");
@@ -672,24 +680,34 @@ const configuratorScript = `
 
     function setPanel(panel) {
       currentPanel = panel;
-      selectionPaletteMode = panel;
+      const mobile = isMobileLayout();
+      selectionPaletteMode = mobile ? null : panel;
+
       document.body.classList.toggle("config-panel-options", panel === "options");
       document.body.classList.toggle("config-panel-colors", panel === "colors");
+
       panelButtons.forEach(btn => {
         btn.classList.toggle("active", btn.dataset.panel === panel);
         btn.setAttribute("aria-pressed", btn.dataset.panel === panel ? "true" : "false");
       });
-      if (accordionItems.length >= 2) {
+      panelSwitchButtons.forEach(btn => {
+        const isActive = btn.dataset.panel === panel;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+
+      if (!mobile && accordionItems.length >= 2) {
         accordionItems.forEach((item, idx) => {
           const isOptions = panel === "options";
           item.classList.toggle("open", isOptions ? idx === 0 : idx === 1);
         });
         refreshAccordionHeights();
       }
+
       if (selectedPartId) {
         openColorPanelForPart(selectedPartId);
       }
-      if (isMobileLayout()) {
+      if (mobile) {
         setMobileDrawerVisible(false);
       }
     }
@@ -709,18 +727,12 @@ const configuratorScript = `
     }
 
     function setMobileActionBar(isMobile) {
-      if (!configuratorControls || !addToCartBtn || !addToCartHome) return;
-      if (isMobile) {
-        if (!configuratorControls.contains(addToCartBtn)) {
-          configuratorControls.appendChild(addToCartBtn);
-        }
-      } else {
-        if (addToCartBtn.parentElement !== addToCartHome.parent) {
-          if (addToCartHome.next && addToCartHome.next.parentNode === addToCartHome.parent) {
-            addToCartHome.parent.insertBefore(addToCartBtn, addToCartHome.next);
-          } else {
-            addToCartHome.parent.appendChild(addToCartBtn);
-          }
+      if (!addToCartBtn || !addToCartHome) return;
+      if (addToCartBtn.parentElement !== addToCartHome.parent) {
+        if (addToCartHome.next && addToCartHome.next.parentNode === addToCartHome.parent) {
+          addToCartHome.parent.insertBefore(addToCartBtn, addToCartHome.next);
+        } else {
+          addToCartHome.parent.appendChild(addToCartBtn);
         }
       }
     }
@@ -738,16 +750,7 @@ const configuratorScript = `
 
     function updateMobileSelectedPartBadge() {
       if (!mobileSelectedPart || !mobileSelectedPartImg) return;
-      if (!isMobileLayout() || !showMobileDrawer || !selectedPartId) {
-        mobileSelectedPart.style.display = "none";
-        return;
-      }
-      const part = ALL_PARTS.find(p => p.id === selectedPartId);
-      const icon = part && part.icon ? part.icon : "/assets/icons/shells.png";
-      mobileSelectedPartImg.src = icon;
-      mobileSelectedPartImg.alt = getPartLabel(selectedPartId);
-      mobileSelectedPart.style.display = "flex";
-      mobileSelectedPart.setAttribute("aria-label", getPartLabel(selectedPartId));
+      mobileSelectedPart.style.display = "none";
     }
 
     if (mobileOptionsDrawer) {
@@ -767,6 +770,14 @@ const configuratorScript = `
         openColorPanelForPart(selectedPartId);
       });
     }
+
+    panelSwitchButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const panel = btn.dataset.panel;
+        if (!panel) return;
+        setPanel(panel);
+      });
+    });
 
     if (configuratorControls) {
       configuratorControls.addEventListener("click", (e) => {
@@ -1187,8 +1198,20 @@ const configuratorScript = `
       const hasColors = palette && palette.length;
 
       // If selectionPaletteMode is set, honor it; otherwise default to colors when available, else options.
-      const showOptions = selectionPaletteMode === "options" ? true : (selectionPaletteMode === "colors" ? false : (!hasColors && hasOptions));
-      const showColors = selectionPaletteMode === "colors" ? true : (selectionPaletteMode === "options" ? false : hasColors);
+      const mobile = isMobileLayout();
+      const showOptions = mobile ? hasOptions : (selectionPaletteMode === "options" ? true : (selectionPaletteMode === "colors" ? false : (!hasColors && hasOptions)));
+      const showColors = mobile ? hasColors : (selectionPaletteMode === "colors" ? true : (selectionPaletteMode === "options" ? false : hasColors));
+
+      let renderedSomething = false;
+
+      if (showOptions && hasOptions) {
+        optionsPanelSub.style.display = "block";
+        optionsPanelGrid.style.display = "grid";
+        colorPanelHeaderTop.style.display = "block";
+        optionsPanelSub.textContent = t("availableOptions");
+        buildPaletteCells(optionsPanelGrid, optionspalette, true);
+        renderedSomething = true;
+      }
 
       if (showColors && hasColors) {
         colorPanelHeaderTop.style.display = "block";
@@ -1196,19 +1219,14 @@ const configuratorScript = `
         colorPanelGrid.style.display = "grid";
         colorPanelSub.textContent = t("availableColors");
         buildPaletteCells(colorPanelGrid, palette, false);
-        mobileDrawerOptions = optionspalette || [];
-        mobileDrawerColors = palette || [];
-        updateMobileOptionsDrawer();
-      } else if (showOptions && hasOptions) {
-        optionsPanelSub.style.display = "block";
-        optionsPanelGrid.style.display = "grid";
-        colorPanelHeaderTop.style.display = "block";
-        optionsPanelSub.textContent = t("availableOptions");
-        buildPaletteCells(optionsPanelGrid, optionspalette, true);
-        mobileDrawerOptions = optionspalette || [];
-        mobileDrawerColors = palette || [];
-        updateMobileOptionsDrawer();
-      } else {
+        renderedSomething = true;
+      }
+
+      mobileDrawerOptions = optionspalette || [];
+      mobileDrawerColors = palette || [];
+      updateMobileOptionsDrawer();
+
+      if (!renderedSomething) {
         // show empty placeholder
         colorEmptyState.style.display = "flex";
         mobileDrawerOptions = [];
@@ -1226,9 +1244,6 @@ const configuratorScript = `
       if (currentSide === "back") controllerWrapper.classList.add("is-back");
       else controllerWrapper.classList.remove("is-back");
 
-      sideButtons.forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.side === currentSide);
-      });
       updateFlipControl();
 
       clearSelection();
@@ -1236,12 +1251,13 @@ const configuratorScript = `
       resetOptionsPanel();
     }
 
-    sideButtons.forEach(btn => {
-      btn.addEventListener("click", (e) => {
+    if (controllerFlipBtn) {
+      controllerFlipBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        setSide(btn.dataset.side);
+        setSide(currentSide === "front" ? "back" : "front");
+        playClick();
       });
-    });
+    }
 
     /* ----- Preview button ----- */
 
@@ -1471,7 +1487,7 @@ const configuratorScript = `
         colorEmptyState.contains(e.target);
 
       const clickInsideParts = partsLists.some(list => list.contains(e.target));
-      const clickInsideSideToggle = sideToggle.contains(e.target);
+      const clickInsideSideToggle = controllerFlipBtn ? controllerFlipBtn.contains(e.target) : false;
       const clickInsideNav = document.querySelector(".top-nav").contains(e.target);
 
       if (
@@ -1644,10 +1660,6 @@ const configuratorScript = `
       // const previewBtnEl = document.getElementById("previewBtn");
       // if (previewBtnEl) previewBtnEl.textContent = t("preview");
 
-      sideButtons.forEach(btn => {
-        if (btn.dataset.side === "front") btn.textContent = t("front");
-        else btn.textContent = t("back");
-      });
       updateNavLangLabel();
       updateThemeLabel();
       updateFlipControl();
@@ -1678,10 +1690,15 @@ const configuratorScript = `
     }
 
     function updateFlipControl() {
-      if (!flipControlBtn) return;
       const label = currentSide === "front" ? t("front") : t("back");
-      flipControlBtn.setAttribute("aria-label", label);
-      flipControlBtn.classList.toggle("is-back", currentSide === "back");
+      if (flipControlBtn) {
+        flipControlBtn.setAttribute("aria-label", label);
+        flipControlBtn.classList.toggle("is-back", currentSide === "back");
+      }
+      if (controllerFlipBtn) {
+        controllerFlipBtn.setAttribute("aria-label", label);
+        controllerFlipBtn.classList.toggle("is-back", currentSide === "back");
+      }
     }
 
     function refreshAccordionHeights() {
