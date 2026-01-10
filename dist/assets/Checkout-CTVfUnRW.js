@@ -1,4 +1,4 @@
-import{r as t,j as a}from"./index-BX_qyyDL.js";const n=`
+import{r as t,j as a}from"./index-C9rsYbkK.js";const n=`
 
 
 <canvas id="bgCanvas"></canvas>
