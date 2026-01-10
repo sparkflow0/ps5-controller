@@ -1,29 +1,33 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import HomePage from './pages/Home.jsx';
-import ConfiguratorPage from './pages/Configurator.jsx';
-import CartPage from './pages/Cart.jsx';
-import CheckoutPage from './pages/Checkout.jsx';
-import PaymentPage from './pages/Payment.jsx';
-import ConfirmationPage from './pages/Confirmation.jsx';
-import OrderSummaryPage from './pages/OrderSummary.jsx';
-import TrackOrderPage from './pages/TrackOrder.jsx';
-import POSPage from './pages/POS.jsx';
+
+// Lazy-load heavy pages to reduce initial JS memory footprint.
+const HomePage = lazy(() => import('./pages/Home.jsx'));
+const ConfiguratorPage = lazy(() => import('./pages/Configurator.jsx'));
+const CartPage = lazy(() => import('./pages/Cart.jsx'));
+const CheckoutPage = lazy(() => import('./pages/Checkout.jsx'));
+const PaymentPage = lazy(() => import('./pages/Payment.jsx'));
+const ConfirmationPage = lazy(() => import('./pages/Confirmation.jsx'));
+const OrderSummaryPage = lazy(() => import('./pages/OrderSummary.jsx'));
+const TrackOrderPage = lazy(() => import('./pages/TrackOrder.jsx'));
+const POSPage = lazy(() => import('./pages/POS.jsx'));
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/configurator" element={<ConfiguratorPage />} />
-      <Route path="/cart" element={<CartPage />} />
-      <Route path="/checkout" element={<CheckoutPage />} />
-      <Route path="/payment" element={<PaymentPage />} />
-      <Route path="/payment/confirmation" element={<ConfirmationPage />} />
-      <Route path="/order-summary" element={<OrderSummaryPage />} />
-      <Route path="/trackorder" element={<TrackOrderPage />} />
-      <Route path="/pos" element={<POSPage />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <Suspense fallback={null}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/configurator" element={<ConfiguratorPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/payment/confirmation" element={<ConfirmationPage />} />
+        <Route path="/order-summary" element={<OrderSummaryPage />} />
+        <Route path="/trackorder" element={<TrackOrderPage />} />
+        <Route path="/pos" element={<POSPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   );
 }
 

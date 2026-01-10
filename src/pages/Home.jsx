@@ -308,7 +308,7 @@ function HomePage() {
       localStorage.setItem('ez_lang', lang);
       applyLangAttributes();
       applyTranslations();
-      rebuildPremadeGrid();
+      // rebuildPremadeGrid();
     }
 
     const langToggle = document.getElementById('langToggle');
@@ -335,7 +335,7 @@ function HomePage() {
     applyTranslations();
     applyTheme();
     updateThemeLabel();
-    rebuildPremadeGrid();
+    // rebuildPremadeGrid();
 
     return () => {
       document.body.classList.remove('home-page-active');

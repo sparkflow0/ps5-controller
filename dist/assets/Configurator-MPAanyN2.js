@@ -1,6 +1,4 @@
-import React, { useEffect } from 'react';
-
-const configuratorMarkup = `
+import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 
 
 <canvas id="bgCanvas"></canvas>
@@ -59,20 +57,19 @@ const configuratorMarkup = `
 <div class="controller-buttons-stack">
 <button class="flip-toggle" id="controllerFlipBtn" type="button" aria-label="الأمام">
 <span class="flip-toggle-preview" aria-hidden="true">
-<img class="flip-toggle-front" alt="" src="/assets/controller_back.png"/>
-<img class="flip-toggle-back" alt="" src="/assets/controller.png"/>
+<img class="flip-toggle-front" alt="" src="/assets/controller.png"/>
+<img class="flip-toggle-back" alt="" src="/assets/controller_back.png"/>
 </span>
 </button>
 </div>
     <div class="mobile-panel-switch" id="mobilePanelSwitch" aria-label="تبديل لوحة الأجزاء والألوان">
       <button class="panel-switch-btn active" data-panel="options" type="button" aria-pressed="true">
-        <span data-i18n="partsOptionsHeading">تطوير الأداء</span>
+        <span data-i18n="partsOptionsHeading">الخيارات</span>
       </button>
       <button class="panel-switch-btn" data-panel="colors" type="button" aria-pressed="false">
-        <span data-i18n="partsColorsHeading">شكل الذراع</span>
+        <span data-i18n="partsColorsHeading">الألوان</span>
       </button>
     </div>
-    <div class="mobile-options-grid horizontal-scroll" id="mobileOptionsGrid"></div>
   </div>
 </div>
 <!-- COLORS COLUMN (MIDDLE) -->
@@ -81,13 +78,13 @@ const configuratorMarkup = `
 <!-- Top header: part name + options title -->
 <div class="color-panel-header" id="colorPanelHeaderTop">
 <div class="color-panel-title" id="colorPanelTitle">اختر جزءًا</div>
-<div class="color-panel-sub" id="optionsPanelSub">تطوير الأداء</div>
+<div class="color-panel-sub" id="optionsPanelSub">الخيارات</div>
 </div>
 <!-- Options grid (stick type ...) -->
 <div class="color-panel-grid" id="optionsPanelGrid"></div>
 <!-- Bottom header: colors title -->
 <div class="color-panel-header" id="colorPanelHeaderBottom">
-<div class="color-panel-sub" id="colorPanelSub">شكل الذراع</div>
+<div class="color-panel-sub" id="colorPanelSub">الألوان</div>
 </div>
 <!-- Colors grid -->
 <div class="color-panel-grid2" id="colorPanelGrid"></div>
@@ -104,11 +101,17 @@ const configuratorMarkup = `
 <img alt="" src="/assets/icons/shells.png"/>
 </button>
 <div class="parts-panel">
-
+<div class="mobile-options-drawer" id="mobileOptionsDrawer" aria-live="polite">
+<div class="mobile-options-tabs">
+<button class="mobile-options-tab" data-tab="options" data-i18n="partsOptionsHeading" type="button">الخيارات</button>
+<button class="mobile-options-tab" data-tab="colors" data-i18n="partsColorsHeading" type="button">الألوان</button>
+</div>
+<div class="mobile-options-grid" id="mobileOptionsGrid"></div>
+</div>
 <div class="parts-accordion">
 <div class="accordion-item open">
 <button class="accordion-header" type="button">
-<div class="parts-title" data-i18n="partsOptionsHeading">تطوير الأداء</div>
+<div class="parts-title" data-i18n="partsOptionsHeading">الخيارات</div>
 <span aria-hidden="true" class="accordion-icon"></span>
 </button>
 <div class="accordion-content">
@@ -119,7 +122,7 @@ const configuratorMarkup = `
 </div>
 <div class="accordion-item">
 <button class="accordion-header" type="button">
-<div class="parts-title" data-i18n="partsColorsHeading">شكل الذراع</div>
+<div class="parts-title" data-i18n="partsColorsHeading">الألوان</div>
 <span aria-hidden="true" class="accordion-icon"></span>
 </button>
 <div class="accordion-content">
@@ -133,7 +136,7 @@ const configuratorMarkup = `
 </div>
 </div>
 <div class="configurator-controls" id="configuratorControls" aria-label="Configurator controls">
-<button class="control-btn control-colors" data-panel="colors" type="button" aria-label="شكل الذراع">
+<button class="control-btn control-colors" data-panel="colors" type="button" aria-label="الألوان">
 <span class="control-icon" aria-hidden="true">
 <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
 <circle cx="7" cy="9" r="3.2" fill="#ff5c7a"/>
@@ -141,9 +144,9 @@ const configuratorMarkup = `
 <circle cx="13" cy="16" r="4" fill="#f6d743"/>
 </svg>
 </span>
-<span class="control-label" data-i18n="partsColorsHeading">شكل الذراع</span>
+<span class="control-label" data-i18n="partsColorsHeading">الألوان</span>
 </button>
-<button class="control-btn control-options active" data-panel="options" type="button" aria-label="تطوير الأداء">
+<button class="control-btn control-options active" data-panel="options" type="button" aria-label="الخيارات">
 <span class="control-icon" aria-hidden="true">
 <svg viewBox="0 0 24 24" role="img" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
 <path d="M4 7h10"/>
@@ -153,7 +156,7 @@ const configuratorMarkup = `
 <circle cx="9" cy="17" r="2.2" fill="currentColor"/>
 </svg>
 </span>
-<span class="control-label" data-i18n="partsOptionsHeading">تطوير الأداء</span>
+<span class="control-label" data-i18n="partsOptionsHeading">الخيارات</span>
 </button>
 <button class="control-btn control-flip" id="flipControlBtn" data-action="flip" type="button" aria-label="الأمام">
 <span class="flip-preview" aria-hidden="true">
@@ -201,8 +204,7 @@ const configuratorMarkup = `
 
 
 
-`;
-const configuratorScript = `
+`,r=`
 
 
     const isMobile =
@@ -222,8 +224,8 @@ const configuratorScript = `
     const playClick = () => playSfx(sfxClickEl);
     const playClick2 = () => playSfx(sfxClick2El);
 
-    const ZOHO_ACCESS_TOKEN = "${import.meta.env.VITE_ZOHO_ACCESS_TOKEN || ""}";
-    const ZOHO_ORG_ID = "${import.meta.env.VITE_ZOHO_ORG_ID || ""}";
+    const ZOHO_ACCESS_TOKEN = "1000.7e717720fad33ceb86442de697965dc7.af8c67230ddae4d39636b74a46f1c951";
+    const ZOHO_ORG_ID = "892379608";
     // Always go through our proxy (rewritten in Firebase Hosting to the cloud function).
     const ZOHO_BASE = "/zoho/inventory/v1";
     const ZOHO_ITEMS_ENDPOINT = ZOHO_BASE + "/items";
@@ -648,11 +650,10 @@ const configuratorScript = `
     const mobileSelectedPart = document.getElementById("mobileSelectedPart");
     const mobileSelectedPartImg = mobileSelectedPart ? mobileSelectedPart.querySelector("img") : null;
     const mobileQuery = window.matchMedia("(max-width: 900px)");
-    let currentPanel = "colors";
+    let currentPanel = "options";
     let mobileDrawerOptions = [];
     let mobileDrawerColors = [];
     let showMobileDrawer = false;
-    let lastRenderedMobileKey = "";
 
     const layers = {};
     const maskDataById = {};
@@ -675,14 +676,9 @@ const configuratorScript = `
     }
 
     function setPanel(panel) {
-      if (currentPanel === panel && selectedPartId && isMobileLayout()) {
-        clearSelection();
-        return;
-      }
       currentPanel = panel;
       const mobile = isMobileLayout();
-      selectionPaletteMode = mobile ? currentPanel : panel;
-      // Removed if (mobile) clearSelection(); to allow persistence
+      selectionPaletteMode = mobile ? null : panel;
 
       document.body.classList.toggle("config-panel-options", panel === "options");
       document.body.classList.toggle("config-panel-colors", panel === "colors");
@@ -707,13 +703,9 @@ const configuratorScript = `
 
       if (selectedPartId) {
         openColorPanelForPart(selectedPartId);
-      } else {
-        if (mobile) updateMobileOptionsBar();
       }
-      
-      // Force update of mobile bar to apply filtering
       if (mobile) {
-          updateMobileOptionsBar();
+        setMobileDrawerVisible(false);
       }
     }
 
@@ -728,7 +720,7 @@ const configuratorScript = `
         btn.classList.remove("active");
         btn.setAttribute("aria-pressed", "false");
       });
-      // Drawer logic removed
+      setMobileDrawerVisible(false);
     }
 
     function setMobileActionBar(isMobile) {
@@ -742,21 +734,36 @@ const configuratorScript = `
       }
     }
 
-    // Old drawer functions removed
+    function setMobileDrawerTab(tab) {
+      selectionPaletteMode = tab;
+      updateMobileOptionsDrawer();
+    }
 
+    function setMobileDrawerVisible(visible) {
+      showMobileDrawer = visible;
+      document.body.classList.toggle("mobile-options-open", visible);
+      updateMobileOptionsDrawer();
+    }
 
     function updateMobileSelectedPartBadge() {
       if (!mobileSelectedPart || !mobileSelectedPartImg) return;
       mobileSelectedPart.style.display = "none";
     }
 
-    // Mobile options drawer listener removed
-
+    if (mobileOptionsDrawer) {
+      mobileOptionsDrawer.addEventListener("click", (e) => {
+        if (!isMobileLayout()) return;
+        const btn = e.target.closest(".mobile-options-tab");
+        if (!btn || btn.disabled) return;
+        const tab = btn.dataset.tab;
+        if (tab) setMobileDrawerTab(tab);
+      });
+    }
 
     if (mobileSelectedPart) {
       mobileSelectedPart.addEventListener("click", () => {
         if (!isMobileLayout() || !selectedPartId) return;
-        // Just re-open the panel
+        setMobileDrawerVisible(true);
         openColorPanelForPart(selectedPartId);
       });
     }
@@ -1034,23 +1041,14 @@ const configuratorScript = `
       selectionPaletteMode = null;
       controllerArea.classList.remove("has-selection");
       controllerArea.style.removeProperty("--selected-mask-url");
-      
-      // On mobile, clearing selection means going back to the parts list
       if (isMobileLayout()) {
-          updateMobileOptionsBar();
+        setMobileDrawerVisible(false);
       }
 
       Object.values(layers).forEach(layer => {
         if (!layer) return;
         layer.classList.remove("selected");
       });
-      
-      if (isMobileLayout()) {
-        // Clear selection border in horizontal bar
-        if (mobileOptionsGrid) {
-          mobileOptionsGrid.querySelectorAll(".mobile-part-btn").forEach(b => b.classList.remove("selected"));
-        }
-      }
 
       Object.values(partsRowsById).forEach(rows => {
         if (!rows) return;
@@ -1074,15 +1072,11 @@ const configuratorScript = `
 
       // show empty placeholder
       colorEmptyState.style.display = "flex";
-
       mobileDrawerOptions = [];
       mobileDrawerColors = [];
-
+      updateMobileOptionsDrawer();
       if (isMobileLayout()) {
-          // ensure no part is highlighted in the horizontal bar
-          if (mobileOptionsGrid) {
-            mobileOptionsGrid.querySelectorAll(".mobile-part-btn").forEach(b => b.classList.remove("selected"));
-          }
+        setMobileDrawerVisible(false);
       }
     }
 
@@ -1093,12 +1087,7 @@ const configuratorScript = `
 
     function buildPaletteCells(target, entries, isOption) {
       target.innerHTML = "";
-      const isMobileInfinite = target && target.id === "mobileOptionsGrid" && isMobileLayout();
-      const sourceEntries = isMobileInfinite && entries && entries.length
-        ? entries.concat(entries)
-        : entries;
-
-      (sourceEntries || []).forEach(({ hex, key, qty, price }) => {
+      entries.forEach(({ hex, key, qty, price }) => {
         const cell = document.createElement("div");
         cell.className = isOption ? "cd-cell-op" : "cd-cell";
 
@@ -1141,122 +1130,42 @@ const configuratorScript = `
       });
     }
 
-    function renderMobilePartsList() {
-        if (!mobileOptionsGrid) return;
+    function updateMobileOptionsDrawer() {
+      if (!mobileOptionsDrawer || !mobileOptionsGrid || !mobileOptionsTabs) return;
+      if (!showMobileDrawer || !isMobileLayout() || !selectedPartId) {
+        mobileOptionsDrawer.style.display = "none";
+        updateMobileSelectedPartBadge();
+        return;
+      }
 
+      const hasOptions = mobileDrawerOptions && mobileDrawerOptions.length;
+      const hasColors = mobileDrawerColors && mobileDrawerColors.length;
+      if (!hasOptions && !hasColors) {
+        mobileOptionsDrawer.style.display = "none";
+        updateMobileSelectedPartBadge();
+        return;
+      }
 
-        const baseParts = [...FRONT_PARTS, ...BACK_PARTS].filter(p => {
-             if (!isPartActive(p)) return false;
-             if (currentPanel === "options") {
-                 return (dynamicOptionsByPart[p.id] || []).length > 0;
-             } else {
-                 return (dynamicColorsByPart[p.id] || []).length > 0;
-             }
-        });
+      mobileOptionsDrawer.style.display = "flex";
 
-        const renderKey = currentPanel + "_" + baseParts.map(p => p.id).join(",");
-        if (lastRenderedMobileKey === renderKey) {
-            mobileOptionsGrid.querySelectorAll(".mobile-part-btn").forEach(b => {
-               const isSelected = b.dataset.id === selectedPartId;
-               b.classList.toggle("selected", isSelected);
-               if (isSelected) {
-                   // Ensure visible
-                   setTimeout(() => {
-                       b.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-                   }, 10);
-               }
-            });
-            // If the listener is missing for some reason, we might want to Add it,
-            // but we absolutely should NOT reset the scroll position.
-            // For now, assume it persists or we rely on the mount.
-            return;
-        }
-        lastRenderedMobileKey = renderKey;
-        
-        // Cleanup old scroll listener if it exists (though we aren't using one anymore)
-        if (mobileOptionsGrid._infiniteScrollHandler) {
-            mobileOptionsGrid.removeEventListener("scroll", mobileOptionsGrid._infiniteScrollHandler);
-            delete mobileOptionsGrid._infiniteScrollHandler;
-        }
-        
-        mobileOptionsGrid.innerHTML = "";
-        mobileOptionsGrid.scrollLeft = 0; // Reset scroll on fresh render
-        
-        if (baseParts.length === 0) return;
+      let activeTab = selectionPaletteMode;
+      if (activeTab !== "options" && activeTab !== "colors") {
+        activeTab = hasColors ? "colors" : "options";
+      }
+      if (activeTab === "colors" && !hasColors) activeTab = "options";
+      if (activeTab === "options" && !hasOptions) activeTab = "colors";
+      selectionPaletteMode = activeTab;
 
-        // Auto-select first part if nothing selected or not in list
-        let shouldAutoSelect = false;
-        if (!selectedPartId || !baseParts.find(p => p.id === selectedPartId)) {
-             shouldAutoSelect = true;
-             selectedPartId = baseParts[0].id; // Update state implicitly
-        }
+      mobileOptionsTabs.forEach(btn => {
+        const tab = btn.dataset.tab;
+        const isOptionsTab = tab === "options";
+        const enabled = isOptionsTab ? hasOptions : hasColors;
+        btn.disabled = !enabled;
+        btn.classList.toggle("active", tab === activeTab);
+      });
 
-        // Use baseParts directly - NO INFINITE LOOP
-        baseParts.forEach((part) => {
-             const cell = document.createElement("div");
-             cell.className = "mobile-part-item";
-             const btn = document.createElement("button");
-             btn.className = "mobile-part-btn";
-             if (selectedPartId === part.id) {
-                 btn.classList.add("selected");
-                 setTimeout(() => {
-                     btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-                 }, 50);
-             }
-             
-             const img = document.createElement("img");
-             img.src = part.icon || "/assets/icons/shells.png";
-             img.alt = getPartLabel(part.id);
-             btn.appendChild(img);
-             
-             cell.addEventListener("click", (e) => {
-                e.stopPropagation();
-                
-                // Clear all, select this one
-                mobileOptionsGrid.querySelectorAll(".mobile-part-btn").forEach(b => b.classList.remove("selected"));
-                btn.classList.add("selected");
-
-                
-                const targetSide = part.side;
-                if (currentSide !== targetSide) setSide(targetSide);
-                selectedPartId = part.id;
-                selectionPaletteMode = currentPanel;
-                controllerArea.classList.add("has-selection");
-                controllerArea.style.setProperty("--selected-mask-url", "url('" + part.mask + "')");
-                const layer = layers[part.id];
-                if (layer) {
-                  Object.values(layers).forEach(l => l?.classList.remove("selected"));
-                  layer.classList.add("selected");
-                }
-                Object.values(partsRowsById).forEach(rArr => {
-                  if (!rArr) return;
-                  rArr.forEach(r => r.classList.remove("active"));
-                });
-                (partsRowsById[part.id] || []).forEach(r => r.classList.add("active"));
-                playClick();
-                openColorPanelForPart(part.id);
-             });
-
-             btn.dataset.id = part.id;
-             cell.appendChild(btn);
-             mobileOptionsGrid.appendChild(cell);
-        });
-        
-        // Trigger initial color panel population for auto-selected part
-        if (shouldAutoSelect && baseParts[0]) {
-            const firstPart = baseParts[0];
-            // Mimic click logic to ensure colors load
-            setTimeout(() => {
-                openColorPanelForPart(firstPart.id); 
-                // We might need to select button visually if not handled by redraw
-            }, 50);
-        }
-    }
-
-    function updateMobileOptionsBar() {
-      if (!mobileOptionsGrid || !isMobileLayout()) return;
-      // Always show parts list in the horizontal bar on mobile
-      renderMobilePartsList();
+      const entries = activeTab === "colors" ? mobileDrawerColors : mobileDrawerOptions;
+      buildPaletteCells(mobileOptionsGrid, entries, activeTab === "options");
       updateMobileSelectedPartBadge();
     }
 
@@ -1285,45 +1194,42 @@ const configuratorScript = `
       const hasOptions = optionspalette && optionspalette.length;
       const hasColors = palette && palette.length;
 
+      // If selectionPaletteMode is set, honor it; otherwise default to colors when available, else options.
       const mobile = isMobileLayout();
-      
-      let showOptions = false;
-      let showColors = false;
+      const showOptions = mobile ? hasOptions : (selectionPaletteMode === "options" ? true : (selectionPaletteMode === "colors" ? false : (!hasColors && hasOptions)));
+      const showColors = mobile ? hasColors : (selectionPaletteMode === "colors" ? true : (selectionPaletteMode === "options" ? false : hasColors));
 
-      if (currentPanel === "options" && hasOptions) showOptions = true;
-      else if (currentPanel === "colors" && hasColors) showColors = true;
-      else {
-          if (hasColors) showColors = true;
-          else if (hasOptions) showOptions = true;
-      }
-      
-      if (showOptions) {
-        optionsPanelSub.style.display = "none";
+      let renderedSomething = false;
+
+      if (showOptions && hasOptions) {
+        optionsPanelSub.style.display = "block";
         optionsPanelGrid.style.display = "grid";
         colorPanelHeaderTop.style.display = "block";
-        // optionsPanelSub.textContent = t("availableOptions");
+        optionsPanelSub.textContent = t("availableOptions");
         buildPaletteCells(optionsPanelGrid, optionspalette, true);
+        renderedSomething = true;
       }
-      if (showColors) {
+
+      if (showColors && hasColors) {
         colorPanelHeaderTop.style.display = "block";
         colorPanelHeaderBottom.style.display = "block";
         colorPanelGrid.style.display = "grid";
-        colorPanelSub.style.display = "none";
-        // colorPanelSub.textContent = t("availableColors");
+        colorPanelSub.textContent = t("availableColors");
         buildPaletteCells(colorPanelGrid, palette, false);
+        renderedSomething = true;
       }
-      
-      if (mobile) {
-        // Ensure color panel container itself is visible on mobile
-        const colorPanelContainer = document.getElementById("colors-column");
-        if (colorPanelContainer) {
-           colorPanelContainer.style.display = "block";
-           // Option: scroll to the panel if it's currently selected
-           // colorPanelContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }
+
+      mobileDrawerOptions = optionspalette || [];
+      mobileDrawerColors = palette || [];
+      updateMobileOptionsDrawer();
+
+      if (!renderedSomething) {
+        // show empty placeholder
+        colorEmptyState.style.display = "flex";
+        mobileDrawerOptions = [];
+        mobileDrawerColors = [];
+        updateMobileOptionsDrawer();
       }
-      
-      updateMobileSelectedPartBadge();
     }
 
     /* ----- Side toggle ----- */
@@ -1338,45 +1244,8 @@ const configuratorScript = `
       updateFlipControl();
 
       clearSelection();
-
-      // Defer heavy selection logic to allow the flip animation to start smoothly
-      setTimeout(() => {
-          // Auto-select logic
-          const targetPartId = side === "back" ? "backShellMain" : "shell";
-          
-          // We need to ensure this part exists and is active
-          const part = ALL_PARTS.find(p => p.id === targetPartId);
-          if (part && isPartActive(part)) {
-              selectedPartId = part.id;
-              selectionPaletteMode = currentPanel; // Keep current panel mode
-              
-              controllerArea.classList.add("has-selection");
-              controllerArea.style.setProperty("--selected-mask-url", "url('" + part.mask + "')");
-              
-              const layer = layers[part.id];
-              if (layer) {
-                 Object.values(layers).forEach(l => l?.classList.remove("selected"));
-                 layer.classList.add("selected");
-              }
-              
-              Object.values(partsRowsById).forEach(rArr => {
-                 if (!rArr) return;
-                 rArr.forEach(r => r.classList.remove("active"));
-              });
-              (partsRowsById[part.id] || []).forEach(r => r.classList.add("active"));
-              
-              openColorPanelForPart(part.id);
-              
-              // For mobile horizontal bar
-              if (isMobileLayout()) {
-                 updateMobileOptionsBar();
-              }
-          } else {
-             // Fallback if target part not valid
-             resetColorPanel();
-             resetOptionsPanel();
-          }
-      }, 400); // Wait until animation is almost done (700ms total)
+      resetColorPanel();
+      resetOptionsPanel();
     }
 
     if (controllerFlipBtn) {
@@ -1442,6 +1311,9 @@ const configuratorScript = `
 
         playClick();
         openColorPanelForPart(part.id);
+        if (isMobileLayout()) {
+          setMobileDrawerVisible(true);
+        }
       });
 
       if (!partsRowsById[part.id]) partsRowsById[part.id] = [];
@@ -1474,11 +1346,6 @@ const configuratorScript = `
         colorOnlyParts.forEach(p => secondaryList.appendChild(createPartRow(p, "colors")));
       }
       refreshAccordionHeights();
-      
-      // Update Mobile Bar as well
-      if (isMobileLayout()) {
-          updateMobileOptionsBar();
-      }
     }
 
     /* ----- Hit testing ----- */
@@ -1548,6 +1415,9 @@ const configuratorScript = `
         selectionPaletteMode = hasOpts ? "options" : "colors";
       }
       openColorPanelForPart(partId);
+      if (isMobileLayout()) {
+        setMobileDrawerVisible(true);
+      }
     });
 
     /* ----- Hover tooltip (desktop only) ----- */
@@ -1616,17 +1486,13 @@ const configuratorScript = `
       const clickInsideParts = partsLists.some(list => list.contains(e.target));
       const clickInsideSideToggle = controllerFlipBtn ? controllerFlipBtn.contains(e.target) : false;
       const clickInsideNav = document.querySelector(".top-nav").contains(e.target);
-      const clickInsideMobileBar = mobileOptionsGrid ? mobileOptionsGrid.contains(e.target) : false;
-      const clickInsideMobileTabs = document.getElementById("mobilePanelSwitch") ? document.getElementById("mobilePanelSwitch").contains(e.target) : false;
 
       if (
         !clickInsideController &&
         !clickInsideColors &&
         !clickInsideParts &&
         !clickInsideSideToggle &&
-        !clickInsideNav &&
-        !clickInsideMobileBar &&
-        !clickInsideMobileTabs
+        !clickInsideNav
       ) {
         clearSelection();
         resetColorPanel();
@@ -1860,30 +1726,9 @@ const configuratorScript = `
     // Initial language application
     applyLanguage();
     bootstrapZohoInventory();
-    setPanel(currentPanel);
     refreshAccordionHeights();
   
 
-`;
-
-function ConfiguratorPage() {
-  useEffect(() => {
-    document.body.classList.add('configurator-page-active');
-    const scriptEl = document.createElement('script');
-    // Wrap configurator script to avoid leaking globals and redeclaration errors on remount.
-    scriptEl.textContent = `(function(){\n${configuratorScript}\n})();`;
-    document.body.appendChild(scriptEl);
-    return () => {
-      document.body.classList.remove('configurator-page-active');
-      document.body.removeChild(scriptEl);
-    };
-  }, []);
-
-  return (
-    <div className="configurator-page">
-      <div dangerouslySetInnerHTML={{ __html: configuratorMarkup }} />
-    </div>
-  );
-}
-
-export default ConfiguratorPage;
+`;function l(){return a.useEffect(()=>{document.body.classList.add("configurator-page-active");const e=document.createElement("script");return e.textContent=`(function(){
+${r}
+})();`,document.body.appendChild(e),()=>{document.body.classList.remove("configurator-page-active"),document.body.removeChild(e)}},[]),t.jsx("div",{className:"configurator-page",children:t.jsx("div",{dangerouslySetInnerHTML:{__html:o}})})}export{l as default};
