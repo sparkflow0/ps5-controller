@@ -1,4 +1,4 @@
-import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
+import{r as a,j as t}from"./index-CBVrc029.js";const o=`
 
 
 <canvas id="bgCanvas"></canvas>
@@ -57,19 +57,20 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 <div class="controller-buttons-stack">
 <button class="flip-toggle" id="controllerFlipBtn" type="button" aria-label="الأمام">
 <span class="flip-toggle-preview" aria-hidden="true">
-<img class="flip-toggle-front" alt="" src="/assets/controller.png"/>
-<img class="flip-toggle-back" alt="" src="/assets/controller_back.png"/>
+<img class="flip-toggle-front" alt="" src="/assets/controller_back.png"/>
+<img class="flip-toggle-back" alt="" src="/assets/controller.png"/>
 </span>
 </button>
 </div>
     <div class="mobile-panel-switch" id="mobilePanelSwitch" aria-label="تبديل لوحة الأجزاء والألوان">
       <button class="panel-switch-btn active" data-panel="options" type="button" aria-pressed="true">
-        <span data-i18n="partsOptionsHeading">الخيارات</span>
+        <span data-i18n="partsOptionsHeading">تطوير الأداء</span>
       </button>
       <button class="panel-switch-btn" data-panel="colors" type="button" aria-pressed="false">
-        <span data-i18n="partsColorsHeading">الألوان</span>
+        <span data-i18n="partsColorsHeading">شكل الذراع</span>
       </button>
     </div>
+    <div class="mobile-options-grid horizontal-scroll" id="mobileOptionsGrid"></div>
   </div>
 </div>
 <!-- COLORS COLUMN (MIDDLE) -->
@@ -78,13 +79,13 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 <!-- Top header: part name + options title -->
 <div class="color-panel-header" id="colorPanelHeaderTop">
 <div class="color-panel-title" id="colorPanelTitle">اختر جزءًا</div>
-<div class="color-panel-sub" id="optionsPanelSub">الخيارات</div>
+<div class="color-panel-sub" id="optionsPanelSub">تطوير الأداء</div>
 </div>
 <!-- Options grid (stick type ...) -->
 <div class="color-panel-grid" id="optionsPanelGrid"></div>
 <!-- Bottom header: colors title -->
 <div class="color-panel-header" id="colorPanelHeaderBottom">
-<div class="color-panel-sub" id="colorPanelSub">الألوان</div>
+<div class="color-panel-sub" id="colorPanelSub">شكل الذراع</div>
 </div>
 <!-- Colors grid -->
 <div class="color-panel-grid2" id="colorPanelGrid"></div>
@@ -101,17 +102,11 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 <img alt="" src="/assets/icons/shells.png"/>
 </button>
 <div class="parts-panel">
-<div class="mobile-options-drawer" id="mobileOptionsDrawer" aria-live="polite">
-<div class="mobile-options-tabs">
-<button class="mobile-options-tab" data-tab="options" data-i18n="partsOptionsHeading" type="button">الخيارات</button>
-<button class="mobile-options-tab" data-tab="colors" data-i18n="partsColorsHeading" type="button">الألوان</button>
-</div>
-<div class="mobile-options-grid" id="mobileOptionsGrid"></div>
-</div>
+
 <div class="parts-accordion">
 <div class="accordion-item open">
 <button class="accordion-header" type="button">
-<div class="parts-title" data-i18n="partsOptionsHeading">الخيارات</div>
+<div class="parts-title" data-i18n="partsOptionsHeading">تطوير الأداء</div>
 <span aria-hidden="true" class="accordion-icon"></span>
 </button>
 <div class="accordion-content">
@@ -122,7 +117,7 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 </div>
 <div class="accordion-item">
 <button class="accordion-header" type="button">
-<div class="parts-title" data-i18n="partsColorsHeading">الألوان</div>
+<div class="parts-title" data-i18n="partsColorsHeading">شكل الذراع</div>
 <span aria-hidden="true" class="accordion-icon"></span>
 </button>
 <div class="accordion-content">
@@ -136,7 +131,7 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 </div>
 </div>
 <div class="configurator-controls" id="configuratorControls" aria-label="Configurator controls">
-<button class="control-btn control-colors" data-panel="colors" type="button" aria-label="الألوان">
+<button class="control-btn control-colors" data-panel="colors" type="button" aria-label="شكل الذراع">
 <span class="control-icon" aria-hidden="true">
 <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
 <circle cx="7" cy="9" r="3.2" fill="#ff5c7a"/>
@@ -144,9 +139,9 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 <circle cx="13" cy="16" r="4" fill="#f6d743"/>
 </svg>
 </span>
-<span class="control-label" data-i18n="partsColorsHeading">الألوان</span>
+<span class="control-label" data-i18n="partsColorsHeading">شكل الذراع</span>
 </button>
-<button class="control-btn control-options active" data-panel="options" type="button" aria-label="الخيارات">
+<button class="control-btn control-options active" data-panel="options" type="button" aria-label="تطوير الأداء">
 <span class="control-icon" aria-hidden="true">
 <svg viewBox="0 0 24 24" role="img" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
 <path d="M4 7h10"/>
@@ -156,7 +151,7 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 <circle cx="9" cy="17" r="2.2" fill="currentColor"/>
 </svg>
 </span>
-<span class="control-label" data-i18n="partsOptionsHeading">الخيارات</span>
+<span class="control-label" data-i18n="partsOptionsHeading">تطوير الأداء</span>
 </button>
 <button class="control-btn control-flip" id="flipControlBtn" data-action="flip" type="button" aria-label="الأمام">
 <span class="flip-preview" aria-hidden="true">
@@ -650,10 +645,11 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
     const mobileSelectedPart = document.getElementById("mobileSelectedPart");
     const mobileSelectedPartImg = mobileSelectedPart ? mobileSelectedPart.querySelector("img") : null;
     const mobileQuery = window.matchMedia("(max-width: 900px)");
-    let currentPanel = "options";
+    let currentPanel = "colors";
     let mobileDrawerOptions = [];
     let mobileDrawerColors = [];
     let showMobileDrawer = false;
+    let lastRenderedMobileKey = "";
 
     const layers = {};
     const maskDataById = {};
@@ -676,9 +672,14 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
     }
 
     function setPanel(panel) {
+      if (currentPanel === panel && selectedPartId && isMobileLayout()) {
+        clearSelection();
+        return;
+      }
       currentPanel = panel;
       const mobile = isMobileLayout();
-      selectionPaletteMode = mobile ? null : panel;
+      selectionPaletteMode = mobile ? currentPanel : panel;
+      // Removed if (mobile) clearSelection(); to allow persistence
 
       document.body.classList.toggle("config-panel-options", panel === "options");
       document.body.classList.toggle("config-panel-colors", panel === "colors");
@@ -703,9 +704,13 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 
       if (selectedPartId) {
         openColorPanelForPart(selectedPartId);
+      } else {
+        if (mobile) updateMobileOptionsBar();
       }
+      
+      // Force update of mobile bar to apply filtering
       if (mobile) {
-        setMobileDrawerVisible(false);
+          updateMobileOptionsBar();
       }
     }
 
@@ -720,7 +725,7 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
         btn.classList.remove("active");
         btn.setAttribute("aria-pressed", "false");
       });
-      setMobileDrawerVisible(false);
+      // Drawer logic removed
     }
 
     function setMobileActionBar(isMobile) {
@@ -734,36 +739,21 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
       }
     }
 
-    function setMobileDrawerTab(tab) {
-      selectionPaletteMode = tab;
-      updateMobileOptionsDrawer();
-    }
+    // Old drawer functions removed
 
-    function setMobileDrawerVisible(visible) {
-      showMobileDrawer = visible;
-      document.body.classList.toggle("mobile-options-open", visible);
-      updateMobileOptionsDrawer();
-    }
 
     function updateMobileSelectedPartBadge() {
       if (!mobileSelectedPart || !mobileSelectedPartImg) return;
       mobileSelectedPart.style.display = "none";
     }
 
-    if (mobileOptionsDrawer) {
-      mobileOptionsDrawer.addEventListener("click", (e) => {
-        if (!isMobileLayout()) return;
-        const btn = e.target.closest(".mobile-options-tab");
-        if (!btn || btn.disabled) return;
-        const tab = btn.dataset.tab;
-        if (tab) setMobileDrawerTab(tab);
-      });
-    }
+    // Mobile options drawer listener removed
+
 
     if (mobileSelectedPart) {
       mobileSelectedPart.addEventListener("click", () => {
         if (!isMobileLayout() || !selectedPartId) return;
-        setMobileDrawerVisible(true);
+        // Just re-open the panel
         openColorPanelForPart(selectedPartId);
       });
     }
@@ -1041,14 +1031,23 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
       selectionPaletteMode = null;
       controllerArea.classList.remove("has-selection");
       controllerArea.style.removeProperty("--selected-mask-url");
+      
+      // On mobile, clearing selection means going back to the parts list
       if (isMobileLayout()) {
-        setMobileDrawerVisible(false);
+          updateMobileOptionsBar();
       }
 
       Object.values(layers).forEach(layer => {
         if (!layer) return;
         layer.classList.remove("selected");
       });
+      
+      if (isMobileLayout()) {
+        // Clear selection border in horizontal bar
+        if (mobileOptionsGrid) {
+          mobileOptionsGrid.querySelectorAll(".mobile-part-btn").forEach(b => b.classList.remove("selected"));
+        }
+      }
 
       Object.values(partsRowsById).forEach(rows => {
         if (!rows) return;
@@ -1072,11 +1071,15 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 
       // show empty placeholder
       colorEmptyState.style.display = "flex";
+
       mobileDrawerOptions = [];
       mobileDrawerColors = [];
-      updateMobileOptionsDrawer();
+
       if (isMobileLayout()) {
-        setMobileDrawerVisible(false);
+          // ensure no part is highlighted in the horizontal bar
+          if (mobileOptionsGrid) {
+            mobileOptionsGrid.querySelectorAll(".mobile-part-btn").forEach(b => b.classList.remove("selected"));
+          }
       }
     }
 
@@ -1087,7 +1090,12 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 
     function buildPaletteCells(target, entries, isOption) {
       target.innerHTML = "";
-      entries.forEach(({ hex, key, qty, price }) => {
+      const isMobileInfinite = target && target.id === "mobileOptionsGrid" && isMobileLayout();
+      const sourceEntries = isMobileInfinite && entries && entries.length
+        ? entries.concat(entries)
+        : entries;
+
+      (sourceEntries || []).forEach(({ hex, key, qty, price }) => {
         const cell = document.createElement("div");
         cell.className = isOption ? "cd-cell-op" : "cd-cell";
 
@@ -1130,42 +1138,122 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
       });
     }
 
-    function updateMobileOptionsDrawer() {
-      if (!mobileOptionsDrawer || !mobileOptionsGrid || !mobileOptionsTabs) return;
-      if (!showMobileDrawer || !isMobileLayout() || !selectedPartId) {
-        mobileOptionsDrawer.style.display = "none";
-        updateMobileSelectedPartBadge();
-        return;
-      }
+    function renderMobilePartsList() {
+        if (!mobileOptionsGrid) return;
 
-      const hasOptions = mobileDrawerOptions && mobileDrawerOptions.length;
-      const hasColors = mobileDrawerColors && mobileDrawerColors.length;
-      if (!hasOptions && !hasColors) {
-        mobileOptionsDrawer.style.display = "none";
-        updateMobileSelectedPartBadge();
-        return;
-      }
 
-      mobileOptionsDrawer.style.display = "flex";
+        const baseParts = [...FRONT_PARTS, ...BACK_PARTS].filter(p => {
+             if (!isPartActive(p)) return false;
+             if (currentPanel === "options") {
+                 return (dynamicOptionsByPart[p.id] || []).length > 0;
+             } else {
+                 return (dynamicColorsByPart[p.id] || []).length > 0;
+             }
+        });
 
-      let activeTab = selectionPaletteMode;
-      if (activeTab !== "options" && activeTab !== "colors") {
-        activeTab = hasColors ? "colors" : "options";
-      }
-      if (activeTab === "colors" && !hasColors) activeTab = "options";
-      if (activeTab === "options" && !hasOptions) activeTab = "colors";
-      selectionPaletteMode = activeTab;
+        const renderKey = currentPanel + "_" + baseParts.map(p => p.id).join(",");
+        if (lastRenderedMobileKey === renderKey) {
+            mobileOptionsGrid.querySelectorAll(".mobile-part-btn").forEach(b => {
+               const isSelected = b.dataset.id === selectedPartId;
+               b.classList.toggle("selected", isSelected);
+               if (isSelected) {
+                   // Ensure visible
+                   setTimeout(() => {
+                       b.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+                   }, 10);
+               }
+            });
+            // If the listener is missing for some reason, we might want to Add it,
+            // but we absolutely should NOT reset the scroll position.
+            // For now, assume it persists or we rely on the mount.
+            return;
+        }
+        lastRenderedMobileKey = renderKey;
+        
+        // Cleanup old scroll listener if it exists (though we aren't using one anymore)
+        if (mobileOptionsGrid._infiniteScrollHandler) {
+            mobileOptionsGrid.removeEventListener("scroll", mobileOptionsGrid._infiniteScrollHandler);
+            delete mobileOptionsGrid._infiniteScrollHandler;
+        }
+        
+        mobileOptionsGrid.innerHTML = "";
+        mobileOptionsGrid.scrollLeft = 0; // Reset scroll on fresh render
+        
+        if (baseParts.length === 0) return;
 
-      mobileOptionsTabs.forEach(btn => {
-        const tab = btn.dataset.tab;
-        const isOptionsTab = tab === "options";
-        const enabled = isOptionsTab ? hasOptions : hasColors;
-        btn.disabled = !enabled;
-        btn.classList.toggle("active", tab === activeTab);
-      });
+        // Auto-select first part if nothing selected or not in list
+        let shouldAutoSelect = false;
+        if (!selectedPartId || !baseParts.find(p => p.id === selectedPartId)) {
+             shouldAutoSelect = true;
+             selectedPartId = baseParts[0].id; // Update state implicitly
+        }
 
-      const entries = activeTab === "colors" ? mobileDrawerColors : mobileDrawerOptions;
-      buildPaletteCells(mobileOptionsGrid, entries, activeTab === "options");
+        // Use baseParts directly - NO INFINITE LOOP
+        baseParts.forEach((part) => {
+             const cell = document.createElement("div");
+             cell.className = "mobile-part-item";
+             const btn = document.createElement("button");
+             btn.className = "mobile-part-btn";
+             if (selectedPartId === part.id) {
+                 btn.classList.add("selected");
+                 setTimeout(() => {
+                     btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+                 }, 50);
+             }
+             
+             const img = document.createElement("img");
+             img.src = part.icon || "/assets/icons/shells.png";
+             img.alt = getPartLabel(part.id);
+             btn.appendChild(img);
+             
+             cell.addEventListener("click", (e) => {
+                e.stopPropagation();
+                
+                // Clear all, select this one
+                mobileOptionsGrid.querySelectorAll(".mobile-part-btn").forEach(b => b.classList.remove("selected"));
+                btn.classList.add("selected");
+
+                
+                const targetSide = part.side;
+                if (currentSide !== targetSide) setSide(targetSide);
+                selectedPartId = part.id;
+                selectionPaletteMode = currentPanel;
+                controllerArea.classList.add("has-selection");
+                controllerArea.style.setProperty("--selected-mask-url", "url('" + part.mask + "')");
+                const layer = layers[part.id];
+                if (layer) {
+                  Object.values(layers).forEach(l => l?.classList.remove("selected"));
+                  layer.classList.add("selected");
+                }
+                Object.values(partsRowsById).forEach(rArr => {
+                  if (!rArr) return;
+                  rArr.forEach(r => r.classList.remove("active"));
+                });
+                (partsRowsById[part.id] || []).forEach(r => r.classList.add("active"));
+                playClick();
+                openColorPanelForPart(part.id);
+             });
+
+             btn.dataset.id = part.id;
+             cell.appendChild(btn);
+             mobileOptionsGrid.appendChild(cell);
+        });
+        
+        // Trigger initial color panel population for auto-selected part
+        if (shouldAutoSelect && baseParts[0]) {
+            const firstPart = baseParts[0];
+            // Mimic click logic to ensure colors load
+            setTimeout(() => {
+                openColorPanelForPart(firstPart.id); 
+                // We might need to select button visually if not handled by redraw
+            }, 50);
+        }
+    }
+
+    function updateMobileOptionsBar() {
+      if (!mobileOptionsGrid || !isMobileLayout()) return;
+      // Always show parts list in the horizontal bar on mobile
+      renderMobilePartsList();
       updateMobileSelectedPartBadge();
     }
 
@@ -1194,42 +1282,45 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
       const hasOptions = optionspalette && optionspalette.length;
       const hasColors = palette && palette.length;
 
-      // If selectionPaletteMode is set, honor it; otherwise default to colors when available, else options.
       const mobile = isMobileLayout();
-      const showOptions = mobile ? hasOptions : (selectionPaletteMode === "options" ? true : (selectionPaletteMode === "colors" ? false : (!hasColors && hasOptions)));
-      const showColors = mobile ? hasColors : (selectionPaletteMode === "colors" ? true : (selectionPaletteMode === "options" ? false : hasColors));
+      
+      let showOptions = false;
+      let showColors = false;
 
-      let renderedSomething = false;
-
-      if (showOptions && hasOptions) {
-        optionsPanelSub.style.display = "block";
+      if (currentPanel === "options" && hasOptions) showOptions = true;
+      else if (currentPanel === "colors" && hasColors) showColors = true;
+      else {
+          if (hasColors) showColors = true;
+          else if (hasOptions) showOptions = true;
+      }
+      
+      if (showOptions) {
+        optionsPanelSub.style.display = "none";
         optionsPanelGrid.style.display = "grid";
         colorPanelHeaderTop.style.display = "block";
-        optionsPanelSub.textContent = t("availableOptions");
+        // optionsPanelSub.textContent = t("availableOptions");
         buildPaletteCells(optionsPanelGrid, optionspalette, true);
-        renderedSomething = true;
       }
-
-      if (showColors && hasColors) {
+      if (showColors) {
         colorPanelHeaderTop.style.display = "block";
         colorPanelHeaderBottom.style.display = "block";
         colorPanelGrid.style.display = "grid";
-        colorPanelSub.textContent = t("availableColors");
+        colorPanelSub.style.display = "none";
+        // colorPanelSub.textContent = t("availableColors");
         buildPaletteCells(colorPanelGrid, palette, false);
-        renderedSomething = true;
       }
-
-      mobileDrawerOptions = optionspalette || [];
-      mobileDrawerColors = palette || [];
-      updateMobileOptionsDrawer();
-
-      if (!renderedSomething) {
-        // show empty placeholder
-        colorEmptyState.style.display = "flex";
-        mobileDrawerOptions = [];
-        mobileDrawerColors = [];
-        updateMobileOptionsDrawer();
+      
+      if (mobile) {
+        // Ensure color panel container itself is visible on mobile
+        const colorPanelContainer = document.getElementById("colors-column");
+        if (colorPanelContainer) {
+           colorPanelContainer.style.display = "block";
+           // Option: scroll to the panel if it's currently selected
+           // colorPanelContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
       }
+      
+      updateMobileSelectedPartBadge();
     }
 
     /* ----- Side toggle ----- */
@@ -1244,8 +1335,45 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
       updateFlipControl();
 
       clearSelection();
-      resetColorPanel();
-      resetOptionsPanel();
+
+      // Defer heavy selection logic to allow the flip animation to start smoothly
+      setTimeout(() => {
+          // Auto-select logic
+          const targetPartId = side === "back" ? "backShellMain" : "shell";
+          
+          // We need to ensure this part exists and is active
+          const part = ALL_PARTS.find(p => p.id === targetPartId);
+          if (part && isPartActive(part)) {
+              selectedPartId = part.id;
+              selectionPaletteMode = currentPanel; // Keep current panel mode
+              
+              controllerArea.classList.add("has-selection");
+              controllerArea.style.setProperty("--selected-mask-url", "url('" + part.mask + "')");
+              
+              const layer = layers[part.id];
+              if (layer) {
+                 Object.values(layers).forEach(l => l?.classList.remove("selected"));
+                 layer.classList.add("selected");
+              }
+              
+              Object.values(partsRowsById).forEach(rArr => {
+                 if (!rArr) return;
+                 rArr.forEach(r => r.classList.remove("active"));
+              });
+              (partsRowsById[part.id] || []).forEach(r => r.classList.add("active"));
+              
+              openColorPanelForPart(part.id);
+              
+              // For mobile horizontal bar
+              if (isMobileLayout()) {
+                 updateMobileOptionsBar();
+              }
+          } else {
+             // Fallback if target part not valid
+             resetColorPanel();
+             resetOptionsPanel();
+          }
+      }, 400); // Wait until animation is almost done (700ms total)
     }
 
     if (controllerFlipBtn) {
@@ -1311,9 +1439,6 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
 
         playClick();
         openColorPanelForPart(part.id);
-        if (isMobileLayout()) {
-          setMobileDrawerVisible(true);
-        }
       });
 
       if (!partsRowsById[part.id]) partsRowsById[part.id] = [];
@@ -1346,6 +1471,11 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
         colorOnlyParts.forEach(p => secondaryList.appendChild(createPartRow(p, "colors")));
       }
       refreshAccordionHeights();
+      
+      // Update Mobile Bar as well
+      if (isMobileLayout()) {
+          updateMobileOptionsBar();
+      }
     }
 
     /* ----- Hit testing ----- */
@@ -1415,9 +1545,6 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
         selectionPaletteMode = hasOpts ? "options" : "colors";
       }
       openColorPanelForPart(partId);
-      if (isMobileLayout()) {
-        setMobileDrawerVisible(true);
-      }
     });
 
     /* ----- Hover tooltip (desktop only) ----- */
@@ -1486,13 +1613,17 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
       const clickInsideParts = partsLists.some(list => list.contains(e.target));
       const clickInsideSideToggle = controllerFlipBtn ? controllerFlipBtn.contains(e.target) : false;
       const clickInsideNav = document.querySelector(".top-nav").contains(e.target);
+      const clickInsideMobileBar = mobileOptionsGrid ? mobileOptionsGrid.contains(e.target) : false;
+      const clickInsideMobileTabs = document.getElementById("mobilePanelSwitch") ? document.getElementById("mobilePanelSwitch").contains(e.target) : false;
 
       if (
         !clickInsideController &&
         !clickInsideColors &&
         !clickInsideParts &&
         !clickInsideSideToggle &&
-        !clickInsideNav
+        !clickInsideNav &&
+        !clickInsideMobileBar &&
+        !clickInsideMobileTabs
       ) {
         clearSelection();
         resetColorPanel();
@@ -1726,6 +1857,7 @@ import{r as a,j as t}from"./index-ChQVfK1M.js";const o=`
     // Initial language application
     applyLanguage();
     bootstrapZohoInventory();
+    setPanel(currentPanel);
     refreshAccordionHeights();
   
 
