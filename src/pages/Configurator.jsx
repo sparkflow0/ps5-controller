@@ -256,21 +256,21 @@ const configuratorScript = `
     const BASE_HEIGHT = 768;
 
     const FRONT_PARTS = [
-      { id: "shell", icon: "/assets/icons/shells.svg", mask: "/assets/masks/leftShell.png", priority: 4, side: "front" },
-      { id: "trimpiece", icon: "/assets/icons/trimpiece.svg", mask: "/assets/masks/centerBody.png", priority: 1, side: "front" },
-      { id: "stickL", icon: "/assets/icons/stickL.svg", mask: "/assets/masks/stickL.png", priority: 3, side: "front" },
-      { id: "stickR", icon: "/assets/icons/stickR.svg", mask: "/assets/masks/stickR.png", priority: 3, side: "front" },
-      { id: "faceButtons", icon: "/assets/icons/faceButtons.svg", mask: "/assets/masks/faceButtons.png", priority: 4, side: "front" },
-      { id: "touchpad", icon: "/assets/icons/touchpad.svg", mask: "/assets/masks/touchpad.png", priority: 2, side: "front" },
-      { id: "bumpers", icon: "/assets/icons/bumpers.svg", mask: "/assets/masks/bumperL.png", priority: 2, side: "front" },
-      { id: "psButton", icon: "/assets/icons/psButton.svg", mask: "/assets/masks/psButton.png", priority: 1, side: "front" },
-      { id: "share", icon: "/assets/icons/share.svg", mask: "/assets/masks/share.png", priority: 4, side: "front" },
-      { id: "options", icon: "/assets/icons/options.svg", mask: "/assets/masks/options.png", priority: 4, side: "front" },
+      { id: "shell", icon: "/assets/icons/shells.png", mask: "/assets/masks/leftShell.png", priority: 4, side: "front" },
+      { id: "trimpiece", icon: "/assets/icons/trimpiece.png", mask: "/assets/masks/centerBody.png", priority: 1, side: "front" },
+      { id: "stickL", icon: "/assets/icons/stickL.png", mask: "/assets/masks/stickL.png", priority: 3, side: "front" },
+      { id: "stickR", icon: "/assets/icons/stickR.png", mask: "/assets/masks/stickR.png", priority: 3, side: "front" },
+      { id: "faceButtons", icon: "/assets/icons/faceButtons.png", mask: "/assets/masks/faceButtons.png", priority: 4, side: "front" },
+      { id: "touchpad", icon: "/assets/icons/touchpad.png", mask: "/assets/masks/touchpad.png", priority: 2, side: "front" },
+      { id: "bumpers", icon: "/assets/icons/bumpers.png", mask: "/assets/masks/bumperL.png", priority: 2, side: "front" },
+      { id: "psButton", icon: "/assets/icons/psButton.png", mask: "/assets/masks/psButton.png", priority: 1, side: "front" },
+      { id: "share", icon: "/assets/icons/share.png", mask: "/assets/masks/share.png", priority: 4, side: "front" },
+      { id: "options", icon: "/assets/icons/options.png", mask: "/assets/masks/options.png", priority: 4, side: "front" },
     ];
 
     const BACK_PARTS = [
-      { id: "backShellMain", icon: "/assets/icons/backShellMain.svg", mask: "/assets/masks/backShellMain.png", priority: 1, side: "back" },
-      { id: "backTriggers", icon: "/assets/icons/backTriggers.svg", mask: "/assets/masks/backTriggers.png", priority: 2, side: "back" }
+      { id: "backShellMain", icon: "/assets/icons/backShellMain.png", mask: "/assets/masks/backShellMain.png", priority: 1, side: "back" },
+      { id: "backTriggers", icon: "/assets/icons/backTriggers.png", mask: "/assets/masks/backTriggers.png", priority: 2, side: "back" }
     ];
 
     const ALL_PARTS = [...FRONT_PARTS, ...BACK_PARTS];

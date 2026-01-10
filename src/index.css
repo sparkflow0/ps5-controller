@@ -1338,16 +1338,15 @@ img {
   width: 100%;
   height: 100%;
   position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.7s cubic-bezier(0.22, 0.68, 0.16, 1);
-  will-change: transform;
   z-index: 1;
 }
 
 .controller-face {
   position: absolute;
   inset: 0;
-  backface-visibility: hidden;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  z-index: 5;
 }
 
 .controller-face img {
@@ -1359,11 +1358,24 @@ img {
 }
 
 .controller-face-back {
-  transform: rotateY(180deg);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.controller-wrapper.is-back .controller-face:not(.controller-face-back) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.controller-wrapper.is-back .controller-face-back {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 6;
 }
 
 .controller-wrapper.is-back .controller-flip {
-  transform: rotateY(180deg);
+  transform: none;
 }
 
 .part-layer {
@@ -4148,7 +4160,7 @@ body.configurator-page-active .cd-cell-op {
   .panel-switch-btn {
     font-size: 0.9rem;
     padding: 10px 24px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 3px solid rgba(255, 255, 255, 0.12);
     background: var(--button-secondary-bg);
     opacity: 0.6;
     border-radius: 0;
@@ -4156,6 +4168,7 @@ body.configurator-page-active .cd-cell-op {
     /* Allow them to size content */
     min-width: 120px;
     color: #fff;
+    box-shadow: none;
   }
 
   .panel-switch-btn:first-child {
@@ -4172,12 +4185,12 @@ body.configurator-page-active .cd-cell-op {
 
   /* RTL border fixes to ensure the middle "shared" border is handled correctly */
   body[dir="rtl"] .panel-switch-btn:first-child {
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    border-right: 3px solid rgba(255, 255, 255, 0.12);
     border-left: none;
   }
 
   body[dir="rtl"] .panel-switch-btn:last-child {
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 3px solid rgba(255, 255, 255, 0.12);
     border-right: none;
   }
 
@@ -4187,6 +4200,7 @@ body.configurator-page-active .cd-cell-op {
     border-color: var(--accent1, #0c4bff);
     color: #fff;
     font-weight: 700;
+    box-shadow: none;
   }
 }
 
@@ -4231,23 +4245,18 @@ body.configurator-page-active .cd-cell-op {
   }
 
   .mobile-part-btn {
-    width: 16vw;
-    height: 16vw;
-    border-radius: 50%;
-    /* Perfectly circular */
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    /* Slightly more visible border */
+    width: 20vw;
+    height: 20vw;
+    border-radius: 12px;
+    background: transparent;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.2);
-    padding: 6px;
-    /* Optimized padding for circular shape */
     user-select: none;
     -webkit-user-drag: auto;
-    /* Allow drag events to propagate for scroll */
     pointer-events: auto;
   }
 
@@ -4256,25 +4265,10 @@ body.configurator-page-active .cd-cell-op {
     background: rgba(255, 255, 255, 0.08);
   }
 
-  /* Utility classes for edge enhancement */
-  .edge-enhanced {
-    filter:
-      contrast(1.45) saturate(1.2) brightness(1.1) drop-shadow(1px 0 0 rgba(255, 255, 255, 0.5)) drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.5)) drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5)) drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.5));
-  }
-
-  /* Stronger variant */
-  .strong-edge-thick {
-    filter:
-      contrast(1.55) saturate(1.3) brightness(1.15) drop-shadow(1.5px 0 0 rgba(255, 255, 255, 0.6)) drop-shadow(-1.5px 0 0 rgba(255, 255, 255, 0.6)) drop-shadow(0 1.5px 0 rgba(255, 255, 255, 0.6)) drop-shadow(0 -1.5px 0 rgba(255, 255, 255, 0.6));
-  }
-
   .mobile-part-btn img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-
-    filter:
-      contrast(2) saturate(1) brightness(20);
 
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -4285,6 +4279,21 @@ body.configurator-page-active .cd-cell-op {
     filter:
       contrast(1.55) saturate(1.3) brightness(1.15) drop-shadow(1.8px 0 0 rgba(255, 255, 255, 0.75)) drop-shadow(-1.8px 0 0 rgba(255, 255, 255, 0.75)) drop-shadow(0 1.8px 0 rgba(255, 255, 255, 0.75)) drop-shadow(0 -1.8px 0 rgba(255, 255, 255, 0.75));
     transform: scale(1.05);
+
+  }
+
+  /* Selected state for mobile part button - rounded rectangle */
+  .mobile-part-btn.selected {
+    background: rgba(255, 255, 255, 0.08);
+    /* Or variable */
+    border: 1px solid var(--accent1, #0c4bff);
+    border-radius: 50%;
+    /* Circle border */
+    box-shadow: 0 0 12px rgba(12, 75, 255, 0.4);
+  }
+
+  .mobile-part-btn:active {
+    transform: scale(1.2);
   }
 
   .mobile-part-label {
@@ -4381,7 +4390,7 @@ body.configurator-page-active .cd-cell-op {
     height: 48px;
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4468,6 +4477,7 @@ body.configurator-page-active .cd-cell-op {
       background: rgba(20, 20, 23, 1);
       /* Solid back to hide button borders */
       border-color: rgba(255, 255, 255, 0.15);
+      border-width: 2px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
     }
   }
