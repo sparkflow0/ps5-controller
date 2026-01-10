@@ -1,10 +1,10 @@
-import{r as t,j as a}from"./index-CBVrc029.js";const n=`
+import{r as t,j as a}from"./index-BjwuZmE0.js";const n=`
 <canvas id="bgCanvas"></canvas>
 <div class="top-nav">
   <div class="nav-logo">
     <a class="nav-left" href="index.html">
       <div class="nav-logo-mark"></div>
-      <div class="nav-page-title" data-i18n="orderSummaryTitle">ملخص الطلب</div>
+      <div class="nav-page-title" data-i18n="paymentTitle">الدفع (تجريبي)</div>
     </a>
   </div>
   <button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
@@ -29,14 +29,14 @@ import{r as t,j as a}from"./index-CBVrc029.js";const n=`
   <button class="mobile-nav-link mobile-nav-theme" id="mobileThemeToggle" type="button">فاتح</button>
 </aside>
 <div class="page-content" style="padding-top:80px; display:flex; justify-content:center;">
-  <div class="card" style="max-width:640px; width:100%;">
-    <div class="card-title" data-i18n="orderSummaryTitle">ملخص الطلب</div>
-    <div id="orderStatus" style="margin-bottom:8px;"></div>
-    <div id="orderItems"></div>
-    <div id="orderTotals" style="margin-top:10px; font-weight:700;"></div>
+  <div class="card" style="max-width:540px; width:100%; text-align:center;">
+    <div class="card-title" data-i18n="paymentTitle">الدفع (تجريبي)</div>
+    <div id="paymentDetails" style="margin:10px 0; font-size:0.95rem; opacity:0.9;"></div>
+    <button class="place-order-btn" id="payNowBtn" type="button" data-i18n="paymentPayNow">ادفع الآن</button>
+    <div id="paymentStatus" style="margin-top:12px; font-size:0.9rem; opacity:0.85;"></div>
   </div>
 </div>
-`,l=`
+`,o=`
   let navLang = localStorage.getItem("ez_lang") || "ar";
   const i18n = window.__EZ_I18N__ || {};
   const navLangToggle = document.getElementById("langToggle");
@@ -128,28 +128,41 @@ import{r as t,j as a}from"./index-CBVrc029.js";const n=`
     });
   }
 
-  const resultRaw = localStorage.getItem("ezOrderResult");
-  const draftRaw = localStorage.getItem("ezOrderDraft");
-  const statusEl = document.getElementById("orderStatus");
-  const itemsEl = document.getElementById("orderItems");
-  const totalsEl = document.getElementById("orderTotals");
+  const orderDraftRaw = localStorage.getItem("ezOrderDraft");
+  const paymentDetailsEl = document.getElementById("paymentDetails");
+  const statusEl = document.getElementById("paymentStatus");
+  const btn = document.getElementById("payNowBtn");
 
-  if (!resultRaw || !draftRaw) {
-    statusEl.textContent = t("orderStatusMissing");
+  if (!orderDraftRaw) {
+    statusEl.textContent = t("paymentNoDraft");
     setTimeout(() => window.location.href = "/cart", 1200);
   } else {
-    const result = JSON.parse(resultRaw);
-    const draft = JSON.parse(draftRaw);
+    const draft = JSON.parse(orderDraftRaw);
     const cart = draft.cart || [];
     const total = cart.reduce((s, it) => s + (it.unitPrice * it.quantity), 0);
-    statusEl.innerHTML = t("orderStatusLabel") + " <strong>" + t("orderStatusConfirmed") + "</strong>";
-    const list = document.createElement("ul");
-    cart.forEach(it => {
-      const li = document.createElement("li");
-      li.textContent = (it.name || t("orderItemFallback")) + " × " + it.quantity + " — " + (draft.currencyPrefix || "BHD ") + (it.unitPrice * it.quantity).toFixed(2);
-      list.appendChild(li);
+    paymentDetailsEl.textContent = t("paymentAmountDue") + " " + (draft.currencyPrefix || "BHD ") + total.toFixed(2);
+
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      statusEl.textContent = t("paymentProcessing");
+      const succeed = (json) => {
+        localStorage.setItem("ezOrderResult", JSON.stringify(json || { status: "paid_demo" }));
+        statusEl.textContent = t("paymentConfirmed");
+        setTimeout(() => window.location.href = "/payment/confirmation", 500);
+      };
+      try {
+        const res = await fetch("/api/order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: orderDraftRaw
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const json = await res.json();
+        succeed(json);
+      } catch (err) {
+        console.error("Payment demo failed; forcing success", err);
+        succeed({ status: "paid_demo", payment_method: "cash" });
+      }
     });
-    itemsEl.appendChild(list);
-    totalsEl.textContent = t("orderTotalLabel") + " " + (draft.currencyPrefix || "BHD ") + total.toFixed(2);
   }
-`;function i(){return t.useEffect(()=>{const e=document.createElement("script");return e.textContent=l,document.body.appendChild(e),()=>document.body.removeChild(e)},[]),a.jsx("div",{dangerouslySetInnerHTML:{__html:n}})}export{i as default};
+`;function i(){return t.useEffect(()=>{const e=document.createElement("script");return e.textContent=o,document.body.appendChild(e),()=>document.body.removeChild(e)},[]),a.jsx("div",{dangerouslySetInnerHTML:{__html:n}})}export{i as default};

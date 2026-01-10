@@ -2,10 +2,10 @@
   --page-bg: radial-gradient(circle at top, #111322 0, #05060a 45%, #000 100%);
   --color-text: #fff;
   --color-text-muted: rgba(255, 255, 255, 0.78);
-  --accent1: #7cfc00;
-  --accent2: #448107;
-  --accent3: #ff4081;
-  --accent-glow: #00e676;
+  --accent1: #077CE5;
+  --accent2: #D1053A;
+  --accent3: #D1053A;
+  --accent-glow: #077CE5;
   --card-bg: rgba(8, 8, 12, 0.96);
   --border-subtle: rgba(255, 255, 255, 0.12);
   --nav-link-color: var(--accent1);

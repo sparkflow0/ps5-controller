@@ -2148,7 +2148,7 @@ body.theme-light.configurator-page-active .parts-item.active .parts-thumb img {
   .controller-buttons-stack {
     position: absolute;
     left: 50%;
-    top: calc(48% - 48px);
+    top: calc(50% - 48px);
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
@@ -3717,15 +3717,6 @@ body.configurator-page-active .parts-thumb img {
   transform: translateZ(0);
 }
 
-body.configurator-page-active .parts-item:hover .parts-thumb img,
-body.configurator-page-active .parts-item.active .parts-thumb img,
-.parts-item:hover .parts-thumb img,
-.parts-item.active .parts-thumb img {
-  /* filter: invert(1) hue-rotate(180deg) brightness(1.1); */
-  /* filter: invert(1) hue-rotate(180deg) brightness(1.1); */
-
-}
-
 body.configurator-page-active .parts-name {
   font-size: 0.58rem;
 }
@@ -4148,24 +4139,54 @@ body.configurator-page-active .cd-cell-op {
   .mobile-panel-switch {
     display: flex;
     justify-content: center;
-    gap: 16px;
+    gap: 0;
+    /* Remove gap for connected look */
     padding: 10px 0 4px;
-    /* Reduced bottom padding */
     width: 100%;
   }
 
   .panel-switch-btn {
     font-size: 0.9rem;
-    padding: 6px 16px;
-    border-bottom: 2px solid transparent;
+    padding: 10px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--button-secondary-bg);
     opacity: 0.6;
     border-radius: 0;
-    /* Make them look like tabs */
+    flex: 0 1 auto;
+    /* Allow them to size content */
+    min-width: 120px;
+    color: #fff;
+  }
+
+  .panel-switch-btn:first-child {
+    border-right: none;
+    border-start-start-radius: 999px;
+    border-end-start-radius: 999px;
+  }
+
+  .panel-switch-btn:last-child {
+    border-left: none;
+    border-start-end-radius: 999px;
+    border-end-end-radius: 999px;
+  }
+
+  /* RTL border fixes to ensure the middle "shared" border is handled correctly */
+  body[dir="rtl"] .panel-switch-btn:first-child {
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: none;
+  }
+
+  body[dir="rtl"] .panel-switch-btn:last-child {
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    border-right: none;
   }
 
   .panel-switch-btn.active {
     opacity: 1;
-    border-bottom-color: var(--accent1, #0c4bff);
+    background: var(--button-primary-bg);
+    border-color: var(--accent1, #0c4bff);
+    color: #fff;
+    font-weight: 700;
   }
 }
 
@@ -4195,9 +4216,9 @@ body.configurator-page-active .cd-cell-op {
   }
 
   .mobile-part-item {
-    flex: 0 0 94px;
-    /* Fixed width to prevent shrinking */
-    min-width: 94px;
+    flex: 0 0 18vw;
+    /* Dynamic width so ~5.5 items show */
+    min-width: 18vw;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -4210,8 +4231,8 @@ body.configurator-page-active .cd-cell-op {
   }
 
   .mobile-part-btn {
-    width: 90px;
-    height: 90px;
+    width: 16vw;
+    height: 16vw;
     border-radius: 50%;
     /* Perfectly circular */
     background: rgba(255, 255, 255, 0.04);
@@ -4235,19 +4256,40 @@ body.configurator-page-active .cd-cell-op {
     background: rgba(255, 255, 255, 0.08);
   }
 
+  /* Utility classes for edge enhancement */
+  .edge-enhanced {
+    filter:
+      contrast(1.45) saturate(1.2) brightness(1.1) drop-shadow(1px 0 0 rgba(255, 255, 255, 0.5)) drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.5)) drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5)) drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.5));
+  }
+
+  /* Stronger variant */
+  .strong-edge-thick {
+    filter:
+      contrast(1.55) saturate(1.3) brightness(1.15) drop-shadow(1.5px 0 0 rgba(255, 255, 255, 0.6)) drop-shadow(-1.5px 0 0 rgba(255, 255, 255, 0.6)) drop-shadow(0 1.5px 0 rgba(255, 255, 255, 0.6)) drop-shadow(0 -1.5px 0 rgba(255, 255, 255, 0.6));
+  }
+
   .mobile-part-btn img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: brightness(1.1);
-    /* High quality edge rendering */
+    /* High contrast edge enhancement - thick outline simulation + internal clarity */
+    filter:
+      contrast(1.45) saturate(1.2) brightness(1.1) drop-shadow(1.2px 0 0 rgba(255, 255, 255, 0.55)) drop-shadow(-1.2px 0 0 rgba(255, 255, 255, 0.55)) drop-shadow(0 1.2px 0 rgba(255, 255, 255, 0.55)) drop-shadow(0 -1.2px 0 rgba(255, 255, 255, 0.55));
+    /* Optimize for retina and crisp edges */
     image-rendering: -webkit-optimize-contrast;
     image-rendering: auto;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    will-change: transform;
+    will-change: filter;
+    transition: filter 0.2s ease, transform 0.2s ease;
+  }
+
+  .mobile-part-btn:hover img {
+    /* Enhanced intensity on hover */
+    filter:
+      contrast(1.55) saturate(1.3) brightness(1.15) drop-shadow(1.8px 0 0 rgba(255, 255, 255, 0.75)) drop-shadow(-1.8px 0 0 rgba(255, 255, 255, 0.75)) drop-shadow(0 1.8px 0 rgba(255, 255, 255, 0.75)) drop-shadow(0 -1.8px 0 rgba(255, 255, 255, 0.75));
+    transform: scale(1.05);
   }
 
   .mobile-part-label {
@@ -4260,7 +4302,9 @@ body.configurator-page-active .cd-cell-op {
   }
 
   body.theme-light .mobile-part-btn img {
-    filter: none;
+    /* Dark outline for light theme */
+    filter:
+      contrast(1.1) brightness(1.05) drop-shadow(1px 0 0 rgba(0, 0, 0, 0.3)) drop-shadow(-1px 0 0 rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 0 rgba(0, 0, 0, 0.3)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.3));
   }
 }
 
@@ -4316,6 +4360,122 @@ body.configurator-page-active .cd-cell-op {
   }
 
   /* Ensure color panel is visible with rounded corners and borders */
+  .color-panel {
+    display: flex !important;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* FLIP BUTTON RELOCATION STYLES */
+  /* ------------------------------------------------------------------ */
+
+  /* Wrapper for the flip button inside the switch */
+  .flip-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    /* Don't stretch */
+    z-index: 10;
+    margin: 0 10px;
+    /* Space between it and tabs */
+  }
+
+  /* Make sure the flip button stays circular and correct size */
+  .flip-toggle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .flip-toggle .flip-toggle-preview {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: block;
+  }
+
+  .flip-toggle img {
+    width: 85%;
+    height: 85%;
+    object-fit: contain;
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    transition: opacity 0.2s ease;
+  }
+
+  /* On DESKTOP, position the wrapper absolutely (mimicking old stack) and hide tabs */
+  @media (min-width: 901px) {
+    .mobile-panel-switch .panel-switch-btn {
+      display: none;
+    }
+
+    .mobile-panel-switch {
+      display: contents;
+      /* Or visible 0-height container */
+    }
+
+    .flip-toggle-wrapper {
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      /* Adjusted for desktop view */
+      transform: translateX(-50%);
+      margin: 0;
+      width: auto;
+      height: auto;
+    }
+
+    .flip-toggle {
+      width: 42px;
+      height: 42px;
+    }
+  }
+
+  /* On MOBILE, ensure it sits nicely between tabs */
+  @media (max-width: 900px) {
+    .mobile-panel-switch {
+      align-items: center;
+      /* Vertically center all 3 items */
+      justify-content: center;
+      position: relative;
+    }
+
+    .panel-switch-btn {
+      flex: 1;
+      /* Tabs take remaining space */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+    }
+
+    .flip-toggle-wrapper {
+      margin: 0 -25px;
+      /* Negative margin to pull buttons under the circle */
+      z-index: 20;
+      /* Ensure circle stays on top */
+      position: relative;
+    }
+
+    .flip-toggle {
+      width: 56px;
+      /* Slightly larger on mobile for touch */
+      height: 56px;
+      background: rgba(20, 20, 23, 1);
+      /* Solid back to hide button borders */
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+  }
 
   /* Narrow spacing for color grid on mobile */
   .color-panel-grid,
@@ -4355,7 +4515,7 @@ body.configurator-page-active .cd-cell-op {
   }
 
   .controller-area {
-    max-width: 100%;
+    max-width: 65%;
     margin: 0 auto;
   }
 
