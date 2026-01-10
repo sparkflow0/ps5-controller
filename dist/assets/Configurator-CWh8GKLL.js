@@ -1,4 +1,4 @@
-import{r as a,j as t}from"./index-BjwuZmE0.js";const o=`
+import{r as a,j as t}from"./index-CN35kR1i.js";const o=`
 
 
 <canvas id="bgCanvas"></canvas>
@@ -54,18 +54,21 @@ import{r as a,j as t}from"./index-BjwuZmE0.js";const o=`
 </div>
 </div>
 <!-- buttons under the controller -->
-<div class="controller-buttons-stack">
-<button class="flip-toggle" id="controllerFlipBtn" type="button" aria-label="الأمام">
-<span class="flip-toggle-preview" aria-hidden="true">
-<img class="flip-toggle-front" alt="" src="/assets/controller_back.png"/>
-<img class="flip-toggle-back" alt="" src="/assets/controller.png"/>
-</span>
-</button>
-</div>
     <div class="mobile-panel-switch" id="mobilePanelSwitch" aria-label="تبديل لوحة الأجزاء والألوان">
       <button class="panel-switch-btn active" data-panel="options" type="button" aria-pressed="true">
         <span data-i18n="partsOptionsHeading">تطوير الأداء</span>
       </button>
+
+      <!-- FLIP TOGGLE moved here for mobile layout -->
+      <div class="flip-toggle-wrapper">
+          <button class="flip-toggle" id="controllerFlipBtn" type="button" aria-label="الأمام">
+            <span class="flip-toggle-preview" aria-hidden="true">
+              <img class="flip-toggle-front" alt="" src="/assets/icons/backShellMain.png"/>
+              <img class="flip-toggle-back" alt="" src="/assets/icons/shells.png"/>
+            </span>
+          </button>
+      </div>
+
       <button class="panel-switch-btn" data-panel="colors" type="button" aria-pressed="false">
         <span data-i18n="partsColorsHeading">شكل الذراع</span>
       </button>
@@ -155,8 +158,8 @@ import{r as a,j as t}from"./index-BjwuZmE0.js";const o=`
 </button>
 <button class="control-btn control-flip" id="flipControlBtn" data-action="flip" type="button" aria-label="الأمام">
 <span class="flip-preview" aria-hidden="true">
-<img class="flip-preview-front" alt="" src="/assets/controller.png"/>
-<img class="flip-preview-back" alt="" src="/assets/controller_back.png"/>
+<img class="flip-preview-front" alt="" src="/assets/icons/backShellMain.png"/>
+<img class="flip-preview-back" alt="" src="/assets/icons/shells.png"/>
 </span>
 </button>
 <button class="control-btn control-lang" id="langSwitchBtn" type="button" aria-label="اختيار اللغة">
@@ -179,7 +182,7 @@ import{r as a,j as t}from"./index-BjwuZmE0.js";const o=`
 <!-- FIXED BOTTOM BAR: total + add to cart -->
 <div class="controller-bottom-bar">
 <div class="nav-amount-block">
-<div class="nav-amount-label" data-i18n="totalLabel">الإجمالي</div>
+
 <div class="nav-amount-value" id="summaryAmount">د.ب 0.00</div>
 </div>
 <button class="add-to-cart-btn" data-i18n="addToCart" id="addToCartBtn">
