@@ -360,9 +360,8 @@ function HomePage() {
     <div className="home-page">
       <header className="top-nav">
         <div className="nav-left">
-          <button type="button" className="nav-left" onClick={() => navigate('/')}> 
-            <div className="nav-logo-mark" aria-hidden="true"></div>
-            <span className="sr-only">EZ GAMING</span>
+          <button type="button" className="nav-left" onClick={() => navigate('/')}>
+            <span className="nav-logo-text">Fhonel Store</span>
           </button>
         </div>
         <button
@@ -412,17 +411,49 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="section" id="premadeSection">
+
+      <section className="section" id="instagramSection" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '60px' }}>
         <div className="section-header">
           <div>
             <div className="section-title" data-i18n="premadeTitle"></div>
           </div>
         </div>
+        <div className="instagram-grid">
+          {/* All placeholders redirect to the main @fhonelstore profile */}
+          {[
+            { imageUrl: "/assets/instagram/custom_ps5_controller_1_1768088488812.png", link: "https://www.instagram.com/fhonelstore/?hl=en" },
+            { imageUrl: "/assets/instagram/custom_ps5_controller_2_1768088503387.png", link: "https://www.instagram.com/fhonelstore/?hl=en" },
+            { imageUrl: "/assets/instagram/custom_ps5_controller_3_1768088517063.png", link: "https://www.instagram.com/fhonelstore/?hl=en" },
+            { imageUrl: "/assets/instagram/custom_ps5_controller_4_1768088529110.png", link: "https://www.instagram.com/fhonelstore/?hl=en" },
+            { imageUrl: "/assets/instagram/custom_ps5_controller_5_1768088542714.png", link: "https://www.instagram.com/fhonelstore/?hl=en" },
+            { imageUrl: "/assets/instagram/custom_ps5_controller_6_1768088557182.png", link: "https://www.instagram.com/fhonelstore/?hl=en" },
+            { imageUrl: "/assets/instagram/custom_ps5_controller_7_1768088570250.png", link: "https://www.instagram.com/fhonelstore/?hl=en" },
+            { imageUrl: "/assets/instagram/custom_ps5_controller_8_1768088585868.png", link: "https://www.instagram.com/fhonelstore/?hl=en" },
+            { imageUrl: "/assets/instagram/custom_ps5_controller_9_1768088602381.png", link: "https://www.instagram.com/fhonelstore/?hl=en" }
+          ].map((post, i) => (
+            <a
+              key={i}
+              href={post.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="instagram-item"
+            >
+              <div className="instagram-overlay">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '30px', height: '30px' }}>
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+              </div>
+              <img src={post.imageUrl} alt={`Instagram post ${i + 1}`} loading="lazy" />
+            </a>
+          ))}
+        </div>
 
-        <div className="build-grid" id="buildGrid"></div>
       </section>
 
       <section className="section" id="contactSection">
+
         <div className="section-header">
           <div className="section-title" data-i18n="contactTitle"></div>
         </div>
@@ -454,9 +485,47 @@ function HomePage() {
       </section>
 
       <footer className="footer">
-        <span data-i18n="footerText"></span>
-        <span id="year"></span>
+        <div className="footer-content">
+          <div className="footer-links">
+            <button onClick={() => navigate('/privacy')} className="nav-link" data-i18n="footerPrivacy"></button>
+            <button onClick={() => navigate('/terms')} className="nav-link" data-i18n="footerTerms"></button>
+            <button onClick={() => navigate('/returns')} className="nav-link" data-i18n="footerReturns"></button>
+          </div>
+
+          <div className="footer-socials">
+            <a href="https://www.instagram.com/fhonelstore/?hl=en" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="social-icon">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/fhonelstore/?hl=en" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="TikTok">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="social-icon">
+                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+              </svg>
+            </a>
+            <a href="mailto:Fhonelstore.2022@gmail.com" className="social-link" aria-label="Email">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="social-icon">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </a>
+            <a href="https://wa.me/97333699393" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="WhatsApp">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="social-icon">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+            </a>
+          </div>
+
+
+        </div>
+        <div className="footer-bottom">
+          <span data-i18n="footerText"></span>
+          <span id="year"></span>
+        </div>
       </footer>
+
     </div>
   );
 }

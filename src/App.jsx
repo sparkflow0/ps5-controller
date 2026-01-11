@@ -11,6 +11,10 @@ const ConfirmationPage = lazy(() => import('./pages/Confirmation.jsx'));
 const OrderSummaryPage = lazy(() => import('./pages/OrderSummary.jsx'));
 const TrackOrderPage = lazy(() => import('./pages/TrackOrder.jsx'));
 const POSPage = lazy(() => import('./pages/POS.jsx'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy.jsx'));
+const TermsConditions = lazy(() => import('./pages/TermsConditions.jsx'));
+const ReturnPolicy = lazy(() => import('./pages/ReturnPolicy.jsx'));
+
 
 function App() {
   return (
@@ -25,7 +29,12 @@ function App() {
         <Route path="/order-summary" element={<OrderSummaryPage />} />
         <Route path="/trackorder" element={<TrackOrderPage />} />
         <Route path="/pos" element={<POSPage />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsConditions />} />
+        <Route path="/returns" element={<ReturnPolicy />} />
+
         <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
     </Suspense>
   );

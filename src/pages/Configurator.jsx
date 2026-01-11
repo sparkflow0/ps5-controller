@@ -14,9 +14,10 @@ const configuratorMarkup = `
 <audio id="sfxClick2" preload="auto" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="></audio>
 <div class="top-nav">
 <div class="nav-logo">
-<a class="nav-left" href="index.html" style="display:block;">
-<div class="nav-logo-mark"></div>
+<a class="nav-left" href="/" style="display:block;">
+<span class="nav-logo-text">Fhonel Store</span>
 </a>
+
 </div>
 <button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
 <span></span>

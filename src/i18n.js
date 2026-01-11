@@ -7,13 +7,17 @@ export const i18n = {
     navBuildCta: "صمّم ذراعك الآن",
     heroBadge: "متجر إلكتروني لتخصيص أذرع التحكم",
     heroTitle: "اصنع <span class=\"highlight\">ذراع بلايستيشن 5</span> الخاص فيك",
-    heroSub: "اختر ألوان الهيكل والأزرار والمقابض، وابدأ بذراع فارغ أو انطلق من تصاميم EZ GAMING الجاهزة.",
+    heroSub: "اختر ألوان الهيكل والأزرار والمقابض، وابدأ بذراع فارغ أو انطلق من تصاميم Fhonel Store الجاهزة.",
     heroCreateBtn: "اصنع الذراع الخاص فيك",
     heroPremadeBtn: "استعرض التصاميم الجاهزة",
     heroNote: "الأسعار تبدأ من <strong>4.00 دينار بحريني</strong> – بدون اشتراك، تخصيص كامل حسب ذوقك.",
     heroLiveTag: "معاينة فورية",
-    premadeTitle: "تصاميم جاهزة من EZ GAMING",
+    premadeTitle: "تصاميم جاهزة من Fhonel Store",
+
     premadeSub: "مجموعة من ٢٠ ذراع تحكم جاهزة تم توليدها من نفس نظام الألوان المستخدم في صفحة التخصيص، مع معاينة حقيقية لكل جزء.",
+    instagramTitle: "تابعنا على انستقرام",
+    instagramSub: "استمتع بآخر التصاميم وشاركنا إبداعاتك عبر @fhonelstore",
+
     contactTitle: "تواصل معنا",
     contactCardTitle: "أرسل لنا رسالة",
     contactCardText: "عندك طلبات خاصة، كميات كبيرة، أو شراكات دعائية؟ اكتب لنا التفاصيل وسنرجع لك بأسرع وقت.",
@@ -24,7 +28,7 @@ export const i18n = {
     contactMeta: `
       <p><strong>متجر مخصص للاعبين اللي يهتمون بكل تفصيلة في أجهزتهم.</strong></p>
       <p>
-      EZ GAMING متخصص في تخصيص أذرع بلايستيشن 5 بجودة عالية – مناسب للستريمرز،
+      Fhonel Store متخصص في تخصيص أذرع بلايستيشن 5 بجودة عالية – مناسب للستريمرز،
       فرق الرياضات الإلكترونية، واللاعبين اللي يحبون طقم مميز يعكس هويتهم.
       </p>
       <p>نقدر نوفّر لك:</p>
@@ -47,7 +51,7 @@ export const i18n = {
       backShellMain: "الجزء الخلفي"
     },
     formSuccess: "شكرًا لتواصلك معنا! استلمنا رسالتك وسنرد عليك قريبًا.",
-    logo: "EZ GAMING",
+    logo: "Fhonel Store",
     totalLabel: "الإجمالي",
     addToCart: "أضِف إلى السلة",
     front: "الأمام",
@@ -208,8 +212,53 @@ export const i18n = {
     posStatusFailedPrefix: "فشل تحميل العناصر: ",
     posItemFallback: "عنصر",
     posStockLabel: "المخزون:",
-    posAddToCart: "أضف إلى السلة"
+    posAddToCart: "أضف إلى السلة",
+    footerPrivacy: "سياسة الخصوصية",
+    footerTerms: "الشروط والأحكام",
+    footerReturns: "سياسة الاسترجاع",
+    footerFollowUs: "تابعنا على",
+    instagramLabel: "انستقرام",
+    tiktokLabel: "تيك توك",
+    emailLabel: "البريد الإلكتروني",
+
+    privacyTitle: "سياسة الخصوصية",
+    privacyContent: `
+      <p>في Fhonel Store، نحن ملتزمون بحماية خصوصيتك. توضح سياسة الخصوصية هذه كيفية جمع واستخدام وحماية معلوماتك الشخصية عند زيارة موقعنا الإلكتروني، ومقره في مملكة البحرين.</p>
+      <h3>جمع المعلومات</h3>
+      <p>نقوم بجمع معلومات مثل الاسم والبريد الإلكتروني وعنوان الشحن ورقم الهاتف عند تقديم طلب.</p>
+      <h3>معالجة الدفع</h3>
+      <p>يتم معالجة معلومات الدفع بشكل آمن من خلال مزودي خدمة الدفع لدينا ولا يتم تخزينها على خوادمنا. نحن نستخدم تقنيات تشفير متقدمة لضمان أمان بياناتك المالية.</p>
+      <h3>استخدام المعلومات</h3>
+      <p>نستخدم معلوماتك لتنفيذ الطلبات والتواصل معك بشأن طلبك وتحسين خدماتنا. قد نستخدم بريدك الإلكتروني لإرسال تحديثات حول طلبك أو أخبار عن منتجاتنا إذا اخترت الاشتراك في نشرتنا الإخبارية.</p>
+      <h3>موافقة المستخدم</h3>
+      <p>باستخدامك لموقعنا، فإنك توافق على ممارسات الخصوصية الخاصة بنا وفقاً لقوانين مملكة البحرين، بما في ذلك قانون حماية البيانات الشخصية (PDPL).</p>
+    `,
+    termsTitle: "الشروط والأحكام",
+    termsContent: `
+      <p>تحكم هذه الشروط والأحكام استخدامك لموقع Fhonel Store. من خلال الوصول إلى هذا الموقع، فإنك توافق على الالتزام بهذه الشروط.</p>
+      <h3>المنتجات والتخصيص</h3>
+      <p>جميع المنتجات المعروضة هي منتجات مخصصة وحصرياً حسب طلب العميل. قد تختلف الألوان الفعلية قليلاً عما يظهر على الشاشة بسبب إعدادات العرض المختلفة.</p>
+      <h3>الأسعار والدفع</h3>
+      <p>جميع الأسعار معروضة بالدينار البحريني (BHD). نحن نحتفظ بالحق في تعديل الأسعار في أي وقت. يجب إتمام الدفع بالكامل قبل بدء عملية التصنيع والتخصيص.</p>
+      <h3>إلغاء الطلبات</h3>
+      <p>نظرًا لأن المنتجات مخصصة، لا يمكن إلغاء الطلب بعد البدء في عملية التنفيذ. نحن نحتفظ بالحق في رفض أي طلب وفقاً لتقديرنا الخاص.</p>
+      <h3>المسؤولية</h3>
+      <p>Fhonel Store غير مسؤولة عن أي أضرار غير مباشرة أو تبعية ناتجة عن استخدام منتجاتنا. نحن نضمن جودة العمل والمواد المستخدمة في التعديل.</p>
+    `,
+    returnsTitle: "سياسة الاسترجاع",
+    returnsContent: `
+      <p>نظراً للطبيعة المخصصة لمنتجاتنا (Custom Made)، فإن كل قطعة يتم تصنيعها خصيصاً لك، وبناءً على ذلك:</p>
+      <h3>سياسة المبيعات النهائية</h3>
+      <p>تعتبر جميع المبيعات نهائية. نحن لا نقبل المرتجعات أو الاستبدال في حالة "تغيير الرأي" أو عدم الرغبة في المنتج بعد البدء في تنفيذه.</p>
+      <h3>المنتجات المعيبة أو الأخطاء</h3>
+      <p>إذا وصل جهاز التحكم الخاص بك معيباً تقنيًا أو إذا كان هناك خطأ واضح في التخصيص ناتج عن خطأ من جانبنا (يختلف عن طلبك الموثق)، يرجى الاتصال بنا في غضون 7 أيام عمل من تاريخ الاستلام.</p>
+      <h3>الضمان</h3>
+      <p>نقدم ضماناً على التعديلات الداخلية والإضافات التقنية لمدة 6 أشهر من تاريخ الشراء. لا يشمل الضمان الأضرار الناتجة عن سوء الاستخدام (مثل السقوط أو السوائل) أو التآكل الطبيعي للأزرار والهيكل.</p>
+      <h3>الإصلاح والاستبدال</h3>
+      <p>في حال وجود عيب مصنعي مشمول بالضمان، سنقوم بإصلاح الجهاز أو استبداله بمنتج مماثل في حال تعذر الإصلاح.</p>
+    `
   },
+
   en: {
     themeLight: "Light",
     themeDark: "Dark",
@@ -218,13 +267,16 @@ export const i18n = {
     navBuildCta: "Build your own",
     heroBadge: "Next-gen custom shop",
     heroTitle: "Craft your own <span class=\"highlight\">custom PS5 controller</span>",
-    heroSub: "Choose shell, buttons and triggers. Start from a clean build or pick one of our EZ GAMING presets.",
+    heroSub: "Choose shell, buttons and triggers. Start from a clean build or pick one of our Fhonel Store presets.",
     heroCreateBtn: "Create your own controller",
     heroPremadeBtn: "Browse premade builds",
     heroNote: "Prices start from <strong>BHD 4.00</strong>. No subscription – just fully custom gear.",
     heroLiveTag: "Live preview",
-    premadeTitle: "Premade EZ GAMING builds",
+    premadeTitle: "Premade Designs from Fhonel Store",
     premadeSub: "A curated set of 20 controllers generated from the same color system used in the configurator, with true previews for each part.",
+    instagramTitle: "Follow Us on Instagram",
+    instagramSub: "Check out our latest creations and share yours with @fhonelstore",
+
     contactTitle: "Contact us",
     contactCardTitle: "Send us a message",
     contactCardText: "Questions about bulk orders, finishes, or sponsorships? Share the details and we'll get back to you.",
@@ -235,7 +287,7 @@ export const i18n = {
     contactMeta: `
       <p><strong>A custom shop for players who care about every detail.</strong></p>
       <p>
-      EZ GAMING focuses on high-end PS5 controller customization – perfect for streamers,
+      Fhonel Store focuses on high-end PS5 controller customization – perfect for streamers,
       esports teams, and players who want hardware that matches their identity.
       </p>
       <p>We can help you with:</p>
@@ -258,7 +310,7 @@ export const i18n = {
       backShellMain: "Back"
     },
     formSuccess: "Thank you! Your message has been received. We’ll get back to you shortly.",
-    logo: "EZ GAMING",
+    logo: "Fhonel Store",
     totalLabel: "Total",
     addToCart: "ADD TO CART",
     front: "Front",
@@ -419,6 +471,51 @@ export const i18n = {
     posStatusFailedPrefix: "Failed to load items: ",
     posItemFallback: "Item",
     posStockLabel: "Stock:",
-    posAddToCart: "Add to cart"
+    posAddToCart: "Add to cart",
+    footerPrivacy: "Privacy Policy",
+    footerTerms: "Terms and Conditions",
+    footerReturns: "Return Policy",
+    footerFollowUs: "Follow Us",
+    instagramLabel: "Instagram",
+    tiktokLabel: "TikTok",
+    emailLabel: "Email",
+
+    privacyTitle: "Privacy Policy",
+    privacyContent: `
+      <p>At Fhonel Store, we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your personal information when you visit our website, based in the Kingdom of Bahrain.</p>
+      <h3>Information Collection</h3>
+      <p>We collect information such as your name, email, shipping address, and phone number when you place an order or interact with our site.</p>
+      <h3>Payment Processing</h3>
+      <p>Payment information is processed securely through our authorized payment providers. Your credit card details are encrypted and are not stored on our servers.</p>
+      <h3>How We Use Your Data</h3>
+      <p>We use your information to fulfill orders, communicate with you about your account, and improve our services. We may also send you promotional materials if you have opted in to receive them.</p>
+      <h3>Data Protection</h3>
+      <p>By using our site, you consent to our privacy practices in accordance with the Laws of the Kingdom of Bahrain, specifically the Personal Data Protection Law (PDPL).</p>
+    `,
+    termsTitle: "Terms and Conditions",
+    termsContent: `
+      <p>These Terms and Conditions govern your use of Fhonel Store. By accessing this website, you agree to be bound by these terms.</p>
+      <h3>Custom Products</h3>
+      <p>All products are custom-made to order based on your specific selections. Please note that actual colors and finishes may vary slightly from digital previews due to screen settings.</p>
+      <h3>Pricing and Payments</h3>
+      <p>All prices are listed in Bahraini Dinars (BHD). We reserve the right to change prices at any time. Full payment is required before we begin working on your custom order.</p>
+      <h3>Order Cancellation</h3>
+      <p>Because items are personalized, orders cannot be canceled once production has begun. We reserve the right to refuse service or cancel orders at our discretion.</p>
+      <h3>Liability</h3>
+      <p>Fhonel Store is not liable for any indirect or consequential damages resulting from the use of our products. Our responsibility is limited to the repair or replacement of defective goods as per our warranty.</p>
+    `,
+    returnsTitle: "Return Policy",
+    returnsContent: `
+      <p>Due to the highly customized nature of our products, our return policy is as follows:</p>
+      <h3>All Sales are Final</h3>
+      <p>We do not accept returns or exchanges for "change of mind." Each controller is built specifically to your requirements and cannot be restocked.</p>
+      <h3>Defective or Incorrect Items</h3>
+      <p>If your controller arrives with a technical defect or if there is a significant error in the customization that was our fault, please contact us within 7 business days of delivery.</p>
+      <h3>Warranty</h3>
+      <p>We provide a 6-month warranty on internal modifications and technical additions. This warranty does not cover physical damage, liquid spills, or normal wear and tear of the controllers' exterior components.</p>
+      <h3>Repairs</h3>
+      <p>For authorized warranty claims, we will repair the item or provide a replacement of equal value if the original cannot be repaired.</p>
+    `
   }
 };
+

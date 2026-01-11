@@ -7,10 +7,11 @@ const checkoutMarkup = `
  TOP NAV 
 <div class="top-nav">
 <div class="nav-logo">
-<a class="nav-left" href="index.html">
-<div class="nav-logo-mark"></div>
+<a class="nav-left" href="/">
+<span class="nav-logo-text">Fhonel Store</span>
 <div class="nav-page-title" data-i18n="checkoutTitle">إتمام الشراء</div>
 </a>
+
 </div>
 <button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
 <span></span>

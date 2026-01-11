@@ -1,4 +1,4 @@
-import{r as a,j as t}from"./index-C9rsYbkK.js";const o=`
+import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
 
 
 <canvas id="bgCanvas"></canvas>
@@ -63,8 +63,8 @@ import{r as a,j as t}from"./index-C9rsYbkK.js";const o=`
       <div class="flip-toggle-wrapper">
           <button class="flip-toggle" id="controllerFlipBtn" type="button" aria-label="الأمام">
             <span class="flip-toggle-preview" aria-hidden="true">
-              <img class="flip-toggle-front" alt="" src="/assets/icons/backShellMain.svg"/>
-              <img class="flip-toggle-back" alt="" src="/assets/icons/shells.svg"/>
+              <img class="flip-toggle-front" alt="" src="/assets/icons/backShellMain.png"/>
+              <img class="flip-toggle-back" alt="" src="/assets/icons/shells.png"/>
             </span>
           </button>
       </div>
@@ -158,8 +158,8 @@ import{r as a,j as t}from"./index-C9rsYbkK.js";const o=`
 </button>
 <button class="control-btn control-flip" id="flipControlBtn" data-action="flip" type="button" aria-label="الأمام">
 <span class="flip-preview" aria-hidden="true">
-<img class="flip-preview-front" alt="" src="/assets/icons/backShellMain.svg"/>
-<img class="flip-preview-back" alt="" src="/assets/icons/shells.svg"/>
+<img class="flip-preview-front" alt="" src="/assets/icons/backShellMain.png"/>
+<img class="flip-preview-back" alt="" src="/assets/icons/shells.png"/>
 </span>
 </button>
 <button class="control-btn control-lang" id="langSwitchBtn" type="button" aria-label="اختيار اللغة">
@@ -1112,6 +1112,18 @@ import{r as a,j as t}from"./index-C9rsYbkK.js";const o=`
           sw.classList.add("out-of-stock");
           sw.style.filter = "none";
           sw.style.boxShadow = "none";
+          
+          sw.style.display = "flex";
+          sw.style.alignItems = "center";
+          sw.style.justifyContent = "center";
+          sw.style.color = "#fff";
+          // Strong black outline for readability on any background
+          sw.style.textShadow = "0 0 2px #000, 0 0 2px #000, 0 0 2px #000, 0 0 4px #000";
+          sw.style.fontSize = "0.65rem";
+          sw.style.fontWeight = "800";
+          sw.style.textAlign = "center";
+          sw.style.lineHeight = "1.1";
+          sw.innerText = currentLang === "ar" ? "نفدت الكمية" : "Out of\\nStock";
         }
         sw.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -1124,19 +1136,9 @@ import{r as a,j as t}from"./index-C9rsYbkK.js";const o=`
           }
         });
 
-        const lbl = document.createElement("div");
-        lbl.className = "cd-color-name";
-        lbl.style.textAlign = "center";
-        const labelText = isOption ? t(key) : (key && t(key) ? t(key) : hex);
-        const priceVal = typeof price === "number" ? i18n[currentLang].currencyPrefix + price.toFixed(2) : "";
-        const qtyDisplay = formatQtyDisplay(numericQty);
-        const lines = [labelText];
-        if (priceVal) lines.push(priceVal);
-        if (qtyDisplay) lines.push(qtyDisplay);
-        lbl.innerHTML = lines.join("<br/>");
-
+        // Label removed as requested
+        
         cell.appendChild(sw);
-        cell.appendChild(lbl);
         target.appendChild(cell);
       });
     }
