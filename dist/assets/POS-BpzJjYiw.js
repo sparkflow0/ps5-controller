@@ -1,6 +1,4 @@
-import React, { useEffect } from 'react';
-
-const posMarkup = `
+import{r as e,j as a}from"./index-BS14bs3e.js";const o=`
 <canvas id="bgCanvas"></canvas>
 <div class="top-nav">
   <div class="nav-logo">
@@ -451,9 +449,7 @@ const posMarkup = `
     .pos-cart-close { display: block; }
   }
 </style>
-`;
-
-const posScript = `
+`,n=`
   let navLang = localStorage.getItem("ez_lang") || "ar";
   const i18n = window.__EZ_I18N__ || {};
   
@@ -625,7 +621,7 @@ const posScript = `
       const imageUrl = hasImage ? '/zoho/inventory/v1/items/' + it.item_id + '/image' : '/assets/placeholder.png';
 
       let html = '<div class="pos-product-img">';
-      html += '<img src="' + imageUrl + '" alt="' + it.name + '" onerror="this.src=\\\'/assets/placeholder.png\\\'">';
+      html += '<img src="' + imageUrl + '" alt="' + it.name + '" onerror="this.src=\\'/assets/placeholder.png\\'">';
       html += '</div>';
       html += '<div class="pos-product-info">';
       html += '<div class="pos-product-name">' + it.name + '</div>';
@@ -702,7 +698,7 @@ const posScript = `
       const div = document.createElement("div");
       div.className = "pos-cart-item";
       
-      let html = '<img class="pos-cart-item-img" src="' + (item.preview || '/assets/placeholder.png') + '" onerror="this.src=\\\'/assets/placeholder.png\\\'">';
+      let html = '<img class="pos-cart-item-img" src="' + (item.preview || '/assets/placeholder.png') + '" onerror="this.src=\\'/assets/placeholder.png\\'">';
       html += '<div class="pos-cart-item-info">';
       html += '<div class="pos-cart-item-name">' + item.name + '</div>';
       html += '<div class="pos-cart-item-price">BHD ' + item.unitPrice.toFixed(3) + '</div>';
@@ -777,19 +773,4 @@ const posScript = `
   applyTheme();
   loadItems();
   updateCart(); // Initial badge & items
-`;
-
-function POSPage() {
-  useEffect(() => {
-    const scriptEl = document.createElement('script');
-    scriptEl.textContent = posScript;
-    document.body.appendChild(scriptEl);
-    return () => {
-      document.body.removeChild(scriptEl);
-    };
-  }, []);
-
-  return <div dangerouslySetInnerHTML={{ __html: posMarkup }} />;
-}
-
-export default POSPage;
+`;function i(){return e.useEffect(()=>{const t=document.createElement("script");return t.textContent=n,document.body.appendChild(t),()=>{document.body.removeChild(t)}},[]),a.jsx("div",{dangerouslySetInnerHTML:{__html:o}})}export{i as default};

@@ -1,10 +1,10 @@
-import{r as t,j as a}from"./index-B0vJ3SxT.js";const n=`
+import{r as a,j as t}from"./index-BS14bs3e.js";const n=`
 <canvas id="bgCanvas"></canvas>
 <div class="top-nav">
   <div class="nav-logo">
-    <a class="nav-left" href="index.html">
+    <a class="nav-left" href="/">
       <div class="nav-logo-mark"></div>
-      <div class="nav-page-title" data-i18n="paymentTitle">الدفع (تجريبي)</div>
+      <div class="nav-page-title" data-i18n="paymentFailedTitle">فشل الدفع</div>
     </a>
   </div>
   <button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
@@ -29,14 +29,14 @@ import{r as t,j as a}from"./index-B0vJ3SxT.js";const n=`
   <button class="mobile-nav-link mobile-nav-theme" id="mobileThemeToggle" type="button">فاتح</button>
 </aside>
 <div class="page-content" style="padding-top:80px; display:flex; justify-content:center;">
-  <div class="card" style="max-width:540px; width:100%; text-align:center;">
-    <div class="card-title" data-i18n="paymentTitle">الدفع (تجريبي)</div>
-    <div id="paymentDetails" style="margin:10px 0; font-size:0.95rem; opacity:0.9;"></div>
-    <button class="place-order-btn" id="payNowBtn" type="button" data-i18n="paymentPayNow">ادفع الآن</button>
-    <div id="paymentStatus" style="margin-top:12px; font-size:0.9rem; opacity:0.85;"></div>
+  <div class="card" style="max-width:480px; width:100%; text-align:center;">
+    <div class="card-title" data-i18n="paymentFailedTitle" style="color: #ff4d4d;">فشل الدفع</div>
+    <div style="font-size:3rem; margin:20px 0;">❌</div>
+    <div id="failMessage" data-i18n="paymentFailedMessage" style="font-size:1rem; margin:10px 0;">لم تكتمل عملية الدفع بنجاح.</div>
+    <div id="redirectMsg" data-i18n="redirectingCart" style="font-size:0.9rem; margin-top:10px; opacity:0.7;">جاري التحويل للسلة...</div>
   </div>
 </div>
-`,o=`
+`,l=`
   let navLang = localStorage.getItem("ez_lang") || "ar";
   const i18n = window.__EZ_I18N__ || {};
   const navLangToggle = document.getElementById("langToggle");
@@ -46,6 +46,7 @@ import{r as t,j as a}from"./index-B0vJ3SxT.js";const n=`
   const navMenuBtn = document.querySelector(".nav-menu-btn");
   const mobileNavOverlay = document.getElementById("mobileNavOverlay");
   const mobileNavDrawer = document.getElementById("mobileNavDrawer");
+  
   function t(key) {
     return (i18n[navLang] && i18n[navLang][key]) || key;
   }
@@ -102,6 +103,7 @@ import{r as t,j as a}from"./index-B0vJ3SxT.js";const n=`
   applyTheme();
   updateThemeLabel();
   applyTranslations();
+  
   if (navLangToggle) navLangToggle.addEventListener("click", toggleNavLang);
   if (mobileLangToggle) mobileLangToggle.addEventListener("click", toggleNavLang);
   if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
@@ -128,41 +130,9 @@ import{r as t,j as a}from"./index-B0vJ3SxT.js";const n=`
     });
   }
 
-  const orderDraftRaw = localStorage.getItem("ezOrderDraft");
-  const paymentDetailsEl = document.getElementById("paymentDetails");
-  const statusEl = document.getElementById("paymentStatus");
-  const btn = document.getElementById("payNowBtn");
-
-  if (!orderDraftRaw) {
-    statusEl.textContent = t("paymentNoDraft");
-    setTimeout(() => window.location.href = "/cart", 1200);
-  } else {
-    const draft = JSON.parse(orderDraftRaw);
-    const cart = draft.cart || [];
-    const total = cart.reduce((s, it) => s + (it.unitPrice * it.quantity), 0);
-    paymentDetailsEl.textContent = t("paymentAmountDue") + " " + (draft.currencyPrefix || "BHD ") + total.toFixed(2);
-
-    btn.addEventListener("click", async () => {
-      btn.disabled = true;
-      statusEl.textContent = t("paymentProcessing");
-      const succeed = (json) => {
-        localStorage.setItem("ezOrderResult", JSON.stringify(json || { status: "paid_demo" }));
-        statusEl.textContent = t("paymentConfirmed");
-        setTimeout(() => window.location.href = "/payment/confirmation", 500);
-      };
-      try {
-        const res = await fetch("/api/order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: orderDraftRaw
-        });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const json = await res.json();
-        succeed(json);
-      } catch (err) {
-        console.error("Payment demo failed; forcing success", err);
-        succeed({ status: "paid_demo", payment_method: "cash" });
-      }
-    });
-  }
-`;function i(){return t.useEffect(()=>{const e=document.createElement("script");return e.textContent=o,document.body.appendChild(e),()=>document.body.removeChild(e)},[]),a.jsx("div",{dangerouslySetInnerHTML:{__html:n}})}export{i as default};
+  // --- FAILURE LOGIC ---
+  // Redirect to cart after 5 seconds
+  setTimeout(() => {
+    window.location.href = "/cart";
+  }, 5000);
+`;function o(){return a.useEffect(()=>{const e=document.createElement("script");return e.textContent=l,document.body.appendChild(e),()=>{document.body.contains(e)&&document.body.removeChild(e)}},[]),t.jsx("div",{dangerouslySetInnerHTML:{__html:n}})}export{o as default};

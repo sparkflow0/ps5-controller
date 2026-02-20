@@ -1,4 +1,4 @@
-import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
+import{r as a,j as t}from"./index-BS14bs3e.js";const o=`
 
 
 <canvas id="bgCanvas"></canvas>
@@ -12,9 +12,10 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
 <audio id="sfxClick2" preload="auto" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="></audio>
 <div class="top-nav">
 <div class="nav-logo">
-<a class="nav-left" href="index.html" style="display:block;">
-<div class="nav-logo-mark"></div>
+<a class="nav-left" href="/" style="display:block;">
+<span class="nav-logo-text">Fhonel Store</span>
 </a>
+
 </div>
 <button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
 <span></span>
@@ -271,6 +272,8 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
     ];
 
     const ALL_PARTS = [...FRONT_PARTS, ...BACK_PARTS];
+    const FRONT_PART_IDS = new Set(FRONT_PARTS.map(part => part.id));
+    const BACK_PART_IDS = new Set(BACK_PARTS.map(part => part.id));
 
     const PART_KEYS = {
       shell: "part_shell",
@@ -392,6 +395,10 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
       "#8c3b2f",
       "#e3e3e3"
     ]);
+    const TRANSPARENT_TINT_OPACITY = 0.55;
+
+    const TRANSPARENCY_HINTS = new Set(["transparent", "trans", "t"]);
+    const SOLID_HINTS = new Set(["solid", "opaque", "s"]);
 
     const SHELL_PART_IDS = new Set([
       "shell",
@@ -424,6 +431,9 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
       if (existing) {
         if (variant.price != null) existing.price = variant.price;
         if (variant.qty != null) existing.qty = variant.qty;
+        if (typeof variant.isTransparent === "boolean") {
+          existing.isTransparent = variant.isTransparent;
+        }
       } else {
         targetMap[partId].push(variant);
       }
@@ -492,11 +502,27 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
         return;
       }
 
-      const match = /^ps5_([^_]+)_([^_]+)_(.+)$/i.exec(rawName.trim());
-      if (!match) return;
-      const partSlug = normalizeVariant(match[1]);
-      const typeSlug = normalizeVariant(match[2]);
-      const valueRaw = match[3];
+      const tokens = rawName.trim().split("_");
+      if (tokens.length < 4) return;
+      if (normalizeVariant(tokens[0]) !== "ps5") return;
+      const partSlug = normalizeVariant(tokens[1]);
+      const typeSlug = normalizeVariant(tokens[2]);
+      let valueTokens = tokens.slice(3);
+      let transparencyHint = null;
+
+      if (typeSlug === "color" && valueTokens.length >= 2) {
+        const hintSlug = normalizeVariant(valueTokens[0]);
+        if (TRANSPARENCY_HINTS.has(hintSlug)) {
+          transparencyHint = true;
+          valueTokens = valueTokens.slice(1);
+        } else if (SOLID_HINTS.has(hintSlug)) {
+          transparencyHint = false;
+          valueTokens = valueTokens.slice(1);
+        }
+      }
+
+      const valueRaw = valueTokens.join("_").trim();
+      if (!valueRaw) return;
       const partId = PART_SLUG_TO_ID[partSlug];
       if (!partId) return;
       const price = typeof item.rate === "number" ? item.rate : parseFloat(item.rate);
@@ -513,7 +539,11 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
       if (typeSlug === "color") {
         const col = parseColorVariant(valueRaw);
         if (!col) return;
-        addVariantToMap(dynamicColorsByPart, partId, { ...col, price, qty });
+        const isTransparent =
+          typeof transparencyHint === "boolean"
+            ? transparencyHint
+            : TRANSPARENT_HEXES.has((col.hex || "").toLowerCase());
+        addVariantToMap(dynamicColorsByPart, partId, { ...col, price, qty, isTransparent });
         addPriceFallback(partId, price);
         return;
       }
@@ -606,6 +636,8 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
     const controllerArea = document.getElementById("controllerArea");
     const faceFrontEl = document.getElementById("controllerFaceFront");
     const faceBackEl = document.getElementById("controllerFaceBack");
+    const faceFrontImg = faceFrontEl ? faceFrontEl.querySelector("img") : null;
+    const faceBackImg = faceBackEl ? faceBackEl.querySelector("img") : null;
 
     const controllerFlipBtn = document.getElementById("controllerFlipBtn");
     //const previewBtn = document.getElementById("previewBtn");
@@ -666,7 +698,14 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
 
     const partsRowsById = {};
     const configState = {};
-    ALL_PARTS.forEach(p => { configState[p.id] = null; });
+    const selectedTransparencyByPart = {};
+    let colorApplySeq = 0;
+    const lastApplySeqByPart = {};
+    ALL_PARTS.forEach(p => {
+      configState[p.id] = null;
+      selectedTransparencyByPart[p.id] = false;
+      lastApplySeqByPart[p.id] = 0;
+    });
 
     function setZohoLoading(isLoading) {
       if (!zohoLoadingOverlay) return;
@@ -978,10 +1017,57 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
 
     /* ----- Color application ----- */
 
-    function setPartPrice(partId, variantHex, isOption) {
+    function findVariantByHex(partId, variantHex, isOption) {
       const palette = isOption ? dynamicOptionsByPart[partId] : dynamicColorsByPart[partId];
       const hexLower = (variantHex || "").toLowerCase();
-      const match = palette ? palette.find(entry => (entry.hex || "").toLowerCase() === hexLower) : null;
+      if (!palette || !hexLower) return null;
+      return palette.find(entry => (entry.hex || "").toLowerCase() === hexLower) || null;
+    }
+
+    function isTransparentSelection(partId, variantHex, isOption) {
+      const entry = findVariantByHex(partId, variantHex, isOption);
+      if (entry && typeof entry.isTransparent === "boolean") return entry.isTransparent;
+      return TRANSPARENT_HEXES.has((variantHex || "").toLowerCase());
+    }
+
+    function isColorEntryTransparent(entry) {
+      if (!entry) return false;
+      if (typeof entry.isTransparent === "boolean") return entry.isTransparent;
+      return TRANSPARENT_HEXES.has((entry.hex || "").toLowerCase());
+    }
+
+    function hasAnyTransparentParts() {
+      return ALL_PARTS.some(part => selectedTransparencyByPart[part.id]);
+    }
+
+    function getControllerImageSrc(side) {
+      const hasTransparent = hasAnyTransparentParts();
+      if (side === "back") {
+        return hasTransparent ? "/assets/controller_back_t.png" : "/assets/controller_back.png";
+      }
+      return hasTransparent ? "/assets/controller_t.png" : "/assets/controller.png";
+    }
+
+    function updateControllerImageWait(side) {
+      const imgEl = side === "back" ? faceBackImg : faceFrontImg;
+      if (!imgEl) return false;
+      const nextSrc = getControllerImageSrc(side);
+      const currentSrc = imgEl.getAttribute("src") || "";
+      if (currentSrc === nextSrc) return false;
+      return new Promise(resolve => {
+        const onDone = () => {
+          imgEl.removeEventListener("load", onDone);
+          imgEl.removeEventListener("error", onDone);
+          resolve(true);
+        };
+        imgEl.addEventListener("load", onDone);
+        imgEl.addEventListener("error", onDone);
+        imgEl.setAttribute("src", nextSrc);
+      });
+    }
+
+    function setPartPrice(partId, variantHex, isOption) {
+      const match = findVariantByHex(partId, variantHex, isOption);
       if (match && typeof match.price === "number" && !Number.isNaN(match.price)) {
         selectedPriceByPart[partId] = match.price;
       } else if (typeof dynamicPricesByPart[partId] === "number" && !Number.isNaN(dynamicPricesByPart[partId])) {
@@ -1002,29 +1088,69 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
     }
 
     function applyColor(partId, colorHex) {
+      const applySeq = ++colorApplySeq;
+      lastApplySeqByPart[partId] = applySeq;
       configState[partId] = colorHex;
       setPartPrice(partId, colorHex, false);
-      const layer = layers[partId];
-      if (!layer) return;
-      layer.style.setProperty("--tint", colorHex);
-      if (TRANSPARENT_HEXES.has(colorHex.toLowerCase())) {
-        layer.style.setProperty("--tint-opacity", "0.35");
+      const isTransparent = isTransparentSelection(partId, colorHex, false);
+      selectedTransparencyByPart[partId] = isTransparent;
+      const applyTint = () => {
+        if (lastApplySeqByPart[partId] !== applySeq) return;
+        const layer = layers[partId];
+        if (layer) {
+          layer.style.setProperty("--tint", colorHex);
+          layer.style.setProperty("--tint-opacity", isTransparent ? String(TRANSPARENT_TINT_OPACITY) : "1");
+        }
+      };
+      let waitForImage = false;
+      if (FRONT_PART_IDS.has(partId)) {
+        waitForImage = updateControllerImageWait("front");
+        updateControllerImageWait("back");
+      } else if (BACK_PART_IDS.has(partId)) {
+        waitForImage = updateControllerImageWait("back");
+        updateControllerImageWait("front");
       } else {
-        layer.style.setProperty("--tint-opacity", "1");
+        updateControllerImageWait("front");
+        updateControllerImageWait("back");
+      }
+      if (waitForImage && typeof waitForImage.then === "function") {
+        waitForImage.then(applyTint);
+      } else {
+        applyTint();
       }
       updateSummary();
     }
 
     function applyOptions(partId, colorHex) {
+      const applySeq = ++colorApplySeq;
+      lastApplySeqByPart[partId] = applySeq;
       configState[partId] = colorHex;
       setPartPrice(partId, colorHex, true);
-      const layer = layers[partId];
-      if (!layer) return;
-      layer.style.setProperty("--tint", colorHex);
-      if (TRANSPARENT_HEXES.has(colorHex.toLowerCase())) {
-        layer.style.setProperty("--tint-opacity", "0.35");
+      const isTransparent = isTransparentSelection(partId, colorHex, true);
+      selectedTransparencyByPart[partId] = isTransparent;
+      const applyTint = () => {
+        if (lastApplySeqByPart[partId] !== applySeq) return;
+        const layer = layers[partId];
+        if (layer) {
+          layer.style.setProperty("--tint", colorHex);
+          layer.style.setProperty("--tint-opacity", isTransparent ? String(TRANSPARENT_TINT_OPACITY) : "1");
+        }
+      };
+      let waitForImage = false;
+      if (FRONT_PART_IDS.has(partId)) {
+        waitForImage = updateControllerImageWait("front");
+        updateControllerImageWait("back");
+      } else if (BACK_PART_IDS.has(partId)) {
+        waitForImage = updateControllerImageWait("back");
+        updateControllerImageWait("front");
       } else {
-        layer.style.setProperty("--tint-opacity", "1");
+        updateControllerImageWait("front");
+        updateControllerImageWait("back");
+      }
+      if (waitForImage && typeof waitForImage.then === "function") {
+        waitForImage.then(applyTint);
+      } else {
+        applyTint();
       }
       updateSummary();
     }
@@ -1098,7 +1224,14 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
         ? entries.concat(entries)
         : entries;
 
-      (sourceEntries || []).forEach(({ hex, key, qty, price }) => {
+      function appendGroupTitle(text) {
+        const title = document.createElement("div");
+        title.className = "color-group-title";
+        title.textContent = text;
+        target.appendChild(title);
+      }
+
+      function appendEntry({ hex, key, qty, price }) {
         const cell = document.createElement("div");
         cell.className = isOption ? "cd-cell-op" : "cd-cell";
 
@@ -1124,6 +1257,18 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
           sw.style.textAlign = "center";
           sw.style.lineHeight = "1.1";
           sw.innerText = currentLang === "ar" ? "نفدت الكمية" : "Out of\\nStock";
+        } else if (typeof price === "number" && !Number.isNaN(price)) {
+          sw.style.display = "flex";
+          sw.style.alignItems = "center";
+          sw.style.justifyContent = "center";
+          sw.style.color = "#fff";
+          // Strong black outline for readability on any background
+          sw.style.textShadow = "0 0 2px #000, 0 0 2px #000, 0 0 2px #000, 0 0 4px #000";
+          sw.style.fontSize = "0.65rem"; // Keeping it small to fit
+          sw.style.fontWeight = "800";
+          sw.style.textAlign = "center";
+          sw.style.lineHeight = "1.1";
+          sw.innerText = formatMoney(price);
         }
         sw.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -1140,7 +1285,28 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const o=`
         
         cell.appendChild(sw);
         target.appendChild(cell);
+      }
+
+      if (isOption || !Array.isArray(sourceEntries) || sourceEntries.length === 0 || isMobileInfinite) {
+        (sourceEntries || []).forEach(appendEntry);
+        return;
+      }
+
+      const solidEntries = [];
+      const transparentEntries = [];
+      sourceEntries.forEach((entry) => {
+        if (isColorEntryTransparent(entry)) transparentEntries.push(entry);
+        else solidEntries.push(entry);
       });
+
+      if (solidEntries.length) {
+        appendGroupTitle(t("solidColors"));
+        solidEntries.forEach(appendEntry);
+      }
+      if (transparentEntries.length) {
+        appendGroupTitle(t("transparentColors"));
+        transparentEntries.forEach(appendEntry);
+      }
     }
 
     function renderMobilePartsList() {

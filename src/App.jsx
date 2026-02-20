@@ -8,6 +8,9 @@ const CartPage = lazy(() => import('./pages/Cart.jsx'));
 const CheckoutPage = lazy(() => import('./pages/Checkout.jsx'));
 const PaymentPage = lazy(() => import('./pages/Payment.jsx'));
 const ConfirmationPage = lazy(() => import('./pages/Confirmation.jsx'));
+const PaymentSuccessPage = lazy(() => import('./pages/PaymentSuccess.jsx'));
+const PaymentFailedPage = lazy(() => import('./pages/PaymentFailed.jsx'));
+const OrderSuccessPage = lazy(() => import('./pages/OrderSuccess.jsx'));
 const OrderSummaryPage = lazy(() => import('./pages/OrderSummary.jsx'));
 const TrackOrderPage = lazy(() => import('./pages/TrackOrder.jsx'));
 const POSPage = lazy(() => import('./pages/POS.jsx'));
@@ -26,6 +29,9 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/payment/confirmation" element={<ConfirmationPage />} />
+        <Route path="/payment/success" element={<PaymentSuccessPage />} />
+        <Route path="/payment/failed" element={<PaymentFailedPage />} />
+        <Route path="/order-success" element={<OrderSuccessPage />} />
         <Route path="/order-summary" element={<OrderSummaryPage />} />
         <Route path="/trackorder" element={<TrackOrderPage />} />
         <Route path="/pos" element={<POSPage />} />

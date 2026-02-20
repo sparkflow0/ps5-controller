@@ -113,6 +113,7 @@ function HomePage() {
       '#8c3b2f',
       '#e3e3e3'
     ]);
+    const TRANSPARENT_TINT_OPACITY = 0.55;
 
     const THUMB_PARTS = [
       { id: 'shell', mask: '/assets/masks/leftShell.png' },
@@ -247,7 +248,7 @@ function HomePage() {
         layer.style.setProperty('--mask-url', `url('${p.mask}')`);
         layer.style.setProperty('--tint', color.hex);
         if (TRANSPARENT_HEXES.has(color.hex.toLowerCase())) {
-          layer.style.setProperty('--tint-opacity', '0.35');
+          layer.style.setProperty('--tint-opacity', String(TRANSPARENT_TINT_OPACITY));
         } else {
           layer.style.setProperty('--tint-opacity', '1');
         }
@@ -405,14 +406,14 @@ function HomePage() {
             <p className="hero-sub" data-i18n="heroSub"></p>
             <div className="hero-actions">
               <button className="hero-btn primary" type="button" data-i18n="heroCreateBtn" onClick={goToConfigurator}></button>
-              <button className="hero-btn secondary" type="button" data-i18n="heroPremadeBtn" onClick={() => scrollToSection('premadeSection')}></button>
+              <button style={{ display: 'none' }} className="hero-btn secondary" type="button" data-i18n="heroPremadeBtn" onClick={() => scrollToSection('premadeSection')}></button>
             </div>
           </div>
         </div>
       </section>
 
 
-      <section className="section" id="instagramSection" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '60px' }}>
+      <section className="section" id="instagramSection" style={{ display: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '60px' }}>
         <div className="section-header">
           <div>
             <div className="section-title" data-i18n="premadeTitle"></div>

@@ -12,6 +12,14 @@
         "function": "zohoProxy"
       },
       {
+        "source": "/api/tap/verify",
+        "function": "tapVerificationHandler"
+      },
+      {
+        "source": "/api/tap",
+        "function": "tapPaymentHandler"
+      },
+      {
         "source": "/api/**",
         "function": "orderHandler"
       },

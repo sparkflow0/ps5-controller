@@ -230,6 +230,7 @@ const cartScript = `
       "#8c3b2f",
       "#e3e3e3"
     ]);
+    const TRANSPARENT_TINT_OPACITY = 0.55;
 
     // masks as in configurator (front view only – for thumbnail)
     const THUMB_PARTS = [
@@ -306,7 +307,7 @@ const cartScript = `
         layer.style.setProperty("--tint", hex);
 
         if (TRANSPARENT_HEXES.has(hex.toLowerCase())) {
-          layer.style.setProperty("--tint-opacity", "0.35");
+          layer.style.setProperty("--tint-opacity", String(TRANSPARENT_TINT_OPACITY));
         } else {
           layer.style.setProperty("--tint-opacity", "1");
         }

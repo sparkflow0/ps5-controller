@@ -1,14 +1,15 @@
-import{r as t,j as a}from"./index-B0vJ3SxT.js";const n=`
+import{r as a,j as t}from"./index-BS14bs3e.js";const n=`
 
 
 <canvas id="bgCanvas"></canvas>
  TOP NAV 
 <div class="top-nav">
 <div class="nav-logo">
-<a class="nav-left" href="index.html">
-<div class="nav-logo-mark"></div>
+<a class="nav-left" href="/">
+<span class="nav-logo-text">Fhonel Store</span>
 <div class="nav-page-title" data-i18n="checkoutTitle">إتمام الشراء</div>
 </a>
+
 </div>
 <button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
 <span></span>
@@ -60,64 +61,22 @@ import{r as t,j as a}from"./index-B0vJ3SxT.js";const n=`
 <input id="phone" name="phone" required="" type="tel"/>
 </div>
 <div class="form-field">
-<label data-i18n="emailLabel" for="email">البريد الإلكتروني *</label>
-<input id="email" name="email" required="" type="email"/>
+<label data-i18n="emailLabel" for="email">البريد الإلكتروني (اختياري)</label>
+<input id="email" name="email" type="email"/>
 </div>
 </div>
 <div class="form-row">
 <div class="form-field">
-<label data-i18n="countryLabel" for="country">الدولة *</label>
-<input id="country" name="country" required=""/>
-</div>
-<div class="form-field">
-<label data-i18n="cityLabel" for="city">المدينة *</label>
-<input id="city" name="city" required=""/>
+<label data-i18n="cityLabel" for="city">المدينة (اختياري)</label>
+<input id="city" name="city"/>
 </div>
 </div>
-<div class="form-row">
-<div class="form-field">
-<label data-i18n="stateLabel" for="state">المحافظة / الولاية *</label>
-<input id="state" name="state" required=""/>
-</div>
-<div class="form-field">
-<label data-i18n="postalCodeLabel" for="postalCode">الرمز البريدي (اختياري)</label>
-<input id="postalCode" name="postalCode"/>
-</div>
-</div>
-<div class="form-row">
-<div class="form-field">
-<label data-i18n="addressLine1Label" for="addressLine1">العنوان التفصيلي (سطر 1) *</label>
-<input id="addressLine1" name="addressLine1" required=""/>
-</div>
-<div class="form-field">
-<label data-i18n="addressLine2Label" for="addressLine2">العنوان (سطر 2) اختياري</label>
-<input id="addressLine2" name="addressLine2"/>
-</div>
-</div>
-<div class="form-field">
-<label data-i18n="shippingMethodLabel" for="shippingMethod">طريقة الشحن</label>
-<select id="shippingMethod" name="shippingMethod">
-<option data-i18n="shippingStandard" value="standard">شحن عادي (3–5 أيام)</option>
-<option data-i18n="shippingExpress" value="express">شحن سريع (1–2 يوم)</option>
-<option data-i18n="shippingPickup" value="pickup">استلام من المتجر</option>
-</select>
-</div>
-<div class="form-field">
-<label data-i18n="paymentMethodsTitle">طريقة الدفع (للتجربة فقط – بدون تنفيذ الدفع الفعلي)</label>
-<div class="payment-methods">
-<label class="payment-option">
-<input checked="" name="paymentMethod" type="radio" value="card"/>
-<span data-i18n="paymentCard">بطاقة ائتمانية / مدى</span>
-</label>
-<label class="payment-option">
-<input name="paymentMethod" type="radio" value="online"/>
-<span data-i18n="paymentOnline">بوابة دفع إلكترونية</span>
-</label>
-<label class="payment-option">
-<input name="paymentMethod" type="radio" value="cod"/>
-<span data-i18n="paymentCod">الدفع عند الاستلام (إن توفر)</span>
-</label>
-</div>
+
+<!-- Shipping method hidden (default standard) -->
+<input type="hidden" name="shippingMethod" value="standard" />
+
+<div class="form-field" style="display:none;">
+  <input type="hidden" name="paymentMethod" value="online" />
 </div>
 <div class="terms-row">
 <input id="agree" required="" type="checkbox"/>
@@ -126,7 +85,7 @@ import{r as t,j as a}from"./index-B0vJ3SxT.js";const n=`
             </label>
 </div>
 <button class="place-order-btn" data-i18n="placeOrderBtn" type="submit">
-            تأكيد الطلب (بدون دفع)
+            تأكيد الطلب
           </button>
 </form>
 </div>
@@ -292,7 +251,7 @@ import{r as t,j as a}from"./index-B0vJ3SxT.js";const n=`
 
     function loadCart() {
       try {
-        const raw = localStorage.getItem(CART_KEY);
+        const raw = localStorage.getItem("ezCart");
         if (!raw) return [];
         const parsed = JSON.parse(raw);
         return Array.isArray(parsed) ? parsed : [];
@@ -359,12 +318,20 @@ import{r as t,j as a}from"./index-B0vJ3SxT.js";const n=`
       const formData = new FormData(checkoutForm);
       const data = Object.fromEntries(formData.entries());
       data.agree = document.getElementById("agree").checked;
+
+      // Inject defaults for removed fields
+      data.country = "Bahrain";
+      data.state = "Capital"; 
+      data.addressLine1 = "Not Provided";
+      data.postalCode = "";
+      
       // Build a combined fullName for compatibility with backend and Zoho.
       data.fullName = ((data.firstName || "") + " " + (data.lastName || "")).trim();
       // Keep legacy address for compatibility.
-      data.address = data.addressLine1 || data.address || "";
+      data.address = "Not Provided";
       data.cart = cartItems;
 
+      // Always Redirect to Payment Page for TAP
       try {
         localStorage.setItem("ezOrderDraft", JSON.stringify(data));
         window.location.href = "/payment";
@@ -378,4 +345,4 @@ import{r as t,j as a}from"./index-B0vJ3SxT.js";const n=`
     applyLanguage();
   
 
-`;function o(){return t.useEffect(()=>{const e=document.createElement("script");return e.textContent=l,document.body.appendChild(e),()=>{document.body.removeChild(e)}},[]),a.jsx("div",{className:"checkout-page",children:a.jsx("div",{dangerouslySetInnerHTML:{__html:n}})})}export{o as default};
+`;function i(){return a.useEffect(()=>{const e=document.createElement("script");return e.textContent=l,document.body.appendChild(e),()=>{document.body.removeChild(e)}},[]),t.jsx("div",{className:"checkout-page",children:t.jsx("div",{dangerouslySetInnerHTML:{__html:n}})})}export{i as default};

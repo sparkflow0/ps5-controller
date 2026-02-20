@@ -1,14 +1,15 @@
-import{r as a,j as t}from"./index-B0vJ3SxT.js";const n=`
+import{r as a,j as t}from"./index-BS14bs3e.js";const n=`
 
 
 <canvas id="bgCanvas"></canvas>
  TOP NAV 
 <div class="top-nav">
 <div class="nav-logo">
-<a class="nav-left" href="index.html">
-<div class="nav-logo-mark"></div>
+<a class="nav-left" href="/">
+<span class="nav-logo-text">Fhonel Store</span>
 <div class="nav-page-title" data-i18n="cartTitle">سلة المشتريات</div>
 </a>
+
 </div>
 <button class="nav-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
 <span></span>
@@ -226,6 +227,7 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const n=`
       "#8c3b2f",
       "#e3e3e3"
     ]);
+    const TRANSPARENT_TINT_OPACITY = 0.55;
 
     // masks as in configurator (front view only – for thumbnail)
     const THUMB_PARTS = [
@@ -302,7 +304,7 @@ import{r as a,j as t}from"./index-B0vJ3SxT.js";const n=`
         layer.style.setProperty("--tint", hex);
 
         if (TRANSPARENT_HEXES.has(hex.toLowerCase())) {
-          layer.style.setProperty("--tint-opacity", "0.35");
+          layer.style.setProperty("--tint-opacity", String(TRANSPARENT_TINT_OPACITY));
         } else {
           layer.style.setProperty("--tint-opacity", "1");
         }

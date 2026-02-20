@@ -424,246 +424,246 @@ async function buildCustomizationPdf(cart) {
 exports.orderHandler = functions
   .runWith({ memory: "512MB", timeoutSeconds: 120 })
   .https.onRequest(async (req, res) => {
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  if (req.method === "OPTIONS") return res.status(204).send("");
-  if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    if (req.method === "OPTIONS") return res.status(204).send("");
+    if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
 
-  let zohoEnabled = true;
-  try {
-    ensureConfig();
-  } catch {
-    zohoEnabled = false;
-  }
+    let zohoEnabled = true;
+    try {
+      ensureConfig();
+    } catch {
+      zohoEnabled = false;
+    }
 
-  try {
-    const body = req.body || {};
-    const customer = body.customer || body || {};
-    const cart = Array.isArray(body.items || body.cart) ? (body.items || body.cart) : [];
-    const total = cart.reduce((s, it) => s + (Number(it.unitPrice) || 0) * (Number(it.quantity) || 0), 0);
+    try {
+      const body = req.body || {};
+      const customer = body.customer || body || {};
+      const cart = Array.isArray(body.items || body.cart) ? (body.items || body.cart) : [];
+      const total = cart.reduce((s, it) => s + (Number(it.unitPrice) || 0) * (Number(it.quantity) || 0), 0);
 
-    let contact_id = null;
-    let salesorder = null;
-    let so_confirm = null;
-    let invoice = null;
-    let payment = null;
+      let contact_id = null;
+      let salesorder = null;
+      let so_confirm = null;
+      let invoice = null;
+      let payment = null;
 
-    if (zohoEnabled) {
-      try {
-        const token = await getAccessToken();
-        const itemsJson = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/items?organization_id=${ZOHO_ORG_ID}&per_page=200`, {
-          headers: { Authorization: `Zoho-oauthtoken ${token}` }
-        }, "items");
-        const itemMap = {};
-        (itemsJson.items || []).forEach(it => {
-          const nameKey = (it.name || it.item_name || "").toLowerCase();
-          itemMap[nameKey] = it;
-        });
-        const baseItem = itemMap["ps5_original_controller"];
-
-        const line_items = cart.map(it => {
-          const nameKey = (it.name || "").toLowerCase();
-          const mapped = itemMap[nameKey];
-          const descParts = [];
-          const desc = formatCustomizations(it.config);
-          if (desc) descParts.push(desc);
-          const composedDesc = descParts.join("\n");
-          return {
-            item_id: mapped ? mapped.item_id : (baseItem ? baseItem.item_id : undefined),
-            name: it.name || "PS5 Controller",
-            description: composedDesc,
-            quantity: it.quantity || 1,
-            rate: it.unitPrice || 0
-          };
-        });
-
-        const contact_name = customer.name || customer.fullName || "PS5 Customer";
-        const { first: first_name, last: last_name } = splitName(contact_name);
-        const shorten = (v, max = 60) => (v || "").toString().slice(0, max);
-        const contactPayload = {
-          contact_name: contact_name.slice(0, 50),
-          display_name: contact_name.slice(0, 50),
-          company_name: customer.company || "",
-          customer_sub_type: "individual",
-          email: customer.email || "",
-          phone: customer.phone || customer.mobile || "",
-          billing_address: buildAddress(customer),
-          shipping_address: buildAddress(customer),
-          contact_persons: [
-            {
-              salutation: customer.salutation || "",
-              first_name,
-              last_name,
-              email: customer.email || "",
-              phone: customer.phone || "",
-              mobile: customer.mobile || customer.phone || ""
-            }
-          ]
-        };
-
-        const shippingAddress = buildAddress(customer);
-        const billingAddress = buildAddress(customer);
-
+      if (zohoEnabled) {
         try {
-          const contactJson = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/contacts?organization_id=${ZOHO_ORG_ID}`, {
-            method: "POST",
-            headers: {
-              Authorization: `Zoho-oauthtoken ${token}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(contactPayload)
-          }, "contacts");
-          contact_id = contactJson.contact ? contactJson.contact.contact_id : null;
-        } catch (e) {
-          // ignore
-        }
+          const token = await getAccessToken();
+          const itemsJson = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/items?organization_id=${ZOHO_ORG_ID}&per_page=200`, {
+            headers: { Authorization: `Zoho-oauthtoken ${token}` }
+          }, "items");
+          const itemMap = {};
+          (itemsJson.items || []).forEach(it => {
+            const nameKey = (it.name || it.item_name || "").toLowerCase();
+            itemMap[nameKey] = it;
+          });
+          const baseItem = itemMap["ps5_original_controller"];
 
-        try {
-          const soPayload = {
-            customer_id: contact_id || undefined,
-            contact_name,
-            customer_name: contact_name,
-            billing_address: billingAddress,
-            shipping_address: shippingAddress,
-            line_items,
-            payment_options: { payment_mode: "cash" }
-          };
-          salesorder = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/salesorders?organization_id=${ZOHO_ORG_ID}`, {
-            method: "POST",
-            headers: {
-              Authorization: `Zoho-oauthtoken ${token}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(soPayload)
-          }, "salesorders");
-        } catch (e) {
-          // ignore
-        }
-
-        // Confirm the sales order if created
-        if (salesorder && salesorder.salesorder && salesorder.salesorder.salesorder_id) {
-          try {
-            const soId = salesorder.salesorder.salesorder_id;
-            so_confirm = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/salesorders/${soId}/status/confirmed?organization_id=${ZOHO_ORG_ID}`, {
-              method: "POST",
-              headers: { Authorization: `Zoho-oauthtoken ${token}` }
-            }, "salesorders_confirm");
-          } catch (e) {
-            // ignore
-          }
-        }
-
-        // Create invoice regardless (attach salesorder_id when available)
-        try {
-          const invPayload = {
-            customer_id: contact_id || undefined,
-            salesorder_id: salesorder && salesorder.salesorder && salesorder.salesorder.salesorder_id ? salesorder.salesorder.salesorder_id : undefined,
-            contact_name,
-            customer_name: contact_name,
-            billing_address: billingAddress,
-            shipping_address: shippingAddress,
-            line_items,
-            payment_options: { payment_mode: "cash" }
-          };
-          invoice = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/invoices?organization_id=${ZOHO_ORG_ID}`, {
-            method: "POST",
-            headers: {
-              Authorization: `Zoho-oauthtoken ${token}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(invPayload)
-          }, "invoices");
-        } catch (e) {
-          // ignore
-        }
-
-        // Record payment against the invoice (cash, paid)
-        if (invoice && invoice.invoice && invoice.invoice.invoice_id) {
-          try {
-            const payPayload = {
-              customer_id: contact_id || undefined,
-              payment_mode: "cash",
-              amount: total,
-              invoices: [
-                {
-                  invoice_id: invoice.invoice.invoice_id,
-                  amount_applied: total
-                }
-              ]
+          const line_items = cart.map(it => {
+            const nameKey = (it.name || "").toLowerCase();
+            const mapped = itemMap[nameKey];
+            const descParts = [];
+            const desc = formatCustomizations(it.config);
+            if (desc) descParts.push(desc);
+            const composedDesc = descParts.join("\n");
+            return {
+              item_id: mapped ? mapped.item_id : (baseItem ? baseItem.item_id : undefined),
+              name: it.name || "PS5 Controller",
+              description: composedDesc,
+              quantity: it.quantity || 1,
+              rate: it.unitPrice || 0
             };
-            payment = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/customerpayments?organization_id=${ZOHO_ORG_ID}`, {
+          });
+
+          const contact_name = customer.name || customer.fullName || "PS5 Customer";
+          const { first: first_name, last: last_name } = splitName(contact_name);
+          const shorten = (v, max = 60) => (v || "").toString().slice(0, max);
+          const contactPayload = {
+            contact_name: contact_name.slice(0, 50),
+            display_name: contact_name.slice(0, 50),
+            company_name: customer.company || "",
+            customer_sub_type: "individual",
+            email: customer.email || "",
+            phone: customer.phone || customer.mobile || "",
+            billing_address: buildAddress(customer),
+            shipping_address: buildAddress(customer),
+            contact_persons: [
+              {
+                salutation: customer.salutation || "",
+                first_name,
+                last_name,
+                email: customer.email || "",
+                phone: customer.phone || "",
+                mobile: customer.mobile || customer.phone || ""
+              }
+            ]
+          };
+
+          const shippingAddress = buildAddress(customer);
+          const billingAddress = buildAddress(customer);
+
+          try {
+            const contactJson = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/contacts?organization_id=${ZOHO_ORG_ID}`, {
               method: "POST",
               headers: {
                 Authorization: `Zoho-oauthtoken ${token}`,
                 "Content-Type": "application/json"
               },
-              body: JSON.stringify(payPayload)
-            }, "customerpayments");
+              body: JSON.stringify(contactPayload)
+            }, "contacts");
+            contact_id = contactJson.contact ? contactJson.contact.contact_id : null;
           } catch (e) {
             // ignore
           }
-        }
 
-        // Attach customization PDF to the sales order
-        if (salesorder && salesorder.salesorder && salesorder.salesorder.salesorder_id) {
           try {
-            const pdfBuffer = await buildCustomizationPdf(cart);
-            console.log("[orderHandler] attaching customizations.pdf, bytes:", pdfBuffer.length);
-            const blob = new BlobCtor([pdfBuffer], { type: "application/pdf" });
-            const form = new FormDataCtor();
-            // some runtimes expect options object; filename string works across undici/node
-            form.append("attachment", blob, "customizations.pdf");
-            const url = `${ZOHO_BASE}/inventory/v1/salesorders/${salesorder.salesorder.salesorder_id}/attachment?organization_id=${ZOHO_ORG_ID}`;
-            const res = await fetch(url, {
+            const soPayload = {
+              customer_id: contact_id || undefined,
+              contact_name,
+              customer_name: contact_name,
+              billing_address: billingAddress,
+              shipping_address: shippingAddress,
+              line_items,
+              payment_options: { payment_mode: "cash" }
+            };
+            salesorder = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/salesorders?organization_id=${ZOHO_ORG_ID}`, {
               method: "POST",
               headers: {
-                Authorization: `Zoho-oauthtoken ${token}`
+                Authorization: `Zoho-oauthtoken ${token}`,
+                "Content-Type": "application/json"
               },
-              body: form
-            });
-            const txt = await res.text();
-            if (!res.ok) {
-              console.error("[orderHandler] attach pdf failed", res.status, txt);
-            } else {
-              let json = null;
-              try { json = JSON.parse(txt); } catch { /* ignore */ }
-              if (json && json.code !== 0) {
-                console.error("[orderHandler] attach pdf non-zero code", json);
-              } else {
-                console.log("[orderHandler] attach pdf ok");
-              }
-            }
+              body: JSON.stringify(soPayload)
+            }, "salesorders");
           } catch (e) {
-            console.error("[orderHandler] attach pdf error", e);
+            // ignore
           }
+
+          // Confirm the sales order if created
+          if (salesorder && salesorder.salesorder && salesorder.salesorder.salesorder_id) {
+            try {
+              const soId = salesorder.salesorder.salesorder_id;
+              so_confirm = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/salesorders/${soId}/status/confirmed?organization_id=${ZOHO_ORG_ID}`, {
+                method: "POST",
+                headers: { Authorization: `Zoho-oauthtoken ${token}` }
+              }, "salesorders_confirm");
+            } catch (e) {
+              // ignore
+            }
+          }
+
+          // Create invoice regardless (attach salesorder_id when available)
+          try {
+            const invPayload = {
+              customer_id: contact_id || undefined,
+              salesorder_id: salesorder && salesorder.salesorder && salesorder.salesorder.salesorder_id ? salesorder.salesorder.salesorder_id : undefined,
+              contact_name,
+              customer_name: contact_name,
+              billing_address: billingAddress,
+              shipping_address: shippingAddress,
+              line_items,
+              payment_options: { payment_mode: "cash" }
+            };
+            invoice = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/invoices?organization_id=${ZOHO_ORG_ID}`, {
+              method: "POST",
+              headers: {
+                Authorization: `Zoho-oauthtoken ${token}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(invPayload)
+            }, "invoices");
+          } catch (e) {
+            // ignore
+          }
+
+          // Record payment against the invoice (cash, paid)
+          if (invoice && invoice.invoice && invoice.invoice.invoice_id) {
+            try {
+              const payPayload = {
+                customer_id: contact_id || undefined,
+                payment_mode: "cash",
+                amount: total,
+                invoices: [
+                  {
+                    invoice_id: invoice.invoice.invoice_id,
+                    amount_applied: total
+                  }
+                ]
+              };
+              payment = await fetchZohoJson(`${ZOHO_BASE}/inventory/v1/customerpayments?organization_id=${ZOHO_ORG_ID}`, {
+                method: "POST",
+                headers: {
+                  Authorization: `Zoho-oauthtoken ${token}`,
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payPayload)
+              }, "customerpayments");
+            } catch (e) {
+              // ignore
+            }
+          }
+
+          // Attach customization PDF to the sales order
+          if (salesorder && salesorder.salesorder && salesorder.salesorder.salesorder_id) {
+            try {
+              const pdfBuffer = await buildCustomizationPdf(cart);
+              console.log("[orderHandler] attaching customizations.pdf, bytes:", pdfBuffer.length);
+              const blob = new BlobCtor([pdfBuffer], { type: "application/pdf" });
+              const form = new FormDataCtor();
+              // some runtimes expect options object; filename string works across undici/node
+              form.append("attachment", blob, "customizations.pdf");
+              const url = `${ZOHO_BASE}/inventory/v1/salesorders/${salesorder.salesorder.salesorder_id}/attachment?organization_id=${ZOHO_ORG_ID}`;
+              const res = await fetch(url, {
+                method: "POST",
+                headers: {
+                  Authorization: `Zoho-oauthtoken ${token}`
+                },
+                body: form
+              });
+              const txt = await res.text();
+              if (!res.ok) {
+                console.error("[orderHandler] attach pdf failed", res.status, txt);
+              } else {
+                let json = null;
+                try { json = JSON.parse(txt); } catch { /* ignore */ }
+                if (json && json.code !== 0) {
+                  console.error("[orderHandler] attach pdf non-zero code", json);
+                } else {
+                  console.log("[orderHandler] attach pdf ok");
+                }
+              }
+            } catch (e) {
+              console.error("[orderHandler] attach pdf error", e);
+            }
+          }
+
+        } catch (err) {
+          console.error("[orderHandler] Zoho error", err);
         }
-
-      } catch (err) {
-        console.error("[orderHandler] Zoho error", err);
       }
-    }
 
-    res.json({
-      status: "paid_demo",
-      payment_method: "cash",
-      total,
-      contact_id,
-      salesorder,
-      so_confirm,
-      invoice,
-      payment
-    });
-  } catch (err) {
-    console.error("[orderHandler] error", err);
-    res.json({
-      status: "paid_demo",
-      payment_method: "cash",
-      total: 0,
-      error: err.message
-    });
-  }
-});
+      res.json({
+        status: "paid_demo",
+        payment_method: "cash",
+        total,
+        contact_id,
+        salesorder,
+        so_confirm,
+        invoice,
+        payment
+      });
+    } catch (err) {
+      console.error("[orderHandler] error", err);
+      res.json({
+        status: "paid_demo",
+        payment_method: "cash",
+        total: 0,
+        error: err.message
+      });
+    }
+  });
 
 // Serve preview images (e.g., data URI → svg) for Zoho descriptions
 exports.preview = functions.https.onRequest((req, res) => {
@@ -695,3 +695,105 @@ exports.preview = functions.https.onRequest((req, res) => {
   }
   return res.status(400).send("Unsupported data format");
 });
+
+exports.tapPaymentHandler = functions
+  .runWith({ memory: "256MB", timeoutSeconds: 60 })
+  .https.onRequest(async (req, res) => {
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "POST,OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    if (req.method === "OPTIONS") return res.status(204).send("");
+
+    try {
+      if (req.method !== "POST") throw new Error("Method not allowed");
+
+      const body = req.body || {};
+      const { amount, currency, customer, redirect_url, post_url } = body;
+
+      const TAP_SECRET = process.env.TAP_SECRET_KEY || "";
+
+      if (!TAP_SECRET) {
+        throw new Error("Missing TAP_SECRET_KEY in backend config");
+      }
+
+      const payload = {
+        amount: Number(amount).toFixed(2),
+        currency: currency || "BHD",
+        customer: {
+          first_name: customer.first_name || "Customer",
+          last_name: customer.last_name || ".",
+          email: customer.email,
+          phone: {
+            country_code: (customer.phone && customer.phone.country_code) || "965",
+            number: (customer.phone && customer.phone.number) || "00000000"
+          }
+        },
+        source: { id: "src_all" },
+        redirect: { url: redirect_url || "http://localhost:5173/payment/success" },
+        post: { url: post_url || null }
+      };
+
+      console.log("[tapPaymentHandler] initiating charge:", payload);
+
+      const tapRes = await fetch("https://api.tap.company/v2/charges", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${TAP_SECRET}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const tapJson = await tapRes.json();
+      console.log("[tapPaymentHandler] response:", tapJson);
+
+      if (!tapRes.ok) {
+        throw new Error("Tap API Error: " + (tapJson.errors ? JSON.stringify(tapJson.errors) : "Unknown"));
+      }
+
+      res.json(tapJson);
+    } catch (err) {
+      console.error("[tapPaymentHandler] error", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+exports.tapVerificationHandler = functions
+  .runWith({ memory: "256MB", timeoutSeconds: 60 })
+  .https.onRequest(async (req, res) => {
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    if (req.method === "OPTIONS") return res.status(204).send("");
+
+    const tapId = req.query.tap_id || req.body.tap_id;
+
+    if (!tapId) {
+      return res.status(400).json({ error: "Missing tap_id" });
+    }
+
+    try {
+      const TAP_SECRET = process.env.TAP_SECRET_KEY || "";
+      if (!TAP_SECRET) throw new Error("Missing TAP_SECRET_KEY");
+
+      const tapRes = await fetch(`https://api.tap.company/v2/charges/${tapId}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${TAP_SECRET}`
+        }
+      });
+
+      const tapJson = await tapRes.json();
+
+      if (!tapRes.ok) {
+        throw new Error("Tap Verification Failed");
+      }
+
+      res.json(tapJson);
+    } catch (err) {
+      console.error("[tapVerificationHandler] error", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
